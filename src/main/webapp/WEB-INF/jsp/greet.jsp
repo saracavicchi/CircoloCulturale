@@ -7,6 +7,6 @@
     <body>
 		<h1>Hello World!</h1>
 		<h2>Hello <%= request.getAttribute("name")%></h2>
-		<h2>Hello ${name}, using JSP!</h2>
+		<h2>Hello ${name}, using JSTL!</h2>
     </body>
 </html>
