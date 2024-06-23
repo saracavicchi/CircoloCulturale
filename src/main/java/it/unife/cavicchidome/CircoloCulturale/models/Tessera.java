@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tessera")
+@Table(name = "tessera", schema = "public")
 public class Tessera {
     @Id
-    @Column(name = "id", nullable = false)
-    private Integer id;
+    @Column(name = "id", columnDefinition = "bpchar", nullable = false, length = 10)
+    private String id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -25,14 +25,14 @@ public class Tessera {
     @Column(name = "costo", nullable = false, precision = 4, scale = 2)
     private BigDecimal costo;
 
-    @Column(name = "stato_pagamento", nullable = false, columnDefinition = "bpchar")
-    private String statoPagamento;
+    @Column(name = "stato_pagamento", nullable = false, length = Integer.MAX_VALUE)
+    private Character statoPagamento;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -60,11 +60,11 @@ public class Tessera {
         this.costo = costo;
     }
 
-    public String getStatoPagamento() {
+    public Character getStatoPagamento() {
         return statoPagamento;
     }
 
-    public void setStatoPagamento(String statoPagamento) {
+    public void setStatoPagamento(Character statoPagamento) {
         this.statoPagamento = statoPagamento;
     }
 

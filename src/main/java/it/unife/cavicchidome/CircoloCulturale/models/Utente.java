@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "utente", uniqueConstraints = {
+@Table(name = "utente", schema = "public", uniqueConstraints = {
         @UniqueConstraint(name = "UTENTE_unique1", columnNames = {"cf"})
 })
 public class Utente {
@@ -13,23 +13,26 @@ public class Utente {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "cf", nullable = false, length = 16, columnDefinition = "bpchar")
+    @Column(name = "cf", columnDefinition = "bpchar", nullable = false, length = 16)
     private String cf;
 
     @Column(name = "data_nascita", nullable = false)
     private LocalDate dataNascita;
 
-    @Column(name = "luogo_nascita", nullable = false, length = 15)
+    @Column(name = "luogo_nascita", nullable = false, length = 20)
     private String luogoNascita;
 
-    @Column(name = "nome", nullable = false, length = 15)
+    @Column(name = "nome", nullable = false, length = 20)
     private String nome;
 
-    @Column(name = "cognome", nullable = false, length = 15)
+    @Column(name = "cognome", nullable = false, length = 20)
     private String cognome;
 
-    @Column(name = "indirizzo", nullable = false, length = 50)
+    @Column(name = "indirizzo", nullable = false, length = 80)
     private String indirizzo;
+
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted = false;
 
     @OneToOne(mappedBy = "utente")
     private Socio socio;
@@ -88,6 +91,14 @@ public class Utente {
 
     public void setIndirizzo(String indirizzo) {
         this.indirizzo = indirizzo;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Socio getSocio() {

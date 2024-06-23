@@ -5,9 +5,11 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "docente")
+@Table(name = "docente", schema = "public")
 public class Docente {
     @Id
     @Column(name = "id", nullable = false)
@@ -21,6 +23,9 @@ public class Docente {
 
     @Column(name = "stipendio", nullable = false, precision = 7, scale = 2)
     private BigDecimal stipendio;
+
+    @ManyToMany(mappedBy = "docenti")
+    private Set<Corso> corsi = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -44,6 +49,14 @@ public class Docente {
 
     public void setStipendio(BigDecimal stipendio) {
         this.stipendio = stipendio;
+    }
+
+    public Set<Corso> getCorsi() {
+        return corsi;
+    }
+
+    public void setCorsi(Set<Corso> corsi) {
+        this.corsi = corsi;
     }
 
 }
