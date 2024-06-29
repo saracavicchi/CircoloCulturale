@@ -2,6 +2,7 @@ package it.unife.cavicchidome.CircoloCulturale.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -27,8 +28,10 @@ public class Sede {
     @Column(name = "active", nullable = false)
     private Boolean active = false;
 
-    @OneToMany(mappedBy = "idSede")
-    private Set<GiornoChiusura> giornoChiusura = new LinkedHashSet<>();
+    @ElementCollection
+    @CollectionTable(name = "giorno_chiusura", joinColumns = @JoinColumn(name = "id_sede", referencedColumnName = "id", nullable = false))
+    @Column(name = "giorno_chiusura", nullable = false)
+    private Set<LocalDate> giornoChiusura = new LinkedHashSet<LocalDate>();
 
     @OneToMany(mappedBy = "idSede")
     private Set<OrarioSede> orarioSede = new LinkedHashSet<>();
@@ -79,11 +82,11 @@ public class Sede {
         this.active = active;
     }
 
-    public Set<GiornoChiusura> getGiornoChiusura() {
+    public Set<LocalDate> getGiornoChiusura() {
         return giornoChiusura;
     }
 
-    public void setGiornoChiusura(Set<GiornoChiusura> giornoChiusura) {
+    public void setGiornoChiusura(Set<LocalDate> giornoChiusura) {
         this.giornoChiusura = giornoChiusura;
     }
 

@@ -13,7 +13,7 @@ public class OrarioSedeId implements Serializable {
     @Column(name = "id_sede", nullable = false)
     private Integer idSede;
 
-    @Column(name = "giorno_settimana", columnDefinition = "weekday not null")
+    @Column(name = "giorno_settimana", columnDefinition = "weekday")
     private Object giornoSettimana;
 
     public Integer getIdSede() {

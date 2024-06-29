@@ -8,10 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tessera", schema = "public")
+@Table(name = "tessera", schema = "public", uniqueConstraints = {
+        @UniqueConstraint(name = "TESSERA_unique1", columnNames = {"id_socio"})
+})
 public class Tessera {
     @Id
-    @Column(name = "id", nullable = false, length = 10)
+    @Column(name = "id", columnDefinition = "bpchar", nullable = false, length = 10)
     private String id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -26,10 +28,7 @@ public class Tessera {
     private BigDecimal costo;
 
     @Column(name = "stato_pagamento", nullable = false, length = Integer.MAX_VALUE)
-    private String statoPagamento;
-
-    @OneToOne(mappedBy = "idTessera")
-    private Socio socio;
+    private Character statoPagamento;
 
     public String getId() {
         return id;
@@ -63,20 +62,12 @@ public class Tessera {
         this.costo = costo;
     }
 
-    public String getStatoPagamento() {
+    public Character getStatoPagamento() {
         return statoPagamento;
     }
 
-    public void setStatoPagamento(String statoPagamento) {
+    public void setStatoPagamento(Character statoPagamento) {
         this.statoPagamento = statoPagamento;
-    }
-
-    public Socio getSocio() {
-        return socio;
-    }
-
-    public void setSocio(Socio socio) {
-        this.socio = socio;
     }
 
 }

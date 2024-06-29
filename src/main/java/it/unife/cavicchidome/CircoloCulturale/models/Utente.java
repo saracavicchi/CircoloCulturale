@@ -15,7 +15,7 @@ public class Utente {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "cf", nullable = false, length = 16)
+    @Column(name = "cf", columnDefinition = "bpchar", nullable = false, length = 16)
     private String cf;
 
     @Column(name = "data_nascita", nullable = false)
@@ -39,7 +39,7 @@ public class Utente {
     @OneToMany(mappedBy = "idUtente")
     private Set<Biglietto> biglietti = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "id")
+    @OneToOne(mappedBy = "utente")
     private Socio socio;
 
     public Integer getId() {

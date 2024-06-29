@@ -20,18 +20,13 @@ public class Socio {
     @JoinColumn(name = "id", nullable = false)
     private Utente utente;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "id_tessera", nullable = false)
-    private Tessera idTessera;
-
     @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @Column(name = "password", nullable = false, length = 50)
     private String password;
 
-    @Column(name = "telefono", length = 10)
+    @Column(name = "telefono", columnDefinition = "bpchar", length = 10)
     private String telefono;
 
     @Column(name = "url_foto", length = 80)
@@ -40,19 +35,25 @@ public class Socio {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
 
-    @OneToOne(mappedBy = "id")
+    @OneToOne(mappedBy = "socio")
     private Docente docente;
 
     @OneToMany(mappedBy = "idSocio")
-    private Set<PrenotazioneSala> prenotazioniSala = new LinkedHashSet<>();
+    private Set<PrenotazioneSala> prenotazioniSale = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "soci")
+    @ManyToMany
+    @JoinTable(name = "saggio_partecipa_socio",
+            joinColumns = @JoinColumn(name = "id_socio"),
+            inverseJoinColumns = @JoinColumn(name = "id_saggio"))
     private Set<Saggio> saggi = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "id")
+    @OneToOne(mappedBy = "socio")
     private Segretario segretario;
 
-    @ManyToMany(mappedBy = "soci")
+    @ManyToMany
+    @JoinTable(name = "socio_frequenta",
+            joinColumns = @JoinColumn(name = "id_socio"),
+            inverseJoinColumns = @JoinColumn(name = "id_corso"))
     private Set<Corso> corsi = new LinkedHashSet<>();
 
     @OneToOne(mappedBy = "idSocio")
@@ -72,14 +73,6 @@ public class Socio {
 
     public void setUtente(Utente utente) {
         this.utente = utente;
-    }
-
-    public Tessera getIdTessera() {
-        return idTessera;
-    }
-
-    public void setIdTessera(Tessera idTessera) {
-        this.idTessera = idTessera;
     }
 
     public String getEmail() {
@@ -130,12 +123,12 @@ public class Socio {
         this.docente = docente;
     }
 
-    public Set<PrenotazioneSala> getPrenotazioniSala() {
-        return prenotazioniSala;
+    public Set<PrenotazioneSala> getPrenotazioniSale() {
+        return prenotazioniSale;
     }
 
-    public void setPrenotazioniSala(Set<PrenotazioneSala> prenotazioniSala) {
-        this.prenotazioniSala = prenotazioniSala;
+    public void setPrenotazioniSale(Set<PrenotazioneSala> prenotazioniSale) {
+        this.prenotazioniSale = prenotazioniSale;
     }
 
     public Set<Saggio> getSaggi() {

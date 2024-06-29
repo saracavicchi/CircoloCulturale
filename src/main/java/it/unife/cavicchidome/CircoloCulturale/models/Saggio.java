@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -39,7 +38,7 @@ public class Saggio {
     private String indirizzo;
 
     @Column(name = "url_foto")
-    private List<String> urlFoto;
+    private String urlFoto;
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
@@ -47,13 +46,22 @@ public class Saggio {
     @OneToMany(mappedBy = "idSaggio")
     private Set<Biglietto> biglietti = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "idSaggio")
+    @ManyToMany
+    @JoinTable(name = "saggio_inerente_corso",
+            joinColumns = @JoinColumn(name = "id_saggio"),
+            inverseJoinColumns = @JoinColumn(name = "id_corso"))
     private Set<Corso> corsi = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "idSaggio")
+    @ManyToMany
+    @JoinTable(name = "saggio_partecipa_docente",
+            joinColumns = @JoinColumn(name = "id_saggio"),
+            inverseJoinColumns = @JoinColumn(name = "id_docente"))
     private Set<Docente> docenti = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "idSaggio")
+    @ManyToMany
+    @JoinTable(name = "saggio_partecipa_socio",
+            joinColumns = @JoinColumn(name = "id_saggio"),
+            inverseJoinColumns = @JoinColumn(name = "id_socio"))
     private Set<Socio> soci = new LinkedHashSet<>();
 
     public Integer getId() {
@@ -120,11 +128,11 @@ public class Saggio {
         this.indirizzo = indirizzo;
     }
 
-    public List<String> getUrlFoto() {
+    public String getUrlFoto() {
         return urlFoto;
     }
 
-    public void setUrlFoto(List<String> urlFoto) {
+    public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
     }
 

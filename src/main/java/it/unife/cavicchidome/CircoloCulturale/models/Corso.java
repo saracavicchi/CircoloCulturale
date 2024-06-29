@@ -5,7 +5,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,7 +34,7 @@ public class Corso {
     private Sala idSala;
 
     @Column(name = "url_foto")
-    private List<String> urlFoto;
+    private String urlFoto;
 
     @Column(name = "active", nullable = false)
     private Boolean active = false;
@@ -43,13 +42,22 @@ public class Corso {
     @OneToMany(mappedBy = "idCorso")
     private Set<CalendarioCorso> calendarioCorso = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "idCorso")
+    @ManyToMany
+    @JoinTable(name = "docente_insegna",
+            joinColumns = @JoinColumn(name = "id_corso"),
+            inverseJoinColumns = @JoinColumn(name = "id_docente"))
     private Set<Docente> docenti = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "idCorso")
+    @ManyToMany
+    @JoinTable(name = "saggio_inerente_corso",
+            joinColumns = @JoinColumn(name = "id_corso"),
+            inverseJoinColumns = @JoinColumn(name = "id_saggio"))
     private Set<Saggio> saggi = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "idCorso")
+    @ManyToMany
+    @JoinTable(name = "socio_frequenta",
+            joinColumns = @JoinColumn(name = "id_corso"),
+            inverseJoinColumns = @JoinColumn(name = "id_socio"))
     private Set<Socio> soci = new LinkedHashSet<>();
 
     public Integer getId() {
@@ -100,11 +108,11 @@ public class Corso {
         this.idSala = idSala;
     }
 
-    public List<String> getUrlFoto() {
+    public String getUrlFoto() {
         return urlFoto;
     }
 
-    public void setUrlFoto(List<String> urlFoto) {
+    public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
     }
 

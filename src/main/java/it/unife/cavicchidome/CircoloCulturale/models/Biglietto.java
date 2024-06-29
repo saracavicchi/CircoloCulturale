@@ -30,7 +30,7 @@ public class Biglietto {
     private Instant dataOraAcquisto;
 
     @Column(name = "stato_pagamento", nullable = false, length = Integer.MAX_VALUE)
-    private String statoPagamento;
+    private Character statoPagamento;
 
     @Column(name = "sconto", nullable = false)
     private Boolean sconto = false;
@@ -78,11 +78,11 @@ public class Biglietto {
         this.dataOraAcquisto = dataOraAcquisto;
     }
 
-    public String getStatoPagamento() {
+    public Character getStatoPagamento() {
         return statoPagamento;
     }
 
-    public void setStatoPagamento(String statoPagamento) {
+    public void setStatoPagamento(Character statoPagamento) {
         this.statoPagamento = statoPagamento;
     }
 

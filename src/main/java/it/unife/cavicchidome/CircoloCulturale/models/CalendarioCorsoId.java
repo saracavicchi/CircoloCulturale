@@ -13,7 +13,7 @@ public class CalendarioCorsoId implements Serializable {
     @Column(name = "id_corso", nullable = false)
     private Integer idCorso;
 
-    @Column(name = "giorno_settimana", columnDefinition = "weekday not null")
+    @Column(name = "giorno_settimana", columnDefinition = "weekday")
     private Object giornoSettimana;
 
     public Integer getIdCorso() {

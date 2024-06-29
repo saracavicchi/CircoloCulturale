@@ -27,10 +27,16 @@ public class Docente {
     @Column(name = "active", nullable = false)
     private Boolean active = false;
 
-    @ManyToMany(mappedBy = "docenti")
+    @ManyToMany
+    @JoinTable(name = "docente_insegna",
+            joinColumns = @JoinColumn(name = "id_docente"),
+            inverseJoinColumns = @JoinColumn(name = "id_corso"))
     private Set<Corso> corsi = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "docenti")
+    @ManyToMany
+    @JoinTable(name = "saggio_partecipa_docente",
+            joinColumns = @JoinColumn(name = "id_docente"),
+            inverseJoinColumns = @JoinColumn(name = "id_saggio"))
     private Set<Saggio> saggi = new LinkedHashSet<>();
 
     public Integer getId() {
