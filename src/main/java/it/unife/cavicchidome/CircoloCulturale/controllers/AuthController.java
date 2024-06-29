@@ -1,10 +1,13 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import it.unife.cavicchidome.CircoloCulturale.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthController {
 
     SocioRepository socioRepository;
+    AuthService authService;
 
-    AuthController(SocioRepository socioRepository) {
+    AuthController(SocioRepository socioRepository, AuthService authService) {
         this.socioRepository = socioRepository;
+        this.authService = authService;
     }
 
     @GetMapping("/login")
@@ -25,6 +30,7 @@ public class AuthController {
         return "login";
     }
 
+    // @Transactional
     @PostMapping("/login")
     public String login(
             @RequestParam String cf,
@@ -32,7 +38,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes,
             HttpServletResponse response
     ) {
-        var socio = socioRepository.authenticateSocio(cf, password);
+        Socio socio = authService.authenticate(cf, password);
         if (socio != null) {
             Cookie socioCookie = new Cookie("socio-id", "" + socio.getId());
             response.addCookie(socioCookie);
