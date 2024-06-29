@@ -3,6 +3,8 @@ package it.unife.cavicchidome.CircoloCulturale.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "utente", schema = "public", uniqueConstraints = {
@@ -13,7 +15,7 @@ public class Utente {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "cf", columnDefinition = "bpchar", nullable = false, length = 16)
+    @Column(name = "cf", nullable = false, length = 16)
     private String cf;
 
     @Column(name = "data_nascita", nullable = false)
@@ -34,7 +36,10 @@ public class Utente {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
 
-    @OneToOne(mappedBy = "utente")
+    @OneToMany(mappedBy = "idUtente")
+    private Set<Biglietto> biglietti = new LinkedHashSet<>();
+
+    @OneToOne(mappedBy = "id")
     private Socio socio;
 
     public Integer getId() {
@@ -99,6 +104,14 @@ public class Utente {
 
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public Set<Biglietto> getBiglietti() {
+        return biglietti;
+    }
+
+    public void setBiglietti(Set<Biglietto> biglietti) {
+        this.biglietti = biglietti;
     }
 
     public Socio getSocio() {

@@ -5,16 +5,17 @@ import jakarta.persistence.Embeddable;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
-public class SalaId implements Serializable {
-    private static final long serialVersionUID = -6531630855826997454L;
+public class GiornoChiusuraId implements Serializable {
+    private static final long serialVersionUID = -4283234164442422880L;
     @Column(name = "id_sede", nullable = false)
     private Integer idSede;
 
-    @Column(name = "numero_sala", nullable = false)
-    private Integer numeroSala;
+    @Column(name = "giorno_chiusura", nullable = false)
+    private LocalDate giornoChiusura;
 
     public Integer getIdSede() {
         return idSede;
@@ -24,26 +25,26 @@ public class SalaId implements Serializable {
         this.idSede = idSede;
     }
 
-    public Integer getNumeroSala() {
-        return numeroSala;
+    public LocalDate getGiornoChiusura() {
+        return giornoChiusura;
     }
 
-    public void setNumeroSala(Integer numeroSala) {
-        this.numeroSala = numeroSala;
+    public void setGiornoChiusura(LocalDate giornoChiusura) {
+        this.giornoChiusura = giornoChiusura;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        SalaId entity = (SalaId) o;
-        return Objects.equals(this.numeroSala, entity.numeroSala) &&
+        GiornoChiusuraId entity = (GiornoChiusuraId) o;
+        return Objects.equals(this.giornoChiusura, entity.giornoChiusura) &&
                 Objects.equals(this.idSede, entity.idSede);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(numeroSala, idSede);
+        return Objects.hash(giornoChiusura, idSede);
     }
 
 }

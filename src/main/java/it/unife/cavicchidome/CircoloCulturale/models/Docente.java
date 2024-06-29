@@ -24,8 +24,14 @@ public class Docente {
     @Column(name = "stipendio", nullable = false, precision = 7, scale = 2)
     private BigDecimal stipendio;
 
+    @Column(name = "active", nullable = false)
+    private Boolean active = false;
+
     @ManyToMany(mappedBy = "docenti")
     private Set<Corso> corsi = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "docenti")
+    private Set<Saggio> saggi = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -51,12 +57,28 @@ public class Docente {
         this.stipendio = stipendio;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public Set<Corso> getCorsi() {
         return corsi;
     }
 
     public void setCorsi(Set<Corso> corsi) {
         this.corsi = corsi;
+    }
+
+    public Set<Saggio> getSaggi() {
+        return saggi;
+    }
+
+    public void setSaggi(Set<Saggio> saggi) {
+        this.saggi = saggi;
     }
 
 }

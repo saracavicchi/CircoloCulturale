@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Table(name = "tessera", schema = "public")
 public class Tessera {
     @Id
-    @Column(name = "id", columnDefinition = "bpchar", nullable = false, length = 10)
+    @Column(name = "id", nullable = false, length = 10)
     private String id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -26,7 +26,10 @@ public class Tessera {
     private BigDecimal costo;
 
     @Column(name = "stato_pagamento", nullable = false, length = Integer.MAX_VALUE)
-    private Character statoPagamento;
+    private String statoPagamento;
+
+    @OneToOne(mappedBy = "idTessera")
+    private Socio socio;
 
     public String getId() {
         return id;
@@ -60,12 +63,20 @@ public class Tessera {
         this.costo = costo;
     }
 
-    public Character getStatoPagamento() {
+    public String getStatoPagamento() {
         return statoPagamento;
     }
 
-    public void setStatoPagamento(Character statoPagamento) {
+    public void setStatoPagamento(String statoPagamento) {
         this.statoPagamento = statoPagamento;
+    }
+
+    public Socio getSocio() {
+        return socio;
+    }
+
+    public void setSocio(Socio socio) {
+        this.socio = socio;
     }
 
 }

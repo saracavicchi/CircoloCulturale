@@ -30,6 +30,9 @@ public class Segretario {
     @Column(name = "stipendio", nullable = false, precision = 7, scale = 2)
     private BigDecimal stipendio;
 
+    @Column(name = "active", nullable = false)
+    private Boolean active = false;
+
     public Integer getId() {
         return id;
     }
@@ -68,6 +71,14 @@ public class Segretario {
 
     public void setStipendio(BigDecimal stipendio) {
         this.stipendio = stipendio;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
 }

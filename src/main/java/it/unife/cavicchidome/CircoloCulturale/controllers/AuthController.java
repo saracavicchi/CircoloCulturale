@@ -1,14 +1,9 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
-import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.AuthService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;

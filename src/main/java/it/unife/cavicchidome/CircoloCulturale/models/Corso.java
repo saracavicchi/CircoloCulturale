@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,25 +31,25 @@ public class Corso {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumns({
-            @JoinColumn(name = "numero_sala", referencedColumnName = "numero_sala"),
-            @JoinColumn(name = "id_sede", referencedColumnName = "id_sede")
-    })
-    private Sala sala;
+    @JoinColumn(name = "id_sala", nullable = false)
+    private Sala idSala;
 
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted = false;
+    @Column(name = "url_foto")
+    private List<String> urlFoto;
 
-    @ManyToMany
-    @JoinTable(name = "docente_insegna",
-            joinColumns = @JoinColumn(name = "id_corso"),
-            inverseJoinColumns = @JoinColumn(name = "id_docente"))
+    @Column(name = "active", nullable = false)
+    private Boolean active = false;
+
+    @OneToMany(mappedBy = "idCorso")
+    private Set<CalendarioCorso> calendarioCorso = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "idCorso")
     private Set<Docente> docenti = new LinkedHashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "socio_frequenta",
-            joinColumns = @JoinColumn(name = "id_corso"),
-            inverseJoinColumns = @JoinColumn(name = "id_socio"))
+    @ManyToMany(mappedBy = "idCorso")
+    private Set<Saggio> saggi = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "idCorso")
     private Set<Socio> soci = new LinkedHashSet<>();
 
     public Integer getId() {
@@ -91,20 +92,36 @@ public class Corso {
         this.livello = livello;
     }
 
-    public Sala getSala() {
-        return sala;
+    public Sala getIdSala() {
+        return idSala;
     }
 
-    public void setSala(Sala sala) {
-        this.sala = sala;
+    public void setIdSala(Sala idSala) {
+        this.idSala = idSala;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
+    public List<String> getUrlFoto() {
+        return urlFoto;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public void setUrlFoto(List<String> urlFoto) {
+        this.urlFoto = urlFoto;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Set<CalendarioCorso> getCalendarioCorso() {
+        return calendarioCorso;
+    }
+
+    public void setCalendarioCorso(Set<CalendarioCorso> calendarioCorso) {
+        this.calendarioCorso = calendarioCorso;
     }
 
     public Set<Docente> getDocenti() {
@@ -113,6 +130,14 @@ public class Corso {
 
     public void setDocenti(Set<Docente> docenti) {
         this.docenti = docenti;
+    }
+
+    public Set<Saggio> getSaggi() {
+        return saggi;
+    }
+
+    public void setSaggi(Set<Saggio> saggi) {
+        this.saggi = saggi;
     }
 
     public Set<Socio> getSoci() {

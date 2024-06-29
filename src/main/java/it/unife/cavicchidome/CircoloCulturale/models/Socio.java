@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "socio", schema = "public")
 public class Socio {
@@ -17,13 +20,18 @@ public class Socio {
     @JoinColumn(name = "id", nullable = false)
     private Utente utente;
 
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "id_tessera", nullable = false)
+    private Tessera idTessera;
+
     @Column(name = "email", nullable = false, length = 50)
     private String email;
 
     @Column(name = "password", nullable = false, length = 50)
     private String password;
 
-    @Column(name = "telefono", columnDefinition = "bpchar", length = 10)
+    @Column(name = "telefono", length = 10)
     private String telefono;
 
     @Column(name = "url_foto", length = 80)
@@ -32,11 +40,20 @@ public class Socio {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
 
-    @OneToOne(mappedBy = "socio")
+    @OneToOne(mappedBy = "id")
     private Docente docente;
 
-    @OneToOne(mappedBy = "socio")
+    @OneToMany(mappedBy = "idSocio")
+    private Set<PrenotazioneSala> prenotazioniSala = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "soci")
+    private Set<Saggio> saggi = new LinkedHashSet<>();
+
+    @OneToOne(mappedBy = "id")
     private Segretario segretario;
+
+    @ManyToMany(mappedBy = "soci")
+    private Set<Corso> corsi = new LinkedHashSet<>();
 
     @OneToOne(mappedBy = "idSocio")
     private Tessera tessera;
@@ -55,6 +72,14 @@ public class Socio {
 
     public void setUtente(Utente utente) {
         this.utente = utente;
+    }
+
+    public Tessera getIdTessera() {
+        return idTessera;
+    }
+
+    public void setIdTessera(Tessera idTessera) {
+        this.idTessera = idTessera;
     }
 
     public String getEmail() {
@@ -105,12 +130,36 @@ public class Socio {
         this.docente = docente;
     }
 
+    public Set<PrenotazioneSala> getPrenotazioniSala() {
+        return prenotazioniSala;
+    }
+
+    public void setPrenotazioniSala(Set<PrenotazioneSala> prenotazioniSala) {
+        this.prenotazioniSala = prenotazioniSala;
+    }
+
+    public Set<Saggio> getSaggi() {
+        return saggi;
+    }
+
+    public void setSaggi(Set<Saggio> saggi) {
+        this.saggi = saggi;
+    }
+
     public Segretario getSegretario() {
         return segretario;
     }
 
     public void setSegretario(Segretario segretario) {
         this.segretario = segretario;
+    }
+
+    public Set<Corso> getCorsi() {
+        return corsi;
+    }
+
+    public void setCorsi(Set<Corso> corsi) {
+        this.corsi = corsi;
     }
 
     public Tessera getTessera() {

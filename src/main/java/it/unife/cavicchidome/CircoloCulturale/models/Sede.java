@@ -24,8 +24,14 @@ public class Sede {
     @Column(name = "ristoro", nullable = false)
     private Boolean ristoro = false;
 
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted = false;
+    @Column(name = "active", nullable = false)
+    private Boolean active = false;
+
+    @OneToMany(mappedBy = "idSede")
+    private Set<GiornoChiusura> giornoChiusura = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "idSede")
+    private Set<OrarioSede> orarioSede = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "idSede")
     private Set<Sala> sale = new LinkedHashSet<>();
@@ -65,12 +71,28 @@ public class Sede {
         this.ristoro = ristoro;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Set<GiornoChiusura> getGiornoChiusura() {
+        return giornoChiusura;
+    }
+
+    public void setGiornoChiusura(Set<GiornoChiusura> giornoChiusura) {
+        this.giornoChiusura = giornoChiusura;
+    }
+
+    public Set<OrarioSede> getOrarioSede() {
+        return orarioSede;
+    }
+
+    public void setOrarioSede(Set<OrarioSede> orarioSede) {
+        this.orarioSede = orarioSede;
     }
 
     public Set<Sala> getSale() {

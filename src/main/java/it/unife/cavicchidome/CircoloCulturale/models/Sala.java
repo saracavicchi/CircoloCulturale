@@ -8,16 +8,21 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "sala", schema = "public")
+@Table(name = "sala", schema = "public", uniqueConstraints = {
+        @UniqueConstraint(name = "SALA_unique1", columnNames = {"id_sede", "numero_sala"})
+})
 public class Sala {
-    @EmbeddedId
-    private SalaId id;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
-    @MapsId("idSede")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "id_sede", nullable = false)
     private Sede idSede;
+
+    @Column(name = "numero_sala", nullable = false)
+    private Integer numeroSala;
 
     @Column(name = "descrizione", length = Integer.MAX_VALUE)
     private String descrizione;
@@ -28,17 +33,20 @@ public class Sala {
     @Column(name = "prenotabile", nullable = false)
     private Boolean prenotabile = false;
 
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted = false;
+    @Column(name = "active", nullable = false)
+    private Boolean active = false;
 
-    @OneToMany(mappedBy = "sala")
+    @OneToMany(mappedBy = "idSala")
     private Set<Corso> corsi = new LinkedHashSet<>();
 
-    public SalaId getId() {
+    @OneToMany(mappedBy = "idSala")
+    private Set<PrenotazioneSala> prenotazioniSala = new LinkedHashSet<>();
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(SalaId id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -48,6 +56,14 @@ public class Sala {
 
     public void setIdSede(Sede idSede) {
         this.idSede = idSede;
+    }
+
+    public Integer getNumeroSala() {
+        return numeroSala;
+    }
+
+    public void setNumeroSala(Integer numeroSala) {
+        this.numeroSala = numeroSala;
     }
 
     public String getDescrizione() {
@@ -74,12 +90,12 @@ public class Sala {
         this.prenotabile = prenotabile;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Set<Corso> getCorsi() {
@@ -88,6 +104,14 @@ public class Sala {
 
     public void setCorsi(Set<Corso> corsi) {
         this.corsi = corsi;
+    }
+
+    public Set<PrenotazioneSala> getPrenotazioniSala() {
+        return prenotazioniSala;
+    }
+
+    public void setPrenotazioniSala(Set<PrenotazioneSala> prenotazioniSala) {
+        this.prenotazioniSala = prenotazioniSala;
     }
 
 }
