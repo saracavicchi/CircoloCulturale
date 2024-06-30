@@ -3,17 +3,15 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
-<<<<<<< Updated upstream
-=======
 import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
->>>>>>> Stashed changes
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,25 +21,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
-<<<<<<< Updated upstream
-=======
+
+
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.regex.Pattern;
+import java.time.LocalDate;
 
->>>>>>> Stashed changes
+
 @Controller
 public class AuthController {
 
     private final SocioService socioService;
     private final UtenteService utenteService;
     SocioRepository socioRepository;
-<<<<<<< Updated upstream
-
-    AuthController(SocioRepository socioRepository, SocioService socioService) {
-        this.socioRepository = socioRepository;
-        this.socioService = socioService;
-=======
     UtenteRepository utenteRepository;
     TesseraService tesseraService;
 
@@ -57,7 +50,7 @@ public class AuthController {
         this.utenteRepository = utenteRepository;
         this.utenteService = utenteService;
         this.tesseraService = tesseraService;
->>>>>>> Stashed changes
+
     }
 
     @GetMapping("/login")
@@ -82,8 +75,7 @@ public class AuthController {
             return "redirect:/login";
         }
     }
-<<<<<<< Updated upstream
-=======
+
 
     @GetMapping("/logout")
     public String logout(
@@ -154,5 +146,5 @@ public class AuthController {
 
 
 
->>>>>>> Stashed changes
+
 }
