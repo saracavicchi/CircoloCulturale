@@ -30,7 +30,7 @@
         <input type="password" id="password" name="password">
         <label for="password">Password</label>
         <input type="submit" name="login" value="Login">
-        <input type="button" name="signup" value="Registrati">
+        <input type="button" name="signup" value="Registrati" onclick="viewSignup()">
     </form>
     <table>
         <thead>

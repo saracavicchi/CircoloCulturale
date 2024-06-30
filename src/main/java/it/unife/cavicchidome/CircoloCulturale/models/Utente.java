@@ -12,6 +12,9 @@ import java.util.Set;
 })
 public class Utente {
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "utente_seq")
+    //@SequenceGenerator(name = "utente_seq", sequenceName = "utente_seq",  schema = "public", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 
