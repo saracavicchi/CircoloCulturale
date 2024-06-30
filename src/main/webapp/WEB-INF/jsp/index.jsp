@@ -32,5 +32,21 @@
         <input type="submit" name="login" value="Login">
         <input type="button" name="signup" value="Registrati">
     </form>
+    <table>
+        <thead>
+            <tr>
+                <td>Nome</td>
+                <td>Indirizzo</td>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach items="${sedi}" var="sede">
+                <tr>
+                    <td>${sede.nome}</td>
+                    <td>${sede.indirizzo}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
 </body>
 </html>
