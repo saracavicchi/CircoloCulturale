@@ -2,24 +2,27 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
-import it.unife.cavicchidome.CircoloCulturale.services.AuthService;
+import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Optional;
+
 @Controller
 public class AuthController {
 
+    private final SocioService socioService;
     SocioRepository socioRepository;
-    AuthService authService;
 
-    AuthController(SocioRepository socioRepository, AuthService authService) {
+    AuthController(SocioRepository socioRepository, SocioService socioService) {
         this.socioRepository = socioRepository;
-        this.authService = authService;
+        this.socioService = socioService;
     }
 
     @GetMapping("/login")
@@ -27,7 +30,6 @@ public class AuthController {
         return "login";
     }
 
-    // @Transactional
     @PostMapping("/login")
     public String login(
             @RequestParam String cf,
@@ -35,9 +37,9 @@ public class AuthController {
             RedirectAttributes redirectAttributes,
             HttpServletResponse response
     ) {
-        Socio socio = authService.authenticate(cf, password);
-        if (socio != null) {
-            Cookie socioCookie = new Cookie("socio-id", "" + socio.getId());
+        Optional<Integer> socioId = socioService.authenticate(cf, password);
+        if (socioId.isPresent()) {
+            Cookie socioCookie = new Cookie("socio-id", "" + socioId.get());
             response.addCookie(socioCookie);
             return "redirect:/home";
         } else {

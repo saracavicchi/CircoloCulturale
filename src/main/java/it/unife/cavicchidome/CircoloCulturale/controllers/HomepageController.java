@@ -1,28 +1,37 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.ui.Model;
 
 @Controller
-public class SocioController {
+public class HomepageController {
 
     SocioRepository socioRepository;
+    SedeService sedeService;
 
-    SocioController(SocioRepository socioRepository) {
+    HomepageController(SocioRepository socioRepository,
+                       SedeService sedeService) {
         this.socioRepository = socioRepository;
+        this.sedeService = sedeService;
+    }
+
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("sedi", sedeService.getAll());
+        return "index";
     }
 
     @GetMapping("/home")
     public String viewHome(@CookieValue(name = "socio-id", required = false) Integer socioId, Model model) {
         if (socioId != null) {
-            model.addAttribute("socio_id", socioId);
             Socio socio = socioRepository.getReferenceById(socioId);
-            model.addAttribute("name", socio.getUtente().getNome());
-            model.addAttribute("surname", socio.getUtente().getCognome());
+            model.addAttribute("socio", socio);
             return "home";
         } else {
             return "redirect:/";
