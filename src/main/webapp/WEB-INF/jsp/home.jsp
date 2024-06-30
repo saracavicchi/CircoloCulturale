@@ -5,8 +5,7 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Welcome</h1>
-    <h2><%=request.getAttribute("socio-id")%></h2>
-    <h2>${socio}</h2>
+    <h1>Welcome ${name} ${surname}</h1>
+    <h2>Your socio's ID is: ${socio_id}</h2>
 </body>
 </html>

@@ -1,5 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
