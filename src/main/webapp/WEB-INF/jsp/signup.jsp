@@ -9,6 +9,84 @@
 <html>
 <head>
     <title>Pagina di Registrazione</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFCBA4; /* Intermediate orange */
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #FFA500; /* Intermediate orange */
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        form {
+            width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #FFDEAD; /* Intermediate orange */
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0;
+            color: #FFA500; /* Intermediate orange */
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="date"],
+        form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #FFA500; /* Intermediate orange */
+            border-radius: 5px;
+        }
+        form input[type="file"] {
+            margin-top: 20px;
+        }
+        form input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #FFA500; /* Intermediate orange */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #FFCBA4; /* Intermediate orange */
+        }
+
+        .error-message,
+        .specific-error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h1 h2 {
+            text-align: center;
+        }
+        h2 {
+            color: #000000;
+            font-size: 20px;
+        }
+        .registered {
+            color: #FF0000;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
     <script>
 
         window.onload = function() {
@@ -125,24 +203,27 @@
             if (validation) {
                 event.target.submit();
             } else {
+                // Ottieni l'elemento h1
+                var h1Element = document.getElementsByTagName('h1')[0];
+
                 // Controlla se il messaggio di errore esiste già
                 var errorMessageElement = document.getElementById('error-message');
                 var specificErrorElement = document.getElementById('specific-error');
 
                 // Se il messaggio di errore non esiste, crealo
                 if (!errorMessageElement) {
-                    errorMessageElement = document.createElement('p');
+                    errorMessageElement = document.createElement('h2');
                     errorMessageElement.id = 'error-message';
                     errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                    document.body.appendChild(errorMessageElement);
+                    h1Element.appendChild(errorMessageElement);
                 }
 
                 // Se il messaggio di errore specifico non esiste, crealo
                 if (!specificErrorElement) {
-                    specificErrorElement = document.createElement('p');
-                    specificErrorElement.id = 'specific-error';
-                    specificErrorElement.textContent = errorMsg;
-                    document.body.appendChild(specificErrorElement);
+                        specificErrorElement = document.createElement('h2');
+                        specificErrorElement.id = 'specific-error';
+                        specificErrorElement.textContent = errorMsg;
+                        h1Element.appendChild(specificErrorElement);
                 }
 
                 // Colora il bordo del campo o dei campi che hanno dato errore
@@ -151,6 +232,9 @@
                     var fieldElement = document.getElementById(fields[i]);
                     fieldElement.style.border = '1px solid red';
                 }
+
+                // Fai scorrere la pagina fino all'elemento h1
+                h1Element.scrollIntoView({behavior: "smooth"});
             }
         }
 
@@ -178,12 +262,21 @@
         }
 
 
-
-
     </script>
 </head>
 <body>
 <h1>Si prega di inserire le suguenti informazioni personali</h1>
+<% String alreadyPresent;
+    if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
+        if (alreadyPresent.equals("true")) {
+%>
+<h2 class="registered" id="already-present" >Utente già registrato</h2>
+<script>
+    var errorPresentElement = document.getElementById("already-present");
+    errorPresentElement.scrollIntoView({behavior: "smooth"});
+</script>
+<%  }
+} %>
 <form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
     <label for="name">Nome:</label>
     <input type="text" id="name" name="name" maxlength="20" required>
@@ -227,12 +320,7 @@
     <input type="file" id="photo" name="photo">
 
     <input type="submit" name="confirm" value="Conferma">
-    <% String failed;
-        if ((failed = request.getParameter("alreadyPresent")) != null) {
-            if (failed.equals("true")) {%>
-    <h2 style="color:red">Utente già registrato</h2>
-    <%  }
-    } %>
+
 </form>
 </body>
 </html>
