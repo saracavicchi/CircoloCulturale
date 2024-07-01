@@ -17,11 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
-
+import org.springframework.beans.factory.annotation.Value;
+import java.io.File;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.IOException;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -37,6 +45,9 @@ public class AuthController {
     SocioRepository socioRepository;
     UtenteRepository utenteRepository;
     TesseraService tesseraService;
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     AuthController(
             SocioRepository socioRepository,
@@ -116,20 +127,42 @@ public class AuthController {
             @RequestParam String email,
             @RequestParam String password,
             @RequestParam String phoneNumber,
-            @RequestParam String photoUrl,
+            @RequestParam("photo") MultipartFile photo,
             RedirectAttributes redirectAttributes
     ) {
         // Valida i dati del form di registrazione
         if (!(utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber) &&
-                socioService.validateSocioInfo(email, password, phoneNumber, photoUrl))) {
+                socioService.validateSocioInfo(email, password, phoneNumber))) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";
         }
 
         // Registra utente se non presente nel Database
         if(utenteRepository.findByCf(cf) == null){
+            String filename = null;
+            if(photo != null && !photo.isEmpty()){
+                // Ottieni l'estensione del file
+                String originalFilename = photo.getOriginalFilename();
+                String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+                // Crea il nome del file utilizzando il codice fiscale del socio e l'estensione del file
+                filename = cf  + extension;
+                // Salva la fotografia nel server
+
+                try {
+                    Path path = Paths.get(uploadDir, filename);
+                    photo.transferTo(path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    redirectAttributes.addAttribute("failed", "true");
+                    return "redirect:/signup";
+                }
+
+            }
+
+
             Utente utente = utenteService.createUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
-            Socio socio = socioService.createSocio(utente, email, password, phoneNumber, photoUrl);
+            Socio socio = socioService.createSocio(utente, email, password, phoneNumber, filename);
             Tessera tessera = tesseraService.createTessera(socio);
 
         }

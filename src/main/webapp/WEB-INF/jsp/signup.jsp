@@ -41,7 +41,7 @@
             var email = form.email.value;
             var password = form.password.value;
             var phoneNumber = form.phoneNumber.value;
-            var photoUrl = form.photoUrl.value;
+            //var photoUrl = form.photoUrl.value;
 
             // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
             var regex = /^[A-Za-z\s]+$/;
@@ -85,12 +85,14 @@
             }
 
             // Controlla se l'URL della foto è un URL valido
-            var urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+            /*var urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
             if (photoUrl && !urlRegex.test(photoUrl)) {
                 errorMsg="Inserisci un URL valido per la foto.";
                 erroredField="photoUrl";
                 return false;
             }
+            */
+
 
             // Controlla se il numero di telefono contiene solo numeri
             var phoneRegex = /^[0-9]{10}$/;
@@ -175,11 +177,14 @@
             }
         }
 
+
+
+
     </script>
 </head>
 <body>
 <h1>Si prega di inserire le suguenti informazioni personali</h1>
-<form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()">
+<form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
     <label for="name">Nome:</label>
     <input type="text" id="name" name="name" maxlength="20" required>
 
@@ -219,8 +224,7 @@
     <label for="phoneNumber">Numero di telefono:</label>
     <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
 
-    <label for="photoUrl">URL Foto:</label>
-    <input type="text" id="photoUrl" name="photoUrl" maxlength="80">
+    <input type="file" id="photo" name="photo">
 
     <input type="submit" name="confirm" value="Conferma">
     <% String failed;

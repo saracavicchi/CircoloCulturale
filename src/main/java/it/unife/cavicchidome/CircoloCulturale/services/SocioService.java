@@ -33,8 +33,8 @@ public class SocioService {
     public boolean validateSocioInfo(
             String email,
             String password,
-            String phoneNumber,
-            String photoUrl
+            String phoneNumber
+            //String photoUrl
     ) {
         // Crea un'istanza di EmailValidator
         EmailValidator emailValidator = EmailValidator.getInstance();
@@ -57,11 +57,13 @@ public class SocioService {
         }
 
         // Controlla se l'URL della foto è un URL valido e non supera gli 80 caratteri
-        if (photoUrl != null && !photoUrl.isEmpty()){
+        /*if (photoUrl != null && !photoUrl.isEmpty()){
             if (photoUrl.length() > 80 || !photoUrl.matches("^(ftp|http|https):\\/\\/[^ \"]+$")) {
                 return false;
             }
         }
+
+         */
 
 
         // Se tutti i controlli passano, restituisce true
