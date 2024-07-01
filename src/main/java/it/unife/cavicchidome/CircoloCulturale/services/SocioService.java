@@ -10,6 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Properties;
+
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import java.util.Properties;
 
 @Service
 public class SocioService {
@@ -89,6 +95,44 @@ public class SocioService {
 
 
         return socioRepository.save(socio);
+    }
+
+    public void sendEmail(Socio socio) {
+        final String username = "indirizzomail";
+        final String password = "app password"; // replace with your password
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+
+        Session session = Session.getInstance(prop,
+                new jakarta.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("indirizzomailmittente"));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(socio.getEmail())
+            );
+            message.setSubject("Benvenuto al Circolo Culturale");
+            message.setText("Ciao " + socio.getUtente().getNome() + ","
+                    + "\n\n Benvenuto al Circolo Culturale! Il tuo codice tessera è: " + socio.getTessera().getId());
+
+            Transport.send(message);
+
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
 

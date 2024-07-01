@@ -41,7 +41,7 @@ public class TesseraService {
         tessera.setCosto(BigDecimal.valueOf(10.0)); //capire come fare il costo
         tessera.setStatoPagamento('p'); //da cambiare
 
-
+        socio.setTessera(tessera);
 
         return tesseraRepository.save(tessera);
     }

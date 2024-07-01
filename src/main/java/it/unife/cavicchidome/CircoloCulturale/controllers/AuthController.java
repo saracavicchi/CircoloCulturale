@@ -164,6 +164,7 @@ public class AuthController {
             Utente utente = utenteService.createUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
             Socio socio = socioService.createSocio(utente, email, password, phoneNumber, filename);
             Tessera tessera = tesseraService.createTessera(socio);
+            socioService.sendEmail(socio);
 
         }
         else{
