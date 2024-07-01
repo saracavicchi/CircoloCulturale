@@ -3,6 +3,7 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

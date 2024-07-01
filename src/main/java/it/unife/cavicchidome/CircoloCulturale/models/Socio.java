@@ -14,6 +14,7 @@ public class Socio {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

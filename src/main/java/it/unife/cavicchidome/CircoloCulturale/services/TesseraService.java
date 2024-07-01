@@ -3,6 +3,7 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 import org.springframework.stereotype.Service;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
+import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.TesseraRepository;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
@@ -22,7 +23,7 @@ public class TesseraService {
     @Transactional
     public Tessera createTessera(Socio socio) {
         long timestamp = Instant.now().getEpochSecond();
-        long id = socio.getId(); // assuming there is a getId() method
+        long id = socio.getId() ; // assuming there is a getId() method
 
         String tesseraId = Long.toString(id, 36) + Long.toString(timestamp, 36);
 
