@@ -100,7 +100,7 @@ public class AuthController {
     }
 
 
-
+    //TO DO: Optional e dto
     @PostMapping("/signup")
     public String register(
             @RequestParam String name,
