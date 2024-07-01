@@ -34,7 +34,7 @@ public class AuthController {
             @RequestParam String password,
             @RequestParam String redirectTo,
             RedirectAttributes redirectAttributes,
-            HttpServletResponse response,
+            HttpServletResponse response
     ) {
         Optional<Integer> socioId = socioService.authenticate(cf, password);
         if (socioId.isPresent()) {
