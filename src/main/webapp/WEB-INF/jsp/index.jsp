@@ -7,9 +7,11 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<html>
+<!DOCTYPE html>
+<html lang="it">
 <head>
-    <title>Welcome!</title>
+    <title>CircoloCulturale</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <script>
         function viewSignup() {
             window.location.href = "/signup"
@@ -21,32 +23,35 @@
 
         window.addEventListener("load", onLoadHandler);
     </script>
+    <style>
+        section.content article {
+            float: left;
+            width: 250px;
+            border-width: 1px;
+            border-style: solid;
+            border-radius: 10px;
+            border-color: #a3271f;
+            padding: 10px 8px 10px 20px;
+            margin: 0 18px 16px 0;
+            background: linear-gradient(to right,#fdfbfb,#ebedee);
+            box-shadow: 0 3px 2px #777;
+        }
+    </style>
 </head>
 <body>
-    <h1>Circolo Culturale</h1>
-    <form name="authForm" method="post" action="login">
-        <input type="text" id="cf" name="cf" maxlength="16">
-        <label for="cf">Codice fiscale</label>
-        <input type="password" id="password" name="password">
-        <label for="password">Password</label>
-        <input type="submit" name="login" value="Login">
-        <input type="button" name="signup" value="Registrati">
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <td>Nome</td>
-                <td>Indirizzo</td>
-            </tr>
-        </thead>
-        <tbody>
+    <%@include file="/static/include/header.jsp"%>
+    <main>
+        <section class="title">
+            <h1>Le nostre sedi</h1>
+        </section>
+        <section class="content clearfix">
             <c:forEach items="${sedi}" var="sede">
-                <tr>
-                    <td>${sede.nome}</td>
-                    <td>${sede.indirizzo}</td>
-                </tr>
+                <article>
+                    <h1>${sede.nome}</h1>
+                    <h2>${sede.indirizzo}</h2>
+                </article>
             </c:forEach>
-        </tbody>
-    </table>
+        </section>
+    </main>
 </body>
 </html>

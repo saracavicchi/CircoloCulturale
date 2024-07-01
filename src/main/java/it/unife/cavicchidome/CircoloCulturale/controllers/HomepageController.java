@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.Optional;
+
 @Controller
 public class HomepageController {
 
@@ -22,15 +24,21 @@ public class HomepageController {
     }
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId, Model model) {
+        if (socioId.isPresent()) {
+            Optional<Socio> socio = socioRepository.findById(socioId.get());
+            if (socio.isPresent()) {
+                model.addAttribute("socio", socio.get());
+            }
+        }
         model.addAttribute("sedi", sedeService.getAll());
         return "index";
     }
 
     @GetMapping("/home")
-    public String viewHome(@CookieValue(name = "socio-id", required = false) Integer socioId, Model model) {
-        if (socioId != null) {
-            Socio socio = socioRepository.getReferenceById(socioId);
+    public String viewHome(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId, Model model) {
+        if (socioId.isPresent()) {
+            Socio socio = socioRepository.getReferenceById(socioId.get());
             model.addAttribute("socio", socio);
             return "home";
         } else {
