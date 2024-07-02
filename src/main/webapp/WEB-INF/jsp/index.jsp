@@ -7,46 +7,78 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<html>
+<!DOCTYPE html>
+<html lang="it">
 <head>
-    <title>Welcome!</title>
-    <script>
-        function viewSignup() {
-            window.location.href = "/signup"
+    <title>CircoloCulturale</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <style>
+        #main-content {
+            width: 900px;
+            margin: 0 auto;
         }
 
-        function onLoadHandler() {
-            document.authForm.signup.addEventListener("click", )
+        main {
+            float: left;
+            width: 690px;
         }
 
-        window.addEventListener("load", onLoadHandler);
-    </script>
+        section {
+            width: 100%;
+        }
+
+        section.title {
+            height: 35px;
+            background: var(--foreground);
+        }
+
+        section.title>h1 {
+            color: white;
+            height: 100%;
+            width: max-content;
+            font-weight: bold;
+            font-size: 1.5em;
+            align-content: center;
+            margin: 0 0 0 10px;
+        }
+
+        section.content {
+            width: calc(100% - 20px);
+            padding: 10px;
+            background: var(--content-bg);
+        }
+
+        aside {
+            float: right;
+            width: 200px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Circolo Culturale</h1>
-    <form name="authForm" method="post" action="login">
-        <input type="text" id="cf" name="cf" maxlength="16">
-        <label for="cf">Codice fiscale</label>
-        <input type="password" id="password" name="password">
-        <label for="password">Password</label>
-        <input type="submit" name="login" value="Login">
-        <input type="button" name="signup" value="Registrati" onclick="viewSignup()">
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <td>Nome</td>
-                <td>Indirizzo</td>
-            </tr>
-        </thead>
-        <tbody>
-            <c:forEach items="${sedi}" var="sede">
-                <tr>
-                    <td>${sede.nome}</td>
-                    <td>${sede.indirizzo}</td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+    <%@include file="/static/include/header.jsp"%>
+    <div id="main-content">
+        <main class="clearfix">
+            <section class="title">
+                <h1>Il nostro circolo culturale</h1>
+            </section>
+            <section class="content">
+                <h1>
+                </h1>
+            </section>
+        </main>
+        <aside>
+            <section class="title">
+                <h1>Prossimi saggi</h1>
+            </section>
+            <section class="content">
+                <ul>
+                    <c:forEach items="${saggi}" var="saggio">
+                        <li>${saggio.nome}</li>
+                    </c:forEach>
+                </ul>
+                <p>Vedi tutti i saggi</p>
+            </section>
+        </aside>
+    </div>
 </body>
 </html>

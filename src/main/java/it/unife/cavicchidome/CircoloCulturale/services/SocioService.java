@@ -25,4 +25,9 @@ public class SocioService {
             return Optional.empty();
         }
     }
+
+    @Transactional
+    public Optional<Socio> findSocioById(int id) {
+        return socioRepository.findById(id);
+    }
 }

@@ -1,6 +1,5 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
-import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
@@ -10,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +43,7 @@ public class AuthController {
     public String login(
             @RequestParam String cf,
             @RequestParam String password,
+            @RequestParam String redirectTo,
             RedirectAttributes redirectAttributes,
             HttpServletResponse response
     ) {
@@ -52,10 +51,10 @@ public class AuthController {
         if (socioId.isPresent()) {
             Cookie socioCookie = new Cookie("socio-id", "" + socioId.get());
             response.addCookie(socioCookie);
-            return "redirect:/home";
+            return "redirect:" + redirectTo;
         } else {
-            redirectAttributes.addAttribute("failed", "true");
-            return "redirect:/login";
+            redirectAttributes.addAttribute("authFailed", "true");
+            return "redirect:" + redirectTo;
         }
     }
 
