@@ -1,4 +1,4 @@
-package it.unife.cavicchidome.CircoloCulturale.models;
+package it.unife.cavicchidome.CircoloCulturale.models.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -8,20 +8,20 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class CalendarioCorsoId implements Serializable {
-    private static final long serialVersionUID = -7587460371530592486L;
-    @Column(name = "id_corso", nullable = false)
-    private Integer idCorso;
+public class OrarioSedeId implements Serializable {
+    private static final long serialVersionUID = 4270693558481198676L;
+    @Column(name = "id_sede", nullable = false)
+    private Integer idSede;
 
     @Column(name = "giorno_settimana", columnDefinition = "weekday")
     private Object giornoSettimana;
 
-    public Integer getIdCorso() {
-        return idCorso;
+    public Integer getIdSede() {
+        return idSede;
     }
 
-    public void setIdCorso(Integer idCorso) {
-        this.idCorso = idCorso;
+    public void setIdSede(Integer idSede) {
+        this.idSede = idSede;
     }
 
     public Object getGiornoSettimana() {
@@ -36,14 +36,14 @@ public class CalendarioCorsoId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        CalendarioCorsoId entity = (CalendarioCorsoId) o;
-        return Objects.equals(this.idCorso, entity.idCorso) &&
-                Objects.equals(this.giornoSettimana, entity.giornoSettimana);
+        OrarioSedeId entity = (OrarioSedeId) o;
+        return Objects.equals(this.giornoSettimana, entity.giornoSettimana) &&
+                Objects.equals(this.idSede, entity.idSede);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idCorso, giornoSettimana);
+        return Objects.hash(giornoSettimana, idSede);
     }
 
 }

@@ -1,4 +1,4 @@
-package it.unife.cavicchidome.CircoloCulturale.models;
+package it.unife.cavicchidome.CircoloCulturale.models.entity;
 
 import jakarta.persistence.*;
 
