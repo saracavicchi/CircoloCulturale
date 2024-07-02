@@ -1,5 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
@@ -62,16 +63,11 @@ public class AuthController {
 
     }
 
-    @GetMapping("/login")
-    public String viewLogin() {
-        return "login";
-    }
-
     @PostMapping("/login")
     public String login(
             @RequestParam String cf,
             @RequestParam String password,
-            @RequestParam String redirectTo,
+            @RequestParam(defaultValue = "/") String redirectTo,
             RedirectAttributes redirectAttributes,
             HttpServletResponse response
     ) {
@@ -87,8 +83,9 @@ public class AuthController {
     }
 
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(
+            @RequestParam(defaultValue = "/") String redirectTo,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
@@ -101,7 +98,7 @@ public class AuthController {
         response.addCookie(socioCookie);
 
         // Reindirizza l'utente alla pagina di login
-        return "redirect:/login";
+        return "redirect:" + redirectTo;
     }
 
     @GetMapping("/signup")

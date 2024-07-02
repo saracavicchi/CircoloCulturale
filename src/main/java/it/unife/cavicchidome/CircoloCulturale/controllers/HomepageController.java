@@ -5,6 +5,8 @@ import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -29,28 +31,25 @@ public class HomepageController {
     }
 
     @GetMapping("/")
-    public String index(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId, Model model) {
-        if (socioId.isPresent()) {
-            Optional<Socio> socio = socioService.findSocioById(socioId.get());
-            if (socio.isPresent()) {
-                model.addAttribute("socio", socio.get());
-            }
-        }
+    public String index(HttpServletRequest request,
+                        HttpServletResponse response,
+                        Model model) {
+
+        socioService.getSocioFromCookie(request, response, model);
+
         model.addAttribute("saggi", saggioService.getNextMonth());
-        model.addAttribute("redirectTo", "/");
         return "index";
     }
 
     @GetMapping("/sedi")
-    public String sedi(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId,
-                       @RequestParam(name = "id") Optional<Integer> sedeId,
+    public String sedi(@RequestParam(name = "id") Optional<Integer> sedeId,
+                       HttpServletRequest request,
+                       HttpServletResponse response,
                        Model model) {
-        if (socioId.isPresent()) {
-            Optional<Socio> socio = socioService.findSocioById(socioId.get());
-            if (socio.isPresent()) {
-                model.addAttribute("socio", socio.get());
-            }
-        }
+
+        socioService.getSocioFromCookie(request, response, model);
+
+        // TODO: fix JSP return
         if (sedeId.isPresent()) {
             Optional<Sede> sede = sedeService.findSedeById(sedeId.get());
             if (sede.isPresent()) {
@@ -58,19 +57,14 @@ public class HomepageController {
             }
             return "sede-info";
         } else {
-            model.addAttribute("sedi", sedeService.getAll());
-            model.addAttribute("redirectTo", "/sedi");
+            model.addAttribute("sedi", sedeService.getAllSedi());
             return "sedi";
         }
     }
 
-    @GetMapping("/saggi")
-    public String saggi() {
-        return "saggi";
-    }
-
     @GetMapping("/home")
-    public String viewHome(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId, Model model) {
+    public String viewHome(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId,
+                           Model model) {
         if (socioId.isPresent()) {
             Optional<Socio> socio = socioService.findSocioById(socioId.get());
             if (socio.isPresent()) {

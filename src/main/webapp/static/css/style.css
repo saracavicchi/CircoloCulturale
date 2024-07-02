@@ -12,41 +12,58 @@
     clear: both;
 }
 
-* {
+body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    background: var(--background);
+    font-family: "Arial", "Helvetica", sans-serif;
+}
+
+body>* {
     padding: 0;
     margin: 0;
     width: 100%;
 }
 
-body {
-    background: var(--background);
-    font-family: "Arial", "Helvetica", sans-serif;
-}
-
 #top-bar {
     width: 100%;
     height: 35px;
+    margin-bottom: 10px;
     background: var(--foreground);
 }
 
-#top-bar>form {
-    display: flex;
-    max-width: 500px;
+#accountInfo {
+    width: max-content;
     height: 100%;
     margin: auto 0 auto auto;
 }
 
-#top-bar>p {
+#accountInfo>form {
+    display: inline-block;
     width: max-content;
     height: 100%;
     align-content: center;
-    margin: auto 10px auto auto
+    padding: 0 10px 0 10px
 }
 
-#top-bar>form>input {
+#accountInfo>form>input[type="text"], input[type="password"] {
     height: 50%;
     width: 150px;
     margin: auto 5px;
+}
+
+#accountInfo>form>input[type="button"], input[type="submit"] {
+    padding: 0 5px 0 5px;
+    width: max-content;
+}
+
+#accountInfo>p {
+    display: inline-block;
+    width: max-content;
+    height: 100%;
+    align-content: center;
+    padding: 0 10px 0 10px
 }
 
 #banner {
@@ -63,4 +80,60 @@ body {
 #banner>nav {
     height: 35px;
     background: var(--foreground);
+}
+
+#main-content {
+    width: 900px;
+    margin: 0 auto;
+}
+
+.fullsize {
+    width: 100%;
+}
+
+.midleft {
+    float: left;
+    width: 690px;
+}
+
+.smallright {
+    float: right;
+    width: 200px;
+}
+
+main,aside>section {
+    width: 100%;
+}
+
+section.title {
+    height: 35px;
+    background: var(--foreground);
+}
+
+section.title>h1 {
+    color: white;
+    height: 100%;
+    width: max-content;
+    font-weight: bold;
+    font-size: 1.5em;
+    align-content: center;
+    margin: 0 0 0 10px;
+}
+
+section.content {
+    width: calc(100% - 40px);
+    padding: 20px;
+    background: var(--content-bg);
+}
+
+section.content>article {
+    float: left;
+    width: 250px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: var(--foreground);
+    padding: 10px 8px 10px 20px;
+    margin: 0 18px 16px 0;
+    background: linear-gradient(to right,#fdfbfb,#ebedee);
 }

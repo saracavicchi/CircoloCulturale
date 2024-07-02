@@ -8,7 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Pagina di Registrazione</title>
+    <title>CircoloCulturale</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -220,10 +221,10 @@
 
                 // Se il messaggio di errore specifico non esiste, crealo
                 if (!specificErrorElement) {
-                        specificErrorElement = document.createElement('h2');
-                        specificErrorElement.id = 'specific-error';
-                        specificErrorElement.textContent = errorMsg;
-                        h1Element.appendChild(specificErrorElement);
+                    specificErrorElement = document.createElement('h2');
+                    specificErrorElement.id = 'specific-error';
+                    specificErrorElement.textContent = errorMsg;
+                    h1Element.appendChild(specificErrorElement);
                 }
 
                 // Colora il bordo del campo o dei campi che hanno dato errore
@@ -265,62 +266,73 @@
     </script>
 </head>
 <body>
-<h1>Si prega di inserire le suguenti informazioni personali</h1>
-<% String alreadyPresent;
-    if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
-        if (alreadyPresent.equals("true")) {
-%>
-<h2 class="registered" id="already-present" >Utente già registrato</h2>
-<script>
-    var errorPresentElement = document.getElementById("already-present");
-    errorPresentElement.scrollIntoView({behavior: "smooth"});
-</script>
-<%  }
-} %>
-<form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
-    <label for="name">Nome:</label>
-    <input type="text" id="name" name="name" maxlength="20" required>
+<%@include file="/static/include/top-bar.jsp"%>
+<div id="main-content">
+    <main class="fullsize">
+        <section class="title">
+            <h1>Modulo di registrazione</h1>
+        </section>
+        <section class="content">
+            <h1>Si prega di inserire le suguenti informazioni personali</h1>
 
-    <label for="surname">Cognome:</label>
-    <input type="text" id="surname" name="surname" maxlength="20" required>
+            <% String alreadyPresent;
+                if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
+                    if (alreadyPresent.equals("true")) {
+            %>
+            <h2 class="registered" id="already-present" >Utente già registrato</h2>
+            <script>
+                var errorPresentElement = document.getElementById("already-present");
+                errorPresentElement.scrollIntoView({behavior: "smooth"});
+            </script>
+            <%  }
+            } %>
+            <form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" maxlength="20" required>
 
-    <label for="cf">Codice fiscale:</label>
-    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
+                <label for="surname">Cognome:</label>
+                <input type="text" id="surname" name="surname" maxlength="20" required>
 
-    <label for="dob">Data di nascita:</label>
-    <input type="date" id="dob" name="dob" required>
+                <label for="cf">Codice fiscale:</label>
+                <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
 
-    <label for="birthplace">Luogo di nascita (città):</label>
-    <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
+                <label for="dob">Data di nascita:</label>
+                <input type="date" id="dob" name="dob" required>
 
-    <label for="state">Stato:</label>
-    <input type="text" id="state" name="state" required>
+                <label for="birthplace">Luogo di nascita (città):</label>
+                <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
 
-    <label for="province">Provincia:</label>
-    <input type="text" id="province" name="province" required>
+                <label for="state">Stato:</label>
+                <input type="text" id="state" name="state" required>
 
-    <label for="city">Città:</label>
-    <input type="text" id="city" name="city" required>
+                <label for="province">Provincia:</label>
+                <input type="text" id="province" name="province" required>
 
-    <label for="street">Via:</label>
-    <input type="text" id="street" name="street" required>
+                <label for="city">Città:</label>
+                <input type="text" id="city" name="city" required>
 
-    <label for="houseNumber">Numero Civico:</label>
-    <input type="text" id="houseNumber" name="houseNumber" required>
+                <label for="street">Via:</label>
+                <input type="text" id="street" name="street" required>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" maxlength="50" required>
+                <label for="houseNumber">Numero Civico:</label>
+                <input type="text" id="houseNumber" name="houseNumber" required>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" maxlength="50" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" maxlength="50" required>
 
-    <label for="phoneNumber">Numero di telefono:</label>
-    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" maxlength="50" required>
 
-    <input type="file" id="photo" name="photo">
+                <label for="phoneNumber">Numero di telefono:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
 
-    <input type="submit" name="confirm" value="Conferma">
+                <input type="file" id="photo" name="photo">
 
-</form>
+                <input type="submit" name="confirm" value="Conferma">
+
+            </form>
+        </section>
+    </main>
+</div>
 </body>
 </html>

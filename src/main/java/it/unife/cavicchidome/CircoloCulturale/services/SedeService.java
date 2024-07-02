@@ -18,7 +18,7 @@ public class SedeService {
     }
 
     @Transactional
-    public List<Sede> getAll() {
+    public List<Sede> getAllSedi() {
         return sedeRepository.findAll();
     }
 

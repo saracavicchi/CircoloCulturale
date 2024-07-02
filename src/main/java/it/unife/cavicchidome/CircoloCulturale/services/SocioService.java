@@ -1,20 +1,22 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.Properties;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import java.util.Properties;
+import org.springframework.ui.Model;
 
 @Service
 public class SocioService {
@@ -32,6 +34,29 @@ public class SocioService {
             return Optional.of(socio.get().getId());
         } else {
             return Optional.empty();
+        }
+    }
+
+    public void getSocioFromCookie(HttpServletRequest request,
+                                      HttpServletResponse response,
+                                      Model model) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("socio-id")) {
+                Optional<Socio> socio = Optional.empty();
+                try {
+                    socio = socioRepository.findById(Integer.parseInt(cookie.getValue()));
+                } catch (NumberFormatException nfexc) {
+                    System.err.println(nfexc.getMessage());
+                }
+                if (socio.isPresent()) {
+                    model.addAttribute("socio", socio.get());
+                } else {
+                    Cookie invalidateCookie = new Cookie("socio-id", null);
+                    invalidateCookie.setMaxAge(0);
+                    response.addCookie(invalidateCookie);
+                }
+            }
         }
     }
 
