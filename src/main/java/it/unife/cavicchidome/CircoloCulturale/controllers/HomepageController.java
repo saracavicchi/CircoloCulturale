@@ -1,7 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
-import it.unife.cavicchidome.CircoloCulturale.models.entity.Sede;
-import it.unife.cavicchidome.CircoloCulturale.models.entity.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.Sede;
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;

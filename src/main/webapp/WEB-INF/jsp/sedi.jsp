@@ -52,6 +52,9 @@
             box-shadow: 0 3px 2px #777;
         }
     </style>
+    <script>
+        window.console.log(window.location.pathname)
+    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>

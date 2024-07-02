@@ -1,6 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
-import it.unife.cavicchidome.CircoloCulturale.models.entity.Sede;
+import it.unife.cavicchidome.CircoloCulturale.models.Sede;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

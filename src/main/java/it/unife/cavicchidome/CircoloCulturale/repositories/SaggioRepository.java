@@ -1,6 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.repositories;
 
-import it.unife.cavicchidome.CircoloCulturale.models.entity.Saggio;
+import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

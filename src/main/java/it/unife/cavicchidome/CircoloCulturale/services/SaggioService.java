@@ -1,13 +1,12 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
-import it.unife.cavicchidome.CircoloCulturale.models.entity.Biglietto;
-import it.unife.cavicchidome.CircoloCulturale.models.entity.Saggio;
+import it.unife.cavicchidome.CircoloCulturale.models.Biglietto;
+import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SaggioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service

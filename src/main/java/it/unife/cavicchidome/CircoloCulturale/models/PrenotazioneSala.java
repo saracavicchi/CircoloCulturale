@@ -1,4 +1,4 @@
-package it.unife.cavicchidome.CircoloCulturale.models.entity;
+package it.unife.cavicchidome.CircoloCulturale.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;

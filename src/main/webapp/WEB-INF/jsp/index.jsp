@@ -76,6 +76,7 @@
                         <li>${saggio.nome}</li>
                     </c:forEach>
                 </ul>
+                <p>Vedi tutti i saggi</p>
             </section>
         </aside>
     </div>
