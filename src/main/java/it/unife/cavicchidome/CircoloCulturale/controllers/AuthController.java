@@ -136,18 +136,13 @@ public class AuthController {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";
         }
+        String filename = null;
 
         // Registra utente se non presente nel Database
         if(utenteRepository.findByCf(cf) == null){
-            String filename = null;
-            if(photo != null && !photo.isEmpty()){
-                // Ottieni l'estensione del file
-                String originalFilename = photo.getOriginalFilename();
-                String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
 
-                // Crea il nome del file utilizzando il codice fiscale del socio e l'estensione del file
-                filename = cf  + extension;
-                // Salva la fotografia nel server
+            if(photo != null && !photo.isEmpty()){
+                filename = socioService.createPhotoName(photo, cf);
 
                 try {
                     Path path = Paths.get(uploadDir, filename);
