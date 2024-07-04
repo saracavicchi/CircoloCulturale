@@ -16,7 +16,7 @@ public class Tessera {
     @Column(name = "id", columnDefinition = "bpchar", nullable = false, length = 10)
     private String id;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_socio", nullable = false)
     private Socio idSocio;

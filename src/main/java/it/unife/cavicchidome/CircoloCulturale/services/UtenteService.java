@@ -1,5 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -103,5 +105,10 @@ public class UtenteService {
 
 
         return utenteRepository.save(utente);
+    }
+
+    @Transactional
+    public Optional<Utente> findById(Integer utenteId) {
+        return utenteRepository.findById(utenteId);
     }
 }

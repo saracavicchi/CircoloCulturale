@@ -123,7 +123,7 @@
             //var photoUrl = form.photoUrl.value;
 
             // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
-            var regex = /^[A-Za-z\s]+$/;
+            var regex = /^[A-Za-z\s\'\-]+$/;
             if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(state) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
                 errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
                 erroredField = "name, surname, birthplace, state, province, city, street";
@@ -148,9 +148,9 @@
             }
 
             // Controlla se il codice fiscale è composto sia da numeri che da lettere
-            var cfRegex = /^[0-9a-zA-Z]+$/;
+            var cfRegex = /^[0-9a-zA-Z]{16}$/;
             if (!cfRegex.test(cf)) {
-                errorMsg = "Il codice fiscale deve essere composto sia da numeri che da lettere.";
+                errorMsg = "Il codice fiscale deve essere di 16 caratteri e composto sia da numeri che da lettere.";
                 erroredField = "cf";
                 return false;
             }
@@ -163,14 +163,6 @@
                 return false;
             }
 
-            // Controlla se l'URL della foto è un URL valido
-            /*var urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
-            if (photoUrl && !urlRegex.test(photoUrl)) {
-                errorMsg="Inserisci un URL valido per la foto.";
-                erroredField="photoUrl";
-                return false;
-            }
-            */
 
 
             // Controlla se il numero di telefono contiene solo numeri
