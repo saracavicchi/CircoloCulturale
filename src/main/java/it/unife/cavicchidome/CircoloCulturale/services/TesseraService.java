@@ -51,4 +51,8 @@ public class TesseraService {
             return generateTesseraId(socio, RandomGenerator.getDefault().nextInt());
         } else return hashString.toString();
     }
+
+    public Optional<Tessera> findTesseraById(String tesseraId) {
+        return tesseraRepository.findById(tesseraId);
+    }
 }

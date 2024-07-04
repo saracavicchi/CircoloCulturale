@@ -39,6 +39,7 @@ public class Biglietto {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
 
+
     public Integer getId() {
         return id;
     }
@@ -103,4 +104,17 @@ public class Biglietto {
         this.deleted = deleted;
     }
 
+    public Biglietto() {
+    }
+
+    public Biglietto(Integer quantita, Instant dataOraAcquisto, Character statoPagamento, Boolean sconto, Boolean deleted) {
+        this.quantita = quantita;
+        this.dataOraAcquisto = dataOraAcquisto;
+        this.statoPagamento = statoPagamento;
+        this.sconto = sconto;
+        this.deleted = deleted;
+    }
+
+    static public final double COSTO_DEFAULT = 10.0;
+    static public final double SCONTO = 0.5;
 }

@@ -42,7 +42,7 @@ public class SaggioController {
                             HttpServletRequest request,
                             HttpServletResponse response) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         if (saggioId.isPresent()) {
             Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());
@@ -57,12 +57,12 @@ public class SaggioController {
     }
 
     @GetMapping("/iscrizione")
-    public String viewEnrollSaggio(@RequestParam(name = "id") Optional<Integer> saggioId,
-                               Model model,
-                               HttpServletRequest request,
-                               HttpServletResponse response) {
+    public String viewTicketSaggio(@RequestParam(name = "id") Optional<Integer> saggioId,
+                                   Model model,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
         if (saggioId.isPresent()) {
             Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());
             if (saggio.isPresent()) {
@@ -75,7 +75,7 @@ public class SaggioController {
     }
 
     @PostMapping("/iscrizione")
-    public String enrollSaggio(@RequestParam(name = "socio-id") Optional<Integer> socioId,
+    public String ticketSaggio(@RequestParam(name = "socio-id") Optional<Integer> socioId,
                                @RequestParam Optional<String> name,
                                @RequestParam Optional<String> surname,
                                @RequestParam Optional<String> cf,
@@ -89,52 +89,16 @@ public class SaggioController {
                                @RequestParam Integer quantity,
                                @RequestParam(name = "saggio-id") Integer saggioId,
                                RedirectAttributes redirectAttributes) {
-        if (socioId.isPresent()) {
-            Optional<Socio> socio = socioService.findSocioById(socioId.get());
-            if (socio.isPresent()) {
-                if (ticketUser.isPresent()) {
-                    if (ticketUser.get().equals("self")) {
-                        Optional<Saggio> saggio;
-                        if ((saggio = saggioService.findSaggioById(saggioId)).isPresent()) {
-                            Biglietto biglietto = bigliettoService.createBigliettoAndSave(socio.get().getUtente(), saggio.get(), quantity, Instant.now(), 'p', false, false);
-                        } else {
-                            redirectAttributes.addAttribute("failed1", "true");
-                            return "redirect:/saggio/iscrizione?id=" + saggioId;
-                        }
-                    }
-                }
-            } else {
-                redirectAttributes.addAttribute("failed2", "true");
-                return "redirect:/saggio/iscrizione?id=" + saggioId;
-            }
-        }
 
-        Optional<Utente> utente;
-        if ((utente = utenteService.getUtenteByCf(cf)).isPresent()) {
-            Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
-            if (!saggio.isPresent()) {
-                redirectAttributes.addAttribute("failed4", "true");
-                return "redirect:/saggio/iscrizione?id=" + saggioId;
-            }
-            Biglietto biglietto = bigliettoService.createBigliettoAndSave(utente.get(), saggio.get(), quantity, Instant.now(), 'p', false, false);
-            redirectAttributes.addAttribute("success", "true");
+        try {
+            Biglietto biglietto = bigliettoService.newBiglietto(socioId, name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, quantity, saggioId);
+            redirectAttributes.addAttribute("biglietto-id", biglietto.getId());
+            redirectAttributes.addAttribute("redirect", "/biglietto/info?id=" + biglietto.getId());
+            return "redirect:/payment";
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("failed", "true");
             return "redirect:/saggio/iscrizione?id=" + saggioId;
-        } else {
-            if (!utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber)) {
-                redirectAttributes.addAttribute("failed3", "true");
-                return "redirect:/saggio/iscrizione?id=" + saggioId;
-            } else {
-                Utente newUtente = utenteService.createUtenteAndSave(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
-                Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
-                if (!saggio.isPresent()) {
-                    redirectAttributes.addAttribute("failed4", "true");
-                    return "redirect:/saggio/iscrizione?id=" + saggioId;
-                }
-                Biglietto biglietto = bigliettoService.createBigliettoAndSave(newUtente, saggio.get(), quantity, Instant.now(), 'p', false, false);
-
-                redirectAttributes.addAttribute("success", "true");
-                return "redirect:/saggio/iscrizione?id=" + saggioId;
-            }
         }
+
     }
 }
