@@ -112,7 +112,7 @@ public class AuthController {
             @RequestParam String cf,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
             @RequestParam String birthplace,
-            @RequestParam String state,
+            @RequestParam String country,
             @RequestParam String province,
             @RequestParam String city,
             @RequestParam String street,
@@ -124,7 +124,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
+            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
             redirectAttributes.addAttribute("registered", "true");
             return "redirect:/login";
         } catch (ValidationException validExc) {

@@ -81,7 +81,6 @@ public class SocioService {
         return socioRepository.findById(id);
     }
 
-
     @Transactional
     public Socio newSocio(
             String name,
