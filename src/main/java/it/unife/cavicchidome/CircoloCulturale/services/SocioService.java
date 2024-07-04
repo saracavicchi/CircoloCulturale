@@ -20,6 +20,7 @@ import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class SocioService {
@@ -70,23 +71,25 @@ public class SocioService {
         return socioRepository.findById(id);
     }
 
-    Socio validateSocio(Socio socio) throws ValidationException {
+    Socio validateAndParseSocio(String email,
+                                String password,
+                                String phoneNumber) throws ValidationException {
         // Crea un'istanza di EmailValidator
         EmailValidator emailValidator = EmailValidator.getInstance();
 
         // Controlla se l'email è un'email valida e non supera i 50 caratteri
-        if (socio.getEmail() == null || socio.getEmail().length() > 50 || !emailValidator.isValid(socio.getEmail())) {
+        if (email == null || email.length() > 50 || !emailValidator.isValid(email)) {
             throw new ValidationException("Email non valida");
         }
 
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        if (socio.getPassword() == null || socio.getPassword().length() > 50 || !socio.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$")) {
+        if (password == null || password.length() > 50 || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$")) {
             throw new ValidationException("Password non valida");
         }
 
         // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
-        if (socio.getTelefono() != null && !socio.getTelefono().isEmpty()){
-            if( !socio.getTelefono().matches("^[0-9]{10}$")) {
+        if (phoneNumber != null && !phoneNumber.isEmpty()){
+            if( !phoneNumber.matches("^[0-9]{10}$")) {
                 throw new ValidationException("Numero di telefono non valido");
             }
         }
@@ -100,29 +103,50 @@ public class SocioService {
 
          */
 
-        return socio;
+        return new Socio(email, password, phoneNumber);
+    }
+
+    String saveSocioProfilePicture (MultipartFile picture, String filename) {
+        if (picture != null && !picture.isEmpty()) {
+            // Salva la foto del socio
+            //String photoUrl = fileService.saveFile(picture);
+            //return photoUrl;
+            return null;
+        }
     }
 
     @Transactional
     public Socio newSocio(
-            String nome,
-            String cognome,
+            String name,
+            String surname,
             String cf,
             LocalDate dob,
-            String luogoNascita,
-            String indirizzo
+            String pob,
+            String country,
+            String province,
+            String city,
+            String street,
+            String houseNumber,
             String email,
             String password,
             String phone,
             String photoUrl
     ) throws ValidationException, EntityAlreadyPresentException {
 
-        Utente utente = utenteService.newUtente(nome, cognome, cf, dob, luogoNascita, indirizzo);
-
-        if (utente.getSocio() != null) {
-            throw new EntityAlreadyPresentException("Utente già socio");
+        Utente utente;
+        try {
+            utente = utenteService.newUtente(name, surname, cf, dob, pob, country, province, city, street, houseNumber);
+        } catch (EntityAlreadyPresentException exc) {
+            utente = exc.getEntity();
         }
 
+        if (utente.getSocio() != null) {
+            throw new EntityAlreadyPresentException(utente.getSocio());
+        }
+
+        Socio socio = validateAndParseSocio(email, password, phone);
+        socio.setDeleted(false);
+        socio.setUtente(utente);
 
         return socioRepository.save(socio);
     }

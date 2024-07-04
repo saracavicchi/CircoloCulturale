@@ -164,4 +164,12 @@ public class Socio {
         this.tessera = tessera;
     }
 
+    public Socio() {
+    }
+
+    public Socio(String email, String password, String telefono) {
+        this.email = email;
+        this.password = password;
+        this.telefono = telefono;
+    }
 }
