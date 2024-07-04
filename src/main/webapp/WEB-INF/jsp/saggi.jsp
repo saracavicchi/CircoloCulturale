@@ -1,8 +1,8 @@
 <%--
   Created by IntelliJ IDEA.
   User: lucadomeneghetti
-  Date: 31/05/2024
-  Time: 15:19
+  Date: 02/07/2024
+  Time: 10:28
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -29,15 +29,17 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content">
-        <main class="full">
+        <main class="clearfix">
             <section class="title">
-                <h1>Le nostre sedi</h1>
+                <h1>Tutti i saggi del circolo</h1>
             </section>
             <section class="content clearfix">
-                <c:forEach items="${sedi}" var="sede">
+                <c:forEach items="${saggi}" var="saggio">
                     <article>
-                        <h1><a href="/sedi?id=${sede.id}">${sede.nome}</a></h1>
-                        <h2>${sede.indirizzo}</h2>
+                        <h1><a href="/saggio/info?id=${saggio.id}">${saggio.nome}</a></h1>
+                        <h2>${saggio.descrizione}</h2>
+                        <p>${saggio.data} - ${saggio.orarioInizio}
+                        ${saggio.indirizzo}</p>
                     </article>
                 </c:forEach>
             </section>

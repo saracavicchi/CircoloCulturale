@@ -8,8 +8,103 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Pagina di Registrazione</title>
+    <title>CircoloCulturale</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFCBA4; /* Intermediate orange */
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #FFA500; /* Intermediate orange */
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        form {
+            width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #FFDEAD; /* Intermediate orange */
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0;
+            color: #FFA500; /* Intermediate orange */
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="date"],
+        form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #FFA500; /* Intermediate orange */
+            border-radius: 5px;
+        }
+        form input[type="file"] {
+            margin-top: 20px;
+        }
+        form input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #FFA500; /* Intermediate orange */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #FFCBA4; /* Intermediate orange */
+        }
+
+        .error-message,
+        .specific-error {
+            color: red;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h1 h2 {
+            text-align: center;
+        }
+        h2 {
+            color: #000000;
+            font-size: 20px;
+        }
+        .registered {
+            color: #FF0000;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
     <script>
+
+        window.onload = function() {
+            // Aggiungi un listener per l'evento 'submit' al form
+            document.getElementById('registrationForm').addEventListener('submit', submitForm);
+            // Ottieni tutti gli elementi input del form
+            var inputs = document.getElementById('registrationForm').getElementsByTagName('input');
+
+            // Aggiungi un listener per l'evento 'input' a ogni elemento input
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('focus', removeError);
+            }
+        }
+        //campo/i che ha generato l'errore
+        var erroredField = "";
+        var errorMsg = "";
+
         function validateForm() {
             var form = document.registrationForm;
             var cf = form.cf.value;
@@ -25,62 +120,72 @@
             var email = form.email.value;
             var password = form.password.value;
             var phoneNumber = form.phoneNumber.value;
-            var photoUrl = form.photoUrl.value;
+            //var photoUrl = form.photoUrl.value;
 
             // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
             var regex = /^[A-Za-z\s]+$/;
             if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(state) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
-                alert("I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.");
+                errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
+                erroredField = "name, surname, birthplace, state, province, city, street";
                 return false;
             }
 
             // Controlla se la data di nascita è una data o del giorno corrente o antecedente
             var today = new Date();
-            today.setHours(0, 0, 0, 0); // Imposta l'ora a mezzanotte cosi sia today che ora corrente sono uguali
+            today.setHours(0, 0, 0, 0);
             var inputDate = new Date(dob);
             if (inputDate > today) {
-                alert("La data di nascita deve essere odierna o antecedente.");
+                errorMsg = "La data di nascita deve essere odierna o antecedente.";
+                erroredField = "dob";
                 return false;
             }
 
             // Controlla se la somma dei caratteri di stato, provincia, città, via e numero civico non supera gli 80 caratteri
             if ((state.length + province.length + city.length + street.length + houseNumber.length) > 80) {
-                alert("La somma dei caratteri di stato, provincia, città, via e numero civico non deve superare gli 80 caratteri.");
+                errorMsg = "La somma dei caratteri di stato, provincia, città, via e numero civico non deve superare gli 80 caratteri.";
+                erroredField = "state, province, city, street, houseNumber";
                 return false;
             }
 
             // Controlla se il codice fiscale è composto sia da numeri che da lettere
             var cfRegex = /^[0-9a-zA-Z]+$/;
             if (!cfRegex.test(cf)) {
-                alert("Il codice fiscale deve essere composto sia da numeri che da lettere.");
+                errorMsg = "Il codice fiscale deve essere composto sia da numeri che da lettere.";
+                erroredField = "cf";
                 return false;
             }
 
             // Controlla se l'email è un'email valida
             var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!emailRegex.test(email)) {
-                alert("Inserisci un'email valida.");
+                errorMsg = "Inserisci un'email valida.";
+                errorField = "email";
                 return false;
             }
 
             // Controlla se l'URL della foto è un URL valido
-            var urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+            /*var urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
             if (photoUrl && !urlRegex.test(photoUrl)) {
-                alert("Inserisci un URL valido per la foto.");
+                errorMsg="Inserisci un URL valido per la foto.";
+                erroredField="photoUrl";
                 return false;
             }
+            */
+
 
             // Controlla se il numero di telefono contiene solo numeri
             var phoneRegex = /^[0-9]{10}$/;
             if (phoneNumber && !phoneRegex.test(phoneNumber)) {
-                alert("Il numero di telefono deve contenere solo 10 numeri.");
+                errorMsg="Il numero di telefono deve contenere solo 10 numeri.";
+                erroredField="phoneNumber";
                 return false;
             }
 
             // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola e un numero
             var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
             if (!passwordRegex.test(password)) {
-                alert("La password deve avere almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola e un numero.");
+                errorMsg="La password deve avere almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola e un numero.";
+                erroredField="password";
                 return false;
             }
 
@@ -88,91 +193,146 @@
             return true;
         }
 
-        function submitForm() {
+        function submitForm(event) {
+            // Impedisci l'invio del form
+            event.preventDefault();
+
             // Chiama la funzione validateForm
-            var isValid = validateForm();
+            var validation = validateForm();
 
-            // Se la validazione ha esito positivo, formatta la data e invia il form
-            if (isValid) {
-                // Ottieni l'input della data di nascita
-                /*var dobInput = document.getElementById('dob');
-
-                // Crea un nuovo oggetto Date con il valore dell'input
-                var dob = new Date(dobInput.value);
-
-                // Formatta la data nel formato "yyyy-MM-dd"
-                var year = dob.getFullYear();
-                var month = ("0" + (dob.getMonth() + 1)).slice(-2); // Aggiunge uno zero davanti se il mese è un singolo numero
-                var day = ("0" + dob.getDate()).slice(-2); // Aggiunge uno zero davanti se il giorno è un singolo numero
-                var formattedDob = year + "-" + month + "-" + day;
-
-
-
-                // Imposta il valore dell'input con la data formattata
-                dobInput.value = formattedDob;
-                */
-                // Invia il form
-                document.registrationForm.submit();
+            // Se la validazione ha esito positivo, invia il form
+            if (validation) {
+                event.target.submit();
             } else {
-                // Altrimenti, mostra un messaggio di errore
-                alert("Si prega di correggere gli errori nel form prima di inviarlo.");
-                return false;
+                // Ottieni l'elemento h1
+                var h1Element = document.getElementsByTagName('h1')[0];
+
+                // Controlla se il messaggio di errore esiste già
+                var errorMessageElement = document.getElementById('error-message');
+                var specificErrorElement = document.getElementById('specific-error');
+
+                // Se il messaggio di errore non esiste, crealo
+                if (!errorMessageElement) {
+                    errorMessageElement = document.createElement('h2');
+                    errorMessageElement.id = 'error-message';
+                    errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
+                    h1Element.appendChild(errorMessageElement);
+                }
+
+                // Se il messaggio di errore specifico non esiste, crealo
+                if (!specificErrorElement) {
+                    specificErrorElement = document.createElement('h2');
+                    specificErrorElement.id = 'specific-error';
+                    specificErrorElement.textContent = errorMsg;
+                    h1Element.appendChild(specificErrorElement);
+                }
+
+                // Colora il bordo del campo o dei campi che hanno dato errore
+                var fields = erroredField.split(', ');
+                for (var i = 0; i < fields.length; i++) {
+                    var fieldElement = document.getElementById(fields[i]);
+                    fieldElement.style.border = '1px solid red';
+                }
+
+                // Fai scorrere la pagina fino all'elemento h1
+                h1Element.scrollIntoView({behavior: "smooth"});
             }
         }
+
+        function removeError(event) {
+            // Rimuovi il messaggio di errore
+            var errorMessageElement = document.getElementById('error-message');
+            if (errorMessageElement) {
+                errorMessageElement.remove();
+            }
+
+            // Rimuovi il messaggio di errore specifico
+            var specificErrorElement = document.getElementById('specific-error');
+            if (specificErrorElement) {
+                specificErrorElement.remove();
+            }
+
+            // Ottieni tutti gli elementi input del form
+            var inputs = document.getElementById('registrationForm').getElementsByTagName('input');
+
+            // Itera su ogni elemento input
+            for (var i = 0; i < inputs.length; i++) {
+                // Rimuovi il bordo rosso dal campo
+                inputs[i].style.border = '';
+            }
+        }
+
+
     </script>
 </head>
 <body>
-<h1>Si prega di inserire le suguenti informazioni personali</h1>
-<form name="registrationForm" method="post" action="signup" onsubmit="return submitForm()">
-    <label for="name">Nome:</label>
-    <input type="text" id="name" name="name" maxlength="20" required>
+<%@include file="/static/include/top-bar.jsp"%>
+<div id="main-content">
+    <main class="fullsize">
+        <section class="title">
+            <h1>Modulo di registrazione</h1>
+        </section>
+        <section class="content">
+            <h1>Si prega di inserire le suguenti informazioni personali</h1>
 
-    <label for="surname">Cognome:</label>
-    <input type="text" id="surname" name="surname" maxlength="20" required>
+            <% String alreadyPresent;
+                if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
+                    if (alreadyPresent.equals("true")) {
+            %>
+            <h2 class="registered" id="already-present" >Utente già registrato</h2>
+            <script>
+                var errorPresentElement = document.getElementById("already-present");
+                errorPresentElement.scrollIntoView({behavior: "smooth"});
+            </script>
+            <%  }
+            } %>
+            <form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" maxlength="20" required>
 
-    <label for="cf">Codice fiscale:</label>
-    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
+                <label for="surname">Cognome:</label>
+                <input type="text" id="surname" name="surname" maxlength="20" required>
 
-    <label for="dob">Data di nascita:</label>
-    <input type="date" id="dob" name="dob" required>
+                <label for="cf">Codice fiscale:</label>
+                <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
 
-    <label for="birthplace">Luogo di nascita (città):</label>
-    <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
+                <label for="dob">Data di nascita:</label>
+                <input type="date" id="dob" name="dob" required>
 
-    <label for="state">Stato:</label>
-    <input type="text" id="state" name="state" required>
+                <label for="birthplace">Luogo di nascita (città):</label>
+                <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
 
-    <label for="province">Provincia:</label>
-    <input type="text" id="province" name="province" required>
+                <label for="state">Stato:</label>
+                <input type="text" id="state" name="state" required>
 
-    <label for="city">Città:</label>
-    <input type="text" id="city" name="city" required>
+                <label for="province">Provincia:</label>
+                <input type="text" id="province" name="province" required>
 
-    <label for="street">Via:</label>
-    <input type="text" id="street" name="street" required>
+                <label for="city">Città:</label>
+                <input type="text" id="city" name="city" required>
 
-    <label for="houseNumber">Numero Civico:</label>
-    <input type="text" id="houseNumber" name="houseNumber" required>
+                <label for="street">Via:</label>
+                <input type="text" id="street" name="street" required>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" maxlength="50" required>
+                <label for="houseNumber">Numero Civico:</label>
+                <input type="text" id="houseNumber" name="houseNumber" required>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" maxlength="50" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" maxlength="50" required>
 
-    <label for="phoneNumber">Numero di telefono:</label>
-    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" maxlength="50" required>
 
-    <label for="photoUrl">URL Foto:</label>
-    <input type="text" id="photoUrl" name="photoUrl" maxlength="80">
+                <label for="phoneNumber">Numero di telefono:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
 
-    <input type="submit" name="confirm" value="Conferma">
-    <% String alreadyPresent;
-        if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
-            if (alreadyPresent.equals("true")) {%>
-    <h2 style="color:red">Utente già registrato</h2>
-    <%  }
-    } %>
-</form>
+                <input type="file" id="photo" name="photo">
+
+                <input type="submit" name="confirm" value="Conferma">
+
+            </form>
+        </section>
+    </main>
+</div>
 </body>
 </html>

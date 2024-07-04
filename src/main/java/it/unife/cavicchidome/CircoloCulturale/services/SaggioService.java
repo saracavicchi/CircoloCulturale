@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SaggioService {
@@ -23,7 +24,17 @@ public class SaggioService {
         LocalDate untilDate = LocalDate.now().plusDays(60);
         return saggioRepository.getNextSaggi(untilDate);
     }
-    
+
+    @Transactional
+    public Optional<Saggio> findSaggioById(Integer saggioId) {
+        return saggioRepository.findById(saggioId);
+    }
+
+    @Transactional
+    public List<Saggio> findAllSaggi () {
+        return saggioRepository.findAll();
+    }
+
     public int getAvailableTickets(Saggio saggio) {
         int maxAvailable = saggio.getMaxPartecipanti();
         int confirmedTickets = 0;
@@ -32,7 +43,7 @@ public class SaggioService {
                 confirmedTickets += b.getQuantita();
             }
         }
-        return confirmedTickets;
+        return maxAvailable - confirmedTickets;
     }
 
 }

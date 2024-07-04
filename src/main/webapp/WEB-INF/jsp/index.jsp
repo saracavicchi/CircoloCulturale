@@ -12,52 +12,11 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
-    <style>
-        #main-content {
-            width: 900px;
-            margin: 0 auto;
-        }
-
-        main {
-            float: left;
-            width: 690px;
-        }
-
-        section {
-            width: 100%;
-        }
-
-        section.title {
-            height: 35px;
-            background: var(--foreground);
-        }
-
-        section.title>h1 {
-            color: white;
-            height: 100%;
-            width: max-content;
-            font-weight: bold;
-            font-size: 1.5em;
-            align-content: center;
-            margin: 0 0 0 10px;
-        }
-
-        section.content {
-            width: calc(100% - 20px);
-            padding: 10px;
-            background: var(--content-bg);
-        }
-
-        aside {
-            float: right;
-            width: 200px;
-        }
-    </style>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content">
-        <main class="clearfix">
+        <main class="clearfix midleft">
             <section class="title">
                 <h1>Il nostro circolo culturale</h1>
             </section>
@@ -66,7 +25,7 @@
                 </h1>
             </section>
         </main>
-        <aside>
+        <aside class="smallright">
             <section class="title">
                 <h1>Prossimi saggi</h1>
             </section>
