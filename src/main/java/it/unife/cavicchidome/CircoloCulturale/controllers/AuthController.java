@@ -7,7 +7,6 @@ import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
-import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,17 +21,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
-import java.io.File;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.Files;
 import java.io.IOException;
 
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.format.annotation.DateTimeFormat;
-import java.util.regex.Pattern;
+
 import java.time.LocalDate;
 
 
@@ -157,7 +152,7 @@ public class AuthController {
             }
 
 
-            Utente utente = utenteService.createUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
+            Utente utente = utenteService.createUtenteAndSave(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
             Socio socio = socioService.createSocio(utente, email, password, phoneNumber, filename);
             Tessera tessera = tesseraService.createTessera(socio);
             socioService.sendEmail(socio);

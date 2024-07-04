@@ -3,11 +3,11 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Biglietto;
+import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
 import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -95,25 +95,47 @@ public class SaggioController {
             if (socio.isPresent()) {
                 if (ticketUser.isPresent()) {
                     if (ticketUser.get().equals("self")) {
-                        Biglietto biglietto = new Biglietto();
-                        biglietto.setIdUtente(socio.get().getUtente());
-                        biglietto.setIdSaggio(saggioService.findSaggioById(saggioId).get());
-                        biglietto.setDeleted(false);
-                        biglietto.setQuantita(quantity);
-                        biglietto.setDataOraAcquisto(Instant.from(LocalDate.now()));
-                        biglietto.setSconto(true);
-                        biglietto.setStatoPagamento('p');
-                        bigliettoService.saveBiglietto(biglietto);
+                        Optional<Saggio> saggio;
+                        if ((saggio = saggioService.findSaggioById(saggioId)).isPresent()) {
+                            Biglietto biglietto = bigliettoService.createBigliettoAndSave(socio.get().getUtente(), saggio.get(), quantity, Instant.now(), 'p', false, false);
+                        } else {
+                            redirectAttributes.addAttribute("failed1", "true");
+                            return "redirect:/saggio/iscrizione?id=" + saggioId;
+                        }
                     }
                 }
+            } else {
+                redirectAttributes.addAttribute("failed2", "true");
+                return "redirect:/saggio/iscrizione?id=" + saggioId;
             }
-            redirectAttributes.addAttribute("failed", "true");
-            return "redirect:/saggio/iscrizione?id=" + saggioId;
         }
 
-        if (!utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber)) {
-            redirectAttributes.addAttribute("failed", "true");
+        Optional<Utente> utente;
+        if ((utente = utenteService.getUtenteByCf(cf)).isPresent()) {
+            Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
+            if (!saggio.isPresent()) {
+                redirectAttributes.addAttribute("failed4", "true");
+                return "redirect:/saggio/iscrizione?id=" + saggioId;
+            }
+            Biglietto biglietto = bigliettoService.createBigliettoAndSave(utente.get(), saggio.get(), quantity, Instant.now(), 'p', false, false);
+            redirectAttributes.addAttribute("success", "true");
             return "redirect:/saggio/iscrizione?id=" + saggioId;
+        } else {
+            if (!utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber)) {
+                redirectAttributes.addAttribute("failed3", "true");
+                return "redirect:/saggio/iscrizione?id=" + saggioId;
+            } else {
+                Utente newUtente = utenteService.createUtenteAndSave(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
+                Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
+                if (!saggio.isPresent()) {
+                    redirectAttributes.addAttribute("failed4", "true");
+                    return "redirect:/saggio/iscrizione?id=" + saggioId;
+                }
+                Biglietto biglietto = bigliettoService.createBigliettoAndSave(newUtente, saggio.get(), quantity, Instant.now(), 'p', false, false);
+
+                redirectAttributes.addAttribute("success", "true");
+                return "redirect:/saggio/iscrizione?id=" + saggioId;
+            }
         }
     }
 }

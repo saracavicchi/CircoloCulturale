@@ -5,7 +5,6 @@ import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -16,6 +15,7 @@ public class UtenteService {
     UtenteService(UtenteRepository utenteRepository) {
         this.utenteRepository = utenteRepository;
     }
+
     public boolean validateUserInfo(
             String name,
             String surname,
@@ -74,8 +74,55 @@ public class UtenteService {
         return true;
     }
 
+    public Optional<Utente> getUtenteByCf(String cf) {
+        Utente utente;
+        if ((utente = utenteRepository.findByCf(cf)) != null) {
+            return Optional.of(utente);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public boolean validateUserInfo(Utente utente) {
+        if (utente.getNome() == null || utente.getNome().isEmpty() || utente.getCognome() == null || utente.getCognome().isEmpty() || utente.getCf() == null || utente.getCf().isEmpty() || utente.getDataNascita() == null || utente.getLuogoNascita() == null || utente.getLuogoNascita().isEmpty() || utente.getIndirizzo() == null || utente.getIndirizzo().isEmpty()) {
+            return false;
+        }
+
+        if (utente.getNome().length() > 20 || utente.getCognome().length() > 20) {
+            return false;
+        }
+
+        if (utente.getCf().length() != 16) {
+            return false;
+        }
+
+        if (utente.getDataNascita().isAfter(LocalDate.now())) {
+            return false;
+        }
+
+        if (utente.getLuogoNascita().length() > 20) {
+            return false;
+        }
+
+        if ((utente.getIndirizzo().length()) > 80) {
+            return false;
+        }
+
+        String regex = "^[A-Za-z\\s]+$";
+        if (!utente.getNome().matches(regex) || !utente.getCognome().matches(regex) || !utente.getLuogoNascita().matches(regex) || !utente.getIndirizzo().matches(regex)) {
+            return false;
+        }
+
+        String cfRegex = "^[0-9a-zA-Z]+$";
+        if (!utente.getCf().matches(cfRegex)) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Transactional
-    public Utente createUtente(
+    public Utente createUtenteAndSave(
             String name,
             String surname,
             String cf,

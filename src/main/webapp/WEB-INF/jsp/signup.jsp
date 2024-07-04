@@ -6,68 +6,12 @@
   Per modificare questo modello usa File | Impostazioni | Modelli di file.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>CircoloCulturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #FFCBA4; /* Intermediate orange */
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            color: #FFA500; /* Intermediate orange */
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        form {
-            width: 500px;
-            margin: 0 auto;
-            padding: 30px;
-            background-color: #FFDEAD; /* Intermediate orange */
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-        }
-
-        form label {
-            display: block;
-            margin: 10px 0;
-            color: #FFA500; /* Intermediate orange */
-        }
-
-        form input[type="text"],
-        form input[type="email"],
-        form input[type="password"],
-        form input[type="date"],
-        form input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #FFA500; /* Intermediate orange */
-            border-radius: 5px;
-        }
-        form input[type="file"] {
-            margin-top: 20px;
-        }
-        form input[type="submit"] {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #FFA500; /* Intermediate orange */
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        form input[type="submit"]:hover {
-            background-color: #FFCBA4; /* Intermediate orange */
-        }
-
         .error-message,
         .specific-error {
             color: red;
@@ -75,13 +19,6 @@
             margin-top: 20px;
         }
 
-        h1 h2 {
-            text-align: center;
-        }
-        h2 {
-            color: #000000;
-            font-size: 20px;
-        }
         .registered {
             color: #FF0000;
             font-size: 20px;
@@ -162,16 +99,6 @@
                 errorField = "email";
                 return false;
             }
-
-            // Controlla se l'URL della foto è un URL valido
-            /*var urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
-            if (photoUrl && !urlRegex.test(photoUrl)) {
-                errorMsg="Inserisci un URL valido per la foto.";
-                erroredField="photoUrl";
-                return false;
-            }
-            */
-
 
             // Controlla se il numero di telefono contiene solo numeri
             var phoneRegex = /^[0-9]{10}$/;
@@ -261,8 +188,6 @@
                 inputs[i].style.border = '';
             }
         }
-
-
     </script>
 </head>
 <body>
@@ -329,7 +254,6 @@
                 <input type="file" id="photo" name="photo">
 
                 <input type="submit" name="confirm" value="Conferma">
-
             </form>
         </section>
     </main>
