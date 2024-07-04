@@ -41,30 +41,47 @@
             return risultato;
         }
         document.addEventListener('DOMContentLoaded', function() {
+            initializeAddressFields();
+            initProfileForm();
+            checkSegretarioAndSetupForm();
+            handleEliminaSocioFormSubmission();
+            var failSocioMod = "${param.failSocioMod}";
+            if (failSocioMod == 'true') {
+                scrollToErrorMsg();
+            }
+        });
 
+        function initializeAddressFields() {
             var utente = {
                 indirizzo: "${utente.indirizzo}"
             };
-
             var risultato = divideIndirizzo(utente);
-
             document.getElementById('state').value = risultato.state;
             document.getElementById('province').value = risultato.province;
             document.getElementById('city').value = risultato.city;
             document.getElementById('street').value = risultato.street;
             document.getElementById('houseNumber').value = risultato.houseNumber;
+        }
 
-            initProfileForm();
-            checkSegretarioAndSetupForm();
+        function handleEliminaSocioFormSubmission() {
 
-            var failSocioMod = "${param.failSocioMod}";
-            if (failSocioMod == 'true') {
-                var ErrorMsgElement = document.getElementById('ErroreMsg');
-                if (ErrorMsgElement) {
-                    ErrorMsgElement.scrollIntoView({behavior: "smooth"});
-                }
+            document.getElementById('modificaCredenziali').addEventListener('submit', confirmDisiscrizione);
+        }
+
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('ErroreMsg');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
             }
-        });
+        }
+
+        function confirmDisiscrizione(event) {
+            var confirmUnsubscribe = document.getElementById('confirmUnsubscribe');
+            if (!confirmUnsubscribe.checked) {
+                alert('Per favore, conferma se sei sicuro di volerti disiscrivere.');
+                event.preventDefault(); // Prevent form submission
+            }
+        }
 
 
         function initProfileForm() {
@@ -273,6 +290,7 @@
         }
 
 
+
     </script>
 </head>
 <body>
@@ -323,6 +341,7 @@
     <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}" placeholder="Numero di Telefono" />
     <button type="submit">Aggiorna</button>
 </form>
+
 <form action="modificaPassword" method="GET">
     <input type="hidden" name="socioIdPassword" value="${socio.id}" />
     <input type="hidden" name="segretario" value="${segretario}" />
@@ -331,6 +350,17 @@
 <c:if test="${param.failSocioMod == 'true'}">
     <p id="ErroreMsg" >Errore nell'operazione, riprovare</p>
 </c:if>
+
+<p>Disiscrizione dal Circolo Culturale</p>
+<form action="eliminaSocio" method="POST">
+    <input type="hidden" name="socioIdElimina" value="${socio.id}" />
+    <input type="hidden" name="segretario" value="${segretario}" />
+    <label for="confirmUnsubscribe">Sei sicuro?</label>
+    <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
+    <button type="submit">Disiscriviti</button>
+</form>
+
+
 
 <c:if test="${segretario == 'true'}">
 <p id="modificaCredenziali">Inserisci le credenziali per modificare le informazioni di un socio:</p>

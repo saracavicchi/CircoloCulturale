@@ -14,9 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,8 +24,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -74,8 +70,8 @@ public class socioProfileController {
 
         // Recupera i dati del socio tramite il suo ID
         Optional<Socio> socioOpt = socioService.findById(socioId);
-        if (!socioOpt.isPresent()) {
-            return "redirect:/errorPage"; //TODO: gestire l'errore in modo più specifico
+        if (!socioOpt.isPresent() || socioOpt.get().getDeleted()==true) {
+            return "redirect:/"; //TODO: gestire l'errore in modo più specifico
         }
         Socio socio = socioOpt.get();
 
@@ -100,7 +96,7 @@ public class socioProfileController {
         return "socioProfile";
     }
 
-    @PostMapping("/socioProfile")
+    @PostMapping("/socioProfile") //TODO: RENDERE TRANSAZIONALE
     public String changeSocioData(
             @RequestParam("socioId") Integer socioId,
             @RequestParam String name,
@@ -227,15 +223,18 @@ public class socioProfileController {
 
         }
         if(socioService.validatePassword(passwordNuova)){
-            socio.setPassword(passwordNuova);
-            socioRepository.save(socio);
-
-            if(segretario.isPresent()){
-                model.addAttribute("segretario", "true");
+            boolean updateSuccess = socioService.updateSocioPassword(socioId, passwordNuova);
+            if (updateSuccess) {
+                if(segretario.isPresent()){
+                    model.addAttribute("segretario", "true");
+                }
+                return "redirect:/socioProfile";
+            } else {
+                //segnalare che la modifica della password non è andata a buon fine
+                redirectAttributes.addAttribute("failed", "true");
+                return "redirect:/modificaPassword";
             }
-            return "redirect:/socioProfile";
-        }
-        else{
+        } else {
             //segnalare che la nuova password non è valida
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/modificaPassword";
@@ -253,7 +252,7 @@ public class socioProfileController {
     ) {
         final String PASSWORD = "PASSWORD"; // Assumed constant password value
 
-        if (!PASSWORD.equals(password)) {
+        if (!segretarioService.validateCommonPassword(password)) {
             redirectAttributes.addAttribute("socioId", socioId);
             redirectAttributes.addAttribute("failSocioMod", "true");
             return "redirect:/socioProfile";
@@ -273,6 +272,35 @@ public class socioProfileController {
         redirectAttributes.addAttribute("failSocioMod", "true");
         return "redirect:/socioProfile";
 
+    }
+
+    @PostMapping("/eliminaSocio") //TODO: GESTIRE TRANSAZIONALITà
+    public String eliminaSocio(
+            @RequestParam("socioIdElimina") Integer socioId,
+            @CookieValue("socio-id") Integer socioIdCookie,
+            @RequestParam("segretario") Optional<String> segretario,
+            HttpServletResponse response,
+            RedirectAttributes redirectAttributes
+    ) {
+        Optional<Socio> socioOpt = socioService.findById(socioId);
+        if (socioOpt.isPresent()) {
+            socioService.deleteSocioAndUser(socioId);
+        } else {
+            redirectAttributes.addAttribute("fail", "true");
+            redirectAttributes.addAttribute("socioId", socioId);
+            return "redirect:/socioProfile";
+        }
+
+        if (segretario.isPresent() && segretario.get().equals("true") && !socioId.equals(socioIdCookie)) {
+            // Se l'utente è un segretario, reindirizza al profilo del segretario
+            return "redirect:/socioProfile?socioId=" + socioIdCookie;
+        } else {
+            // Se l'utente non è un segretario o è un segretario che sta eliminando il suo profilo, reindirizza alla homepage
+            Cookie socioCookie = new Cookie("socio-id", null);
+            socioCookie.setMaxAge(0);// Invalida il cookie
+            response.addCookie(socioCookie);
+            return "redirect:/";
+        }
     }
 }
 

@@ -3,9 +3,11 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.antlr.v4.runtime.misc.LogManager;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class SocioService {
 
     SocioRepository socioRepository;
+    UtenteRepository utenteRepository;
 
-    SocioService(SocioRepository socioRepository) {
+    SocioService(SocioRepository socioRepository, UtenteRepository utenteRepository) {
+
         this.socioRepository = socioRepository;
+        this.utenteRepository = utenteRepository;
     }
 
     @Transactional
@@ -174,6 +179,27 @@ public class SocioService {
         return cf + extension;
 
 
+    }
+
+    @Transactional
+    public void deleteSocioAndUser(Integer socioId) {
+        socioRepository.findById(socioId).ifPresent(socio -> {
+            socio.setDeleted(true); // Imposta il socio come eliminato
+            socio.getUtente().setDeleted(true); // Imposta l'utente corrispondente come eliminato
+            socioRepository.save(socio); // Salva le modifiche nel database per il socio
+            utenteRepository.save(socio.getUtente()); // Salva le modifiche nel database per l'utente
+        });
+    }
+    @Transactional
+    public boolean updateSocioPassword(Integer socioId, String newPassword) {
+        Optional<Socio> socioOpt = findById(socioId);
+        if (socioOpt.isPresent()) {
+            Socio socio = socioOpt.get();
+            socio.setPassword(newPassword);
+            socioRepository.save(socio);
+            return true; // Operation successful
+        }
+        return false; // Socio not found
     }
 
 
