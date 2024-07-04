@@ -1,5 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
@@ -121,47 +123,18 @@ public class AuthController {
             @RequestParam("photo") MultipartFile photo,
             RedirectAttributes redirectAttributes
     ) {
-        // Valida i dati del form di registrazione
-        String address = state + ", " + province + ", " + city + ", " + street + ", " + houseNumber;
-        if (!(utenteService.validateUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber) &&
-                socioService.validateSocioInfo(email, password, phoneNumber))) {
+        try {
+            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
+            redirectAttributes.addAttribute("registered", "true");
+            return "redirect:/login";
+        } catch (ValidationException validExc) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";
-        }
-        String filename = null;
-
-        // Registra utente se non presente nel Database
-        if(utenteRepository.findByCf(cf) == null){
-
-            if(photo != null && !photo.isEmpty()){
-                filename = socioService.createPhotoName(photo, cf);
-
-                try {
-                    Path path = Paths.get(uploadDir, filename);
-                    photo.transferTo(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    redirectAttributes.addAttribute("failed", "true");
-                    return "redirect:/signup";
-                }
-
-            }
-
-            Utente utente = utenteService.persistUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
-            Socio socio = socioService.persistSocio(utente, email, password, phoneNumber, filename);
-            Tessera tessera = tesseraService.createTessera(socio);
-            socioService.sendEmail(socio);
-
-        }
-        else{
+        } catch (EntityAlreadyPresentException entityExc) {
             redirectAttributes.addAttribute("failed", "true");
             redirectAttributes.addAttribute("alreadyPresent", "true");
             return "redirect:/signup";
         }
-        // Reindirizza l'utente alla pagina di login
-        return "redirect:/login";
-
-
     }
 
 

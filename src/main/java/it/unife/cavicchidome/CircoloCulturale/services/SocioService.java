@@ -3,6 +3,7 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.servlet.http.Cookie;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -29,14 +31,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class SocioService {
 
     private final UtenteService utenteService;
+    private final TesseraService tesseraService;
     SocioRepository socioRepository;
 
     @Value("${file.upload-dir}")
     String uploadDir;
 
-    SocioService(SocioRepository socioRepository, UtenteService utenteService) {
+    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService) {
         this.socioRepository = socioRepository;
         this.utenteService = utenteService;
+        this.tesseraService = tesseraService;
     }
 
     @Transactional
@@ -77,6 +81,52 @@ public class SocioService {
         return socioRepository.findById(id);
     }
 
+
+    @Transactional
+    public Socio newSocio(
+            String name,
+            String surname,
+            String cf,
+            LocalDate dob,
+            String pob,
+            String country,
+            String province,
+            String city,
+            String street,
+            String houseNumber,
+            String email,
+            String password,
+            String phone,
+            Optional<BigDecimal> price,
+            MultipartFile profilePicture
+    ) throws ValidationException, EntityAlreadyPresentException {
+
+        Utente utente;
+        try {
+            utente = utenteService.newUtente(name, surname, cf, dob, pob, country, province, city, street, houseNumber);
+        } catch (EntityAlreadyPresentException exc) {
+            utente = exc.getEntity();
+        }
+
+        if (utente.getSocio() != null) {
+            throw new EntityAlreadyPresentException(utente.getSocio());
+        }
+
+        Socio socio = validateAndParseSocio(email, password, phone);
+        socio.setDeleted(false);
+        socio.setUtente(utente);
+
+        String profilePictureFilename = saveSocioProfilePicture(profilePicture, utente.getCf());
+        socio.setUrlFoto(profilePictureFilename);
+
+        Tessera tessera = tesseraService.newTessera(socio, price);
+        socio.setTessera(tessera);
+
+        sendEmail(socio);
+
+        return socioRepository.save(socio);
+    }
+
     Socio validateAndParseSocio(String email,
                                 String password,
                                 String phoneNumber) throws ValidationException {
@@ -113,6 +163,11 @@ public class SocioService {
     }
 
     String saveSocioProfilePicture (MultipartFile picture, String cf) {
+
+        if (picture == null || picture.isEmpty()) {
+            return null;
+        }
+
         String originalFilename = picture.getOriginalFilename();
         if (originalFilename == null) {
             return null;
@@ -125,53 +180,11 @@ public class SocioService {
         try {
             Path picturePath = Paths.get(uploadDir, filename);
             picture.transferTo(picturePath);
+            return filename;
         } catch (Exception exc) {
             System.err.println(exc.getMessage());
             return null;
         }
-
-        if (picture != null && !picture.isEmpty()) {
-            // Salva la foto del socio
-            //String photoUrl = fileService.saveFile(picture);
-            //return photoUrl;
-            return null;
-        }
-    }
-
-    @Transactional
-    public Socio newSocio(
-            String name,
-            String surname,
-            String cf,
-            LocalDate dob,
-            String pob,
-            String country,
-            String province,
-            String city,
-            String street,
-            String houseNumber,
-            String email,
-            String password,
-            String phone,
-            String photoUrl
-    ) throws ValidationException, EntityAlreadyPresentException {
-
-        Utente utente;
-        try {
-            utente = utenteService.newUtente(name, surname, cf, dob, pob, country, province, city, street, houseNumber);
-        } catch (EntityAlreadyPresentException exc) {
-            utente = exc.getEntity();
-        }
-
-        if (utente.getSocio() != null) {
-            throw new EntityAlreadyPresentException(utente.getSocio());
-        }
-
-        Socio socio = validateAndParseSocio(email, password, phone);
-        socio.setDeleted(false);
-        socio.setUtente(utente);
-
-        return socioRepository.save(socio);
     }
 
     public void sendEmail(Socio socio) {
