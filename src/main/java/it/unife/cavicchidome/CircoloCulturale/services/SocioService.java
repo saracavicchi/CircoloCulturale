@@ -17,6 +17,7 @@ import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class SocioService {
@@ -71,38 +72,29 @@ public class SocioService {
             String phoneNumber
             //String photoUrl
     ) {
-        // Crea un'istanza di EmailValidator
-        EmailValidator emailValidator = EmailValidator.getInstance();
 
-        // Controlla se l'email è un'email valida e non supera i 50 caratteri
-        if (email == null || email.length() > 50 || !emailValidator.isValid(email)) {
+        if (!validatePassword(password) || !validateEmail(email) || !validatePhoneNumber(phoneNumber)) {
             return false;
         }
-
-        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        if (password == null || password.length() > 50 || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$")) {
-            return false;
-        }
-
-        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
-        if (phoneNumber != null && !phoneNumber.isEmpty()){
-            if( !phoneNumber.matches("^[0-9]{10}$")) {
-                return false;
-            }
-        }
-
-        // Controlla se l'URL della foto è un URL valido e non supera gli 80 caratteri
-        /*if (photoUrl != null && !photoUrl.isEmpty()){
-            if (photoUrl.length() > 80 || !photoUrl.matches("^(ftp|http|https):\\/\\/[^ \"]+$")) {
-                return false;
-            }
-        }
-
-         */
-
 
         // Se tutti i controlli passano, restituisce true
         return true;
+    }
+
+    public boolean validatePassword(String password) {
+        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
+        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
+    }
+
+    public boolean validateEmail(String email) {
+        // Crea un'istanza di EmailValidator
+        EmailValidator emailValidator = EmailValidator.getInstance();
+        return emailValidator.isValid(email);
+    }
+
+    public boolean validatePhoneNumber(String phoneNumber) {
+        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
+        return phoneNumber != null && phoneNumber.matches("^[0-9]{10}$");
     }
 
     @Transactional
@@ -127,6 +119,7 @@ public class SocioService {
     }
 
     public void sendEmail(Socio socio) {
+        /*
         final String username = "indirizzomail";
         final String password = "app password"; // replace with your password
 
@@ -162,6 +155,25 @@ public class SocioService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+
+         */
+    }
+
+    @Transactional
+    public Optional<Socio> findById(Integer socioId) {
+        return socioRepository.findById(socioId);
+    }
+
+    public String createPhotoName(MultipartFile photo, String cf) {
+
+        // Ottieni l'estensione del file
+        String originalFilename = photo.getOriginalFilename();
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        // Crea il nome del file utilizzando il codice fiscale del socio e l'estensione del file
+        return cf + extension;
+
+
     }
 
 
