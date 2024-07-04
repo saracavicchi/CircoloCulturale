@@ -6,11 +6,13 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Modifica Password</title>
 
     <script>
+        var errorDisplayed = false;
         window.onload = function() {
             // Aggiungi un listener per l'evento 'submit' al form
             document.getElementById('modificaPasswordForm').addEventListener('submit', submitForm);
@@ -53,10 +55,13 @@
 
         function submitForm(event) {
             event.preventDefault(); // Prevent the default form submission behavior
-
             // Validate the new password and the current password
-            var newPasswordValidation = validateNewPassword();
-            var actualPasswordValidation = validateActualPassword();
+            var newPasswordValidation =  validateNewPassword();
+            var actualPasswordValidation = true;
+
+            if("${segretario}" != 'true') {
+                actualPasswordValidation = validateActualPassword();
+            }
 
             // If validation fails, display error messages
             if (!newPasswordValidation || !actualPasswordValidation) {
@@ -68,6 +73,7 @@
         }
 
         function displayErrorMessages() {
+            errorDisplayed = true;
             var formElement = document.getElementById('modificaPasswordForm');
 
             // Check if the general error message exists, if not, create it
@@ -99,7 +105,11 @@
             errorMessageElement.scrollIntoView({behavior: "smooth"});
         }
 
-        function removeError(event) {
+        function removeError() {
+            if(!errorDisplayed){
+                return;
+            }
+            errorDisplayed=false;
             // Rimuovi il messaggio di errore
             var errorMessageElement = document.getElementById('error-message');
             if (errorMessageElement) {
@@ -128,8 +138,12 @@
 <form id="modificaPasswordForm" name="modificaPasswordForm" action="modificaPassword" method="POST" >
     <input type="hidden" name="socioId" value="${socioId}" />
 
-    <label for="currentPassword">Password Attuale:</label>
-    <input type="password" id="currentPassword" name="currentPassword" placeholder="Password Attuale" required>
+    <input type="hidden" name="segretario" value="${segretario}" />
+
+    <c:if test="${segretario != 'true'}">
+        <label for="currentPassword">Password Attuale:</label>
+        <input type="password" id="currentPassword" name="currentPassword" placeholder="Password Attuale" required>
+    </c:if>
 
     <label for="newPassword">Nuova Password:</label>
     <input type="password" id="newPassword" name="newPassword" placeholder="Nuova Password" required>

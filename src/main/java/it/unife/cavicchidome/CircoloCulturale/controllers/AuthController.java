@@ -135,7 +135,7 @@ public class AuthController {
         String filename = null;
 
         // Registra utente se non presente nel Database
-        if(utenteRepository.findByCf(cf) == null){
+        if(utenteService.findByCf(cf) == null){
 
             if(photo != null && !photo.isEmpty()){
                 filename = socioService.createPhotoName(photo, cf);

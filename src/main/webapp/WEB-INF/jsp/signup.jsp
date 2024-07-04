@@ -89,7 +89,7 @@
         }
     </style>
     <script>
-
+        var errorDisplayed =false;
         window.onload = function() {
             // Aggiungi un listener per l'evento 'submit' al form
             document.getElementById('registrationForm').addEventListener('submit', submitForm);
@@ -196,6 +196,7 @@
             if (validation) {
                 event.target.submit();
             } else {
+                errorDisplayed = true;
                 // Ottieni l'elemento h1
                 var h1Element = document.getElementsByTagName('h1')[0];
 
@@ -232,6 +233,10 @@
         }
 
         function removeError(event) {
+            if(!errorDisplayed) {
+                return;
+            }
+            errorDisplayed = false;
             // Rimuovi il messaggio di errore
             var errorMessageElement = document.getElementById('error-message');
             if (errorMessageElement) {
