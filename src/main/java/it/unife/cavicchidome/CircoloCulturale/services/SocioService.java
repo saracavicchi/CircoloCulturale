@@ -9,9 +9,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Properties;
@@ -27,6 +30,9 @@ public class SocioService {
 
     private final UtenteService utenteService;
     SocioRepository socioRepository;
+
+    @Value("${file.upload-dir}")
+    String uploadDir;
 
     SocioService(SocioRepository socioRepository, UtenteService utenteService) {
         this.socioRepository = socioRepository;
@@ -106,7 +112,24 @@ public class SocioService {
         return new Socio(email, password, phoneNumber);
     }
 
-    String saveSocioProfilePicture (MultipartFile picture, String filename) {
+    String saveSocioProfilePicture (MultipartFile picture, String cf) {
+        String originalFilename = picture.getOriginalFilename();
+        if (originalFilename == null) {
+            return null;
+        }
+
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        String filename = cf + extension;
+
+        try {
+            Path picturePath = Paths.get(uploadDir, filename);
+            picture.transferTo(picturePath);
+        } catch (Exception exc) {
+            System.err.println(exc.getMessage());
+            return null;
+        }
+
         if (picture != null && !picture.isEmpty()) {
             // Salva la foto del socio
             //String photoUrl = fileService.saveFile(picture);
