@@ -1,15 +1,12 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
-import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,7 +31,7 @@ public class SaggioController {
                             HttpServletRequest request,
                             HttpServletResponse response) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         if (saggioId.isPresent()) {
             Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());
@@ -54,7 +51,7 @@ public class SaggioController {
                                HttpServletRequest request,
                                HttpServletResponse response) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
         if (saggioId.isPresent()) {
             Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());
             if (saggio.isPresent()) {

@@ -35,7 +35,7 @@ public class HomepageController {
                         HttpServletResponse response,
                         Model model) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         model.addAttribute("saggi", saggioService.getNextMonth());
         return "index";
@@ -47,7 +47,7 @@ public class HomepageController {
                        HttpServletResponse response,
                        Model model) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         // TODO: fix JSP return
         if (sedeId.isPresent()) {

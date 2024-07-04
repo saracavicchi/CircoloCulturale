@@ -1,5 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
@@ -10,6 +12,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -21,10 +24,12 @@ import org.springframework.ui.Model;
 @Service
 public class SocioService {
 
+    private final UtenteService utenteService;
     SocioRepository socioRepository;
 
-    SocioService(SocioRepository socioRepository) {
+    SocioService(SocioRepository socioRepository, UtenteService utenteService) {
         this.socioRepository = socioRepository;
+        this.utenteService = utenteService;
     }
 
     @Transactional
@@ -37,9 +42,9 @@ public class SocioService {
         }
     }
 
-    public void getSocioFromCookie(HttpServletRequest request,
-                                      HttpServletResponse response,
-                                      Model model) {
+    public void setSocioFromCookie(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   Model model) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("socio-id")) {
@@ -65,29 +70,24 @@ public class SocioService {
         return socioRepository.findById(id);
     }
 
-    public boolean validateSocioInfo(
-            String email,
-            String password,
-            String phoneNumber
-            //String photoUrl
-    ) {
+    Socio validateSocio(Socio socio) throws ValidationException {
         // Crea un'istanza di EmailValidator
         EmailValidator emailValidator = EmailValidator.getInstance();
 
         // Controlla se l'email è un'email valida e non supera i 50 caratteri
-        if (email == null || email.length() > 50 || !emailValidator.isValid(email)) {
-            return false;
+        if (socio.getEmail() == null || socio.getEmail().length() > 50 || !emailValidator.isValid(socio.getEmail())) {
+            throw new ValidationException("Email non valida");
         }
 
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        if (password == null || password.length() > 50 || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$")) {
-            return false;
+        if (socio.getPassword() == null || socio.getPassword().length() > 50 || !socio.getPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$")) {
+            throw new ValidationException("Password non valida");
         }
 
         // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
-        if (phoneNumber != null && !phoneNumber.isEmpty()){
-            if( !phoneNumber.matches("^[0-9]{10}$")) {
-                return false;
+        if (socio.getTelefono() != null && !socio.getTelefono().isEmpty()){
+            if( !socio.getTelefono().matches("^[0-9]{10}$")) {
+                throw new ValidationException("Numero di telefono non valido");
             }
         }
 
@@ -100,27 +100,28 @@ public class SocioService {
 
          */
 
-
-        // Se tutti i controlli passano, restituisce true
-        return true;
+        return socio;
     }
 
     @Transactional
-    public Socio createSocio(
-            Utente utente,
+    public Socio newSocio(
+            String nome,
+            String cognome,
+            String cf,
+            LocalDate dob,
+            String luogoNascita,
+            String indirizzo
             String email,
             String password,
-            String phoneNumber,
+            String phone,
             String photoUrl
-    ){
-        // Crea un nuovo socio
-        Socio socio = new Socio();
-        socio.setUtente(utente);
-        socio.setId(utente.getId());
-        socio.setEmail(email);
-        socio.setPassword(password);
-        socio.setTelefono(phoneNumber);
-        socio.setUrlFoto(photoUrl);
+    ) throws ValidationException, EntityAlreadyPresentException {
+
+        Utente utente = utenteService.newUtente(nome, cognome, cf, dob, luogoNascita, indirizzo);
+
+        if (utente.getSocio() != null) {
+            throw new EntityAlreadyPresentException("Utente già socio");
+        }
 
 
         return socioRepository.save(socio);
