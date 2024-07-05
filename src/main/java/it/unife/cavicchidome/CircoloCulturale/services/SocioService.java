@@ -1,15 +1,23 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -22,10 +30,17 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class SocioService {
 
+    private final UtenteService utenteService;
+    private final TesseraService tesseraService;
     SocioRepository socioRepository;
 
-    SocioService(SocioRepository socioRepository) {
+    @Value("${file.upload-dir}")
+    String uploadDir;
+
+    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService) {
         this.socioRepository = socioRepository;
+        this.utenteService = utenteService;
+        this.tesseraService = tesseraService;
     }
 
     @Transactional
@@ -38,9 +53,9 @@ public class SocioService {
         }
     }
 
-    public void getSocioFromCookie(HttpServletRequest request,
-                                      HttpServletResponse response,
-                                      Model model) {
+    public void setSocioFromCookie(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   Model model) {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("socio-id")) {
@@ -66,56 +81,101 @@ public class SocioService {
         return socioRepository.findById(id);
     }
 
-    public boolean validateSocioInfo(
-            String email,
-            String password,
-            String phoneNumber
-            //String photoUrl
-    ) {
-
-        if (!validatePassword(password) || !validateEmail(email) || !validatePhoneNumber(phoneNumber)) {
-            return false;
-        }
-
-        // Se tutti i controlli passano, restituisce true
-        return true;
-    }
-
-    public boolean validatePassword(String password) {
-        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
-    }
-
-    public boolean validateEmail(String email) {
-        // Crea un'istanza di EmailValidator
-        EmailValidator emailValidator = EmailValidator.getInstance();
-        return emailValidator.isValid(email);
-    }
-
-    public boolean validatePhoneNumber(String phoneNumber) {
-        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
-        return phoneNumber != null && phoneNumber.matches("^[0-9]{10}$");
-    }
 
     @Transactional
-    public Socio createSocio(
-            Utente utente,
+    public Socio newSocio(
+            String name,
+            String surname,
+            String cf,
+            LocalDate dob,
+            String pob,
+            String country,
+            String province,
+            String city,
+            String street,
+            String houseNumber,
             String email,
             String password,
-            String phoneNumber,
-            String photoUrl
-    ){
-        // Crea un nuovo socio
-        Socio socio = new Socio();
-        socio.setUtente(utente);
-        socio.setId(utente.getId());
-        socio.setEmail(email);
-        socio.setPassword(password);
-        socio.setTelefono(phoneNumber);
-        socio.setUrlFoto(photoUrl);
+            String phone,
+            Optional<BigDecimal> price,
+            MultipartFile profilePicture
+    ) throws ValidationException, EntityAlreadyPresentException {
 
+        Utente utente;
+        try {
+            utente = utenteService.newUtente(name, surname, cf, dob, pob, country, province, city, street, houseNumber);
+        } catch (EntityAlreadyPresentException exc) {
+            utente = exc.getEntity();
+        }
+
+        if (utente.getSocio() != null) {
+            throw new EntityAlreadyPresentException(utente.getSocio());
+        }
+
+        Socio socio = validateAndParseSocio(email, password, phone);
+        socio.setDeleted(false);
+        socio.setUtente(utente);
+
+        String profilePictureFilename = saveSocioProfilePicture(profilePicture, utente.getCf());
+        socio.setUrlFoto(profilePictureFilename);
+
+        Tessera tessera = tesseraService.newTessera(socio, price);
+        socio.setTessera(tessera);
+
+        sendEmail(socio);
 
         return socioRepository.save(socio);
+    }
+
+    Socio validateAndParseSocio(String email,
+                                String password,
+                                String phoneNumber) throws ValidationException {
+        // Crea un'istanza di EmailValidator
+        EmailValidator emailValidator = EmailValidator.getInstance();
+
+        // Controlla se l'email è un'email valida e non supera i 50 caratteri
+        if (email == null || email.length() > 50 || !emailValidator.isValid(email)) {
+            throw new ValidationException("Email non valida");
+        }
+
+        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
+        if (!validatePassword(password)) {
+            throw new ValidationException("Password non valida");
+        }
+
+        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
+        if (phoneNumber != null && !phoneNumber.isEmpty()){
+            if( !phoneNumber.matches("^[0-9]{10}$")) {
+                throw new ValidationException("Numero di telefono non valido");
+            }
+        }
+
+        return new Socio(email, password, phoneNumber);
+    }
+
+    public String saveSocioProfilePicture (MultipartFile picture, String cf) {
+
+        if (picture == null || picture.isEmpty()) {
+            return null;
+        }
+
+        String originalFilename = picture.getOriginalFilename();
+        if (originalFilename == null) {
+            return null;
+        }
+
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        String filename = cf + extension;
+
+        try {
+            Path picturePath = Paths.get(uploadDir, filename);
+            picture.transferTo(picturePath);
+            return filename;
+        } catch (Exception exc) {
+            System.err.println(exc.getMessage());
+            return null;
+        }
     }
 
     public void sendEmail(Socio socio) {
@@ -164,16 +224,9 @@ public class SocioService {
         return socioRepository.findById(socioId);
     }
 
-    public String createPhotoName(MultipartFile photo, String cf) {
-
-        // Ottieni l'estensione del file
-        String originalFilename = photo.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
-        // Crea il nome del file utilizzando il codice fiscale del socio e l'estensione del file
-        return cf + extension;
-
-
+    public boolean validatePassword(String password) {
+        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
+        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
     }
 
 

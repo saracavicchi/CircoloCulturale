@@ -5,6 +5,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -164,4 +165,17 @@ public class Socio {
         this.tessera = tessera;
     }
 
+    public Socio() {
+    }
+
+    public Socio(String email, String password, String telefono) {
+        this.email = email;
+        this.password = password;
+        this.telefono = telefono;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUtente(), getEmail(), getPassword(), getTelefono(), getUrlFoto(), getDeleted(), getDocente(), getPrenotazioniSale(), getSaggi(), getSegretario(), getCorsi(), getTessera());
+    }
 }

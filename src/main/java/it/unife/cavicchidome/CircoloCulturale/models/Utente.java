@@ -123,4 +123,16 @@ public class Utente {
         this.socio = socio;
     }
 
+    public Utente() {
+    }
+
+    public Utente(String cf, LocalDate dataNascita, String luogoNascita, String nome, String cognome, String indirizzo, Boolean deleted) {
+        this.cf = cf.toUpperCase();
+        this.dataNascita = dataNascita;
+        this.luogoNascita = luogoNascita;
+        this.nome = nome;
+        this.cognome = cognome;
+        this.indirizzo = indirizzo;
+        this.deleted = deleted;
+    }
 }

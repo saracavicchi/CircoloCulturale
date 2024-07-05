@@ -1,7 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
@@ -24,14 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 @Controller
@@ -120,22 +112,16 @@ public class socioProfileController {
         utente.setIndirizzo(indirizzo);
 
         // Validate the updated Utente and Socio information
-        if (!utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber) ||
-                !socioService.validateSocioInfo(email, socio.getPassword(), phoneNumber)) {
+        /*if (!utenteService.validateAndParseUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber) ||
+                !socioService.validateAndParseSocio(email, socio.getPassword(), phoneNumber)) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/socioProfile?socioId=" + socioId;
-        }
+        }*/ //TODO: Implementare i metodi di validazione con eccezione
 
         // Handle photo upload
         String filename = null;
         if (photo != null && !photo.isEmpty()) {
-            filename = socioService.createPhotoName(photo, cf);
-            try {
-                Path path = Paths.get(uploadDir, filename);
-                photo.transferTo(path);
-                socio.setUrlFoto(filename); // Assuming Socio has a setPhoto method
-            } catch (IOException e) {
-                e.printStackTrace();
+            if((filename = socioService.saveSocioProfilePicture(photo, cf))==null){
                 redirectAttributes.addAttribute("failed", "true");
                 return "redirect:/socioProfile?socioId=" + socioId;
             }
