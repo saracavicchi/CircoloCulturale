@@ -298,6 +298,13 @@
 </head>
 <body>
 <h1>Crea un corso</h1>
+<% String fail;
+    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+%>
+<p>Errore durante la creazione del corso, verificare le informazioni e riprovare</p>
+<%
+    }
+%>
 <form id="creaCorsoForm" action="creazioneCorso" method="post" enctype="multipart/form-data">
     Descrizione: <input type="text" id="descrizione" name="descrizione" required><br>
     Genere: <input type="text" id="genere" name="genere" required><br>
