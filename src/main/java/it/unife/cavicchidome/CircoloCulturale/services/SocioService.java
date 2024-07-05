@@ -6,6 +6,7 @@ import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -32,15 +34,17 @@ public class SocioService {
 
     private final UtenteService utenteService;
     private final TesseraService tesseraService;
+    private final UtenteRepository utenteRepository;
     SocioRepository socioRepository;
 
     @Value("${file.upload-dir}")
     String uploadDir;
 
-    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService) {
+    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
         this.socioRepository = socioRepository;
         this.utenteService = utenteService;
         this.tesseraService = tesseraService;
+        this.utenteRepository = utenteRepository;
     }
 
     @Transactional
@@ -227,6 +231,20 @@ public class SocioService {
     public boolean validatePassword(String password) {
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
         return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
+    }
+
+    @Transactional
+    public List<Object[]> findSociInfo() {
+        return socioRepository.findSociInfo();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsSocioWithCf(String cf) {
+        Optional<Utente> utente = utenteRepository.findByCf(cf);
+        if (!utente.isPresent()) {
+            return false;
+        }
+        return socioRepository.findById(utente.get().getId()).isPresent();
     }
 
 

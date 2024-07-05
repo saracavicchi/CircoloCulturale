@@ -98,8 +98,8 @@ public class UtenteService {
                             String city,
                             String street,
                             String houseNumber) throws ValidationException, EntityAlreadyPresentException {
-        Utente alreadyPresent = utenteRepository.findByCf(cf);
-        if (alreadyPresent != null) {
+        Optional<Utente> alreadyPresent = utenteRepository.findByCf(cf);
+        if (alreadyPresent.isPresent()) {
             throw new EntityAlreadyPresentException(alreadyPresent);
         }
 
@@ -112,5 +112,10 @@ public class UtenteService {
     @Transactional
     public Optional<Utente> findById(Integer utenteId) {
         return utenteRepository.findById(utenteId);
+    }
+
+    @Transactional
+    public Optional<Utente> findByCf(String cf) {
+        return utenteRepository.findByCf(cf);
     }
 }

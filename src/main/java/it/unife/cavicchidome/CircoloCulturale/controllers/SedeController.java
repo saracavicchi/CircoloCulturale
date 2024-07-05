@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
-
+/*
 @Controller
 @RequestMapping("/sede")
 public class SedeController {
@@ -47,3 +47,4 @@ public class SedeController {
         }
     }
 }
+*/

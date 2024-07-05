@@ -13,7 +13,7 @@ public class CalendarioCorso {
     private CalendarioCorsoId id;
 
     @MapsId("idCorso")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_corso", nullable = false)
     private Corso idCorso;

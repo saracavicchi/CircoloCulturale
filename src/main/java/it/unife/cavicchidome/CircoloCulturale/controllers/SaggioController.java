@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/*
 @Controller
 @RequestMapping("/saggio")
 public class SaggioController {
@@ -120,7 +121,8 @@ public class SaggioController {
             Biglietto biglietto = bigliettoService.createBigliettoAndSave(utente.get(), saggio.get(), quantity, Instant.now(), 'p', false, false);
             redirectAttributes.addAttribute("success", "true");
             return "redirect:/saggio/iscrizione?id=" + saggioId;
-        } else {
+        }
+        else {
             if (!utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber)) {
                 redirectAttributes.addAttribute("failed3", "true");
                 return "redirect:/saggio/iscrizione?id=" + saggioId;
@@ -136,6 +138,9 @@ public class SaggioController {
                 redirectAttributes.addAttribute("success", "true");
                 return "redirect:/saggio/iscrizione?id=" + saggioId;
             }
+
+
         }
     }
 }
+*/
