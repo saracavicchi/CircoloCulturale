@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
     <title>Profilo Socio</title>
@@ -26,33 +27,7 @@
         }
     </style>
     <script>
-
-        window.onload = function() {
-            // Prima funzione
-            var utente = {
-                indirizzo: "${utente.indirizzo}"
-            };
-
-            var risultato = divideIndirizzo(utente);
-
-            document.getElementsByName('state')[0].value = risultato.state;
-            document.getElementsByName('province')[0].value = risultato.province;
-            document.getElementsByName('city')[0].value = risultato.city;
-            document.getElementsByName('street')[0].value = risultato.street;
-            document.getElementsByName('houseNumber')[0].value = risultato.houseNumber;
-
-
-            // Aggiungi un listener per l'evento 'submit' al form
-            document.getElementById('profileForm').addEventListener('submit', submitForm);
-            // Ottieni tutti gli elementi input del form
-            var inputs = document.getElementById('profileForm').getElementsByTagName('input');
-
-            // Aggiungi un listener per l'evento 'input' a ogni elemento input
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].addEventListener('focus', removeError);
-            }
-        }
-
+        var errorDisplayed =false;
         function divideIndirizzo(utente) {
             const parti = utente.indirizzo.split(', ');
             const risultato = {
@@ -62,10 +37,80 @@
                 street: parti[3],
                 houseNumber: parti[4]
             };
+            console.log(risultato)
             return risultato;
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAddressFields();
+            initProfileForm();
+            checkSegretarioAndSetupForm();
+            handleEliminaSocioFormSubmission();
+            var failSocioMod = "${param.failSocioMod}";
+            if (failSocioMod == 'true') {
+                scrollToErrorMsg();
+            }
+        });
 
-        //campo/i che ha generato l'errore
+        function initializeAddressFields() {
+            var utente = {
+                indirizzo: "${utente.indirizzo}"
+            };
+            var risultato = divideIndirizzo(utente);
+            document.getElementById('state').value = risultato.state;
+            document.getElementById('province').value = risultato.province;
+            document.getElementById('city').value = risultato.city;
+            document.getElementById('street').value = risultato.street;
+            document.getElementById('houseNumber').value = risultato.houseNumber;
+        }
+
+        function handleEliminaSocioFormSubmission() {
+
+            document.getElementById('modificaCredenziali').addEventListener('submit', confirmDisiscrizione);
+        }
+
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('ErroreMsg');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
+        }
+
+        function confirmDisiscrizione(event) {
+            var confirmUnsubscribe = document.getElementById('confirmUnsubscribe');
+            if (!confirmUnsubscribe.checked) {
+                alert('Per favore, conferma se sei sicuro di volerti disiscrivere.');
+                event.preventDefault(); // Prevent form submission
+            }
+        }
+
+
+        function initProfileForm() {
+            var profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', submitForm);
+                var inputs = profileForm.getElementsByTagName('input');
+                addFocusListenersToInputs(inputs, 'profileForm');
+            }
+        }
+
+        function checkSegretarioAndSetupForm() {
+            var socioModificaForm = document.getElementById('socioModificaForm');
+            if (socioModificaForm) {
+                socioModificaForm.addEventListener('submit', submitSegretarioForm);
+                var inputs = socioModificaForm.getElementsByTagName('input');
+                addFocusListenersToInputs(inputs, 'socioModificaForm');
+            }
+        }
+
+        function addFocusListenersToInputs(inputs, formName) {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener('focus', function() {
+                    removeError(formName);
+                });
+            }
+        }
+
+       //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";
 
@@ -109,10 +154,8 @@
                 return false;
             }
 
-            // Controlla se il codice fiscale è composto sia da numeri che da lettere
-            var cfRegex = /^[0-9a-zA-Z]{16}$/;
-            if (!cfRegex.test(cf)) {
-                errorMsg = "Il codice fiscale deve essere di 16 caratteri e composto sia da numeri che da lettere.";
+            // Controlla CF
+            if (!validateCF(cf)) {
                 erroredField = "cf";
                 return false;
             }
@@ -139,6 +182,37 @@
             return true;
         }
 
+        function validateCF(cf){
+            // Controlla se il codice fiscale è composto sia da numeri che da lettere
+            var cfRegex = /^[0-9a-zA-Z]{16}$/;
+            if (!cfRegex.test(cf)) {
+                errorMsg = "Il codice fiscale deve essere di 16 caratteri e composto sia da numeri che da lettere.";
+                return false;
+            }
+            return true;
+        }
+
+        function submitSegretarioForm(event) {
+            // Impedisci l'invio del form
+            event.preventDefault();
+
+            var cf= document.getElementById('cfSocio').value;
+
+            // Chiama la funzione validateForm
+            var validation = validateCF(cf);
+
+            if (!validation) {
+                erroredField = "cfSocio";
+
+                var Element = document.getElementById('modificaCredenziali');
+                displayErrorMessages(Element);
+
+            } else {  // Se la validazione ha esito positivo, invia il form
+                // Usa l'ID del form per inviarlo direttamente
+                document.getElementById('socioModificaForm').submit();
+            }
+        }
+
         function submitForm(event) {
             // Impedisci l'invio del form
             event.preventDefault();
@@ -146,19 +220,18 @@
             var validation = validateForm();
 
             if (!validation) {
-                displayErrorMessages();
+                // Ottieni l'elemento h1
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('profileForm').submit();
             }
         }
 
-        function displayErrorMessages() {
-            var formElement = document.getElementById('profileForm');
+        function displayErrorMessages(Element) {
 
-            // Ottieni l'elemento h1
-            var h1Element = document.getElementsByTagName('h1')[0];
-
+            errorDisplayed = true;
             // Controlla se il messaggio di errore esiste già
             var errorMessageElement = document.getElementById('error-message');
             var specificErrorElement = document.getElementById('specific-error');
@@ -168,7 +241,7 @@
                 errorMessageElement = document.createElement('p');
                 errorMessageElement.id = 'error-message';
                 errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                h1Element.appendChild(errorMessageElement);
+                Element.appendChild(errorMessageElement);
             }
 
             // Se il messaggio di errore specifico non esiste, crealo
@@ -176,17 +249,24 @@
                 specificErrorElement = document.createElement('p');
                 specificErrorElement.id = 'specific-error';
                 specificErrorElement.textContent = errorMsg;
-                h1Element.appendChild(specificErrorElement);
+                Element.appendChild(specificErrorElement);
             }
 
             // Colora il bordo del campo o dei campi che hanno dato errore
             var fields = erroredField.split(', ');
             for (var i = 0; i < fields.length; i++) {
                 var fieldElement = document.getElementById(fields[i]);
+                if (fieldElement) {
+                    fieldElement.style.border = '1px solid red';
+                }
             }
         }
 
-        function removeError(event) {
+        function removeError(formName) {
+            if(!errorDisplayed){
+                return;
+            }
+            errorDisplayed=false;
             // Rimuovi il messaggio di errore
             var errorMessageElement = document.getElementById('error-message');
             if (errorMessageElement) {
@@ -200,7 +280,7 @@
             }
 
             // Ottieni tutti gli elementi input del form
-            var inputs = document.getElementById('profileForm').getElementsByTagName('input');
+            var inputs = document.getElementById(formName).getElementsByTagName('input');
 
             // Itera su ogni elemento input
             for (var i = 0; i < inputs.length; i++) {
@@ -208,6 +288,7 @@
                 inputs[i].style.border = '';
             }
         }
+
 
 
     </script>
@@ -260,7 +341,43 @@
     <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}" placeholder="Numero di Telefono" />
     <button type="submit">Aggiorna</button>
 </form>
-<button type="button" onclick="window.location.href='/modificaPassword?socioId=${socio.id}'">Modifica Password</button>
+
+<form action="modificaPassword" method="GET">
+    <input type="hidden" name="socioIdPassword" value="${socio.id}" />
+    <input type="hidden" name="segretario" value="${segretario}" />
+    <button type="submit" >Modifica Password</button>
+</form>
+<c:if test="${param.failSocioMod == 'true'}">
+    <p id="ErroreMsg" >Errore nell'operazione, riprovare</p>
+</c:if>
+
+<p>Disiscrizione dal Circolo Culturale</p>
+<form action="eliminaSocio" method="POST">
+    <input type="hidden" name="socioIdElimina" value="${socio.id}" />
+    <input type="hidden" name="segretario" value="${segretario}" />
+    <label for="confirmUnsubscribe">Sei sicuro?</label>
+    <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
+    <button type="submit">Disiscriviti</button>
+</form>
+
+
+
+<c:if test="${segretario == 'true'}">
+<p id="modificaCredenziali">Inserisci le credenziali per modificare le informazioni di un socio:</p>
+
+<form id="socioModificaForm" name="socioModificaForm" action="segretarioModificaSocio" method="post">
+
+    <input type="hidden" name="socioId" value="${socio.id}" />
+
+    <label for="cfSocio">Codice Fiscale:</label>
+    <input type="text" id="cfSocio" name="cfSocio" placeholder="Codice Fiscale" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" placeholder="Password" required>
+
+    <button type="submit">Invia</button>
+</form>
+</c:if>
 
 </body>
 </html>

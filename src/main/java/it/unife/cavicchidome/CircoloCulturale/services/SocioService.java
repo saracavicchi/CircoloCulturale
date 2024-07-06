@@ -1,17 +1,16 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
-import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
-import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
+import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.antlr.v4.runtime.misc.LogManager;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -235,8 +234,9 @@ public class SocioService {
     }
 
     public void sendEmail(Socio socio) {
-        final String username = "circoloculturaleCD@gmail.com";
-        final String password = "fcqn ntzj hzsw agnu"; // replace with your password
+        /*
+        final String username = "indirizzomail";
+        final String password = "app password"; // replace with your password
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -270,6 +270,27 @@ public class SocioService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    @Transactional
+    public void deleteSocioAndUser(Integer socioId) {
+        socioRepository.findById(socioId).ifPresent(socio -> {
+            socio.setDeleted(true); // Imposta il socio come eliminato
+            socio.getUtente().setDeleted(true); // Imposta l'utente corrispondente come eliminato
+            socioRepository.save(socio); // Salva le modifiche nel database per il socio
+            utenteRepository.save(socio.getUtente()); // Salva le modifiche nel database per l'utente
+        });
+    }
+    @Transactional
+    public boolean updateSocioPassword(Integer socioId, String newPassword) {
+        Optional<Socio> socioOpt = findById(socioId);
+        if (socioOpt.isPresent()) {
+            Socio socio = socioOpt.get();
+            socio.setPassword(newPassword);
+            socioRepository.save(socio);
+            return true; // Operation successful
+        }
+        return false; // Socio not found
     }
 
 

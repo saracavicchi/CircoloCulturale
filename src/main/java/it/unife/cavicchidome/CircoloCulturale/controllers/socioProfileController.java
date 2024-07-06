@@ -2,6 +2,9 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
+import it.unife.cavicchidome.CircoloCulturale.models.Segretario;
+import it.unife.cavicchidome.CircoloCulturale.repositories.SegretarioRepository;
+import it.unife.cavicchidome.CircoloCulturale.services.SegretarioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
@@ -11,9 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -23,16 +24,20 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.beans.factory.annotation.Value;
 
 
 @Controller
 public class socioProfileController {
 
+    private final SegretarioRepository segretarioRepository;
     private UtenteService utenteService;
     private SocioService socioService;
     private UtenteRepository utenteRepository;
     private SocioRepository socioRepository;
+    private SegretarioService segretarioService;
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -40,24 +45,30 @@ public class socioProfileController {
             UtenteService utenteService,
             SocioService socioService,
             UtenteRepository utenteRepository,
-            SocioRepository socioRepository
-    ) {
+            SocioRepository socioRepository,
+            SegretarioService segretarioService,
+            SegretarioRepository segretarioRepository) {
         this.utenteService = utenteService;
         this.socioService = socioService;
         this.utenteRepository = utenteRepository;
         this.socioRepository = socioRepository;
+        this.segretarioService = segretarioService;
+        this.segretarioRepository = segretarioRepository;
     }
 
 
     @GetMapping("/socioProfile")
     public String showSocioProfile(
             Model model,
-            @RequestParam("socioId") Integer socioId
+            @RequestParam("socioId") Integer socioId,
+            @RequestParam("segretario") Optional<String> segretario,
+            RedirectAttributes redirectAttributes
     ) {
+
         // Recupera i dati del socio tramite il suo ID
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
-        if (!socioOpt.isPresent()) {
-            return "redirect:/errorPage"; //TODO: gestire l'errore in modo più specifico
+        Optional<Socio> socioOpt = socioService.findById(socioId);
+        if (!socioOpt.isPresent() || socioOpt.get().getDeleted()==true) {
+            return "redirect:/"; //TODO: gestire l'errore in modo più specifico
         }
         Socio socio = socioOpt.get();
 
@@ -70,11 +81,19 @@ public class socioProfileController {
         String placeholderImagePath = uploadDir + "profilo.jpg"; // Costruisci il percorso completo del placeholder
         model.addAttribute("placeholderImagePath", placeholderImagePath);
 
+        redirectAttributes.addAttribute("socioId", socioId);
+        // Verifica se il Socio è anche un Segretario
+        Optional<Segretario> segretarioOpt = segretarioService.findById(socioId); // o segretarioRepository.findById(socioId)
+        if (segretarioOpt.isPresent() || segretario.isPresent()) {
+            // Se il socio è anche un segretario, aggiungi attributo
+            model.addAttribute("segretario", "true");
+        }
+
         // Restituisce la vista socioProfile.jsp con i dati
         return "socioProfile";
     }
 
-    @PostMapping("/socioProfile")
+    @PostMapping("/socioProfile") //TODO: RENDERE TRANSAZIONALE
     public String changeSocioData(
             @RequestParam("socioId") Integer socioId,
             @RequestParam String name,
@@ -89,14 +108,20 @@ public class socioProfileController {
             @RequestParam String houseNumber,
             @RequestParam String email,
             @RequestParam String phoneNumber,
+            @RequestParam("segretario") Optional<String> segretario,
             @RequestParam("photo") MultipartFile photo,
-            RedirectAttributes redirectAttributes
+
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
-        System.out.println("socioId: " + socioId);
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
+        redirectAttributes.addAttribute("socioId", socioId);
+        if(segretario.isPresent()){
+            model.addAttribute("segretario", "true");
+        }
+        Optional<Socio> socioOpt = socioService.findById(socioId);
         if (!socioOpt.isPresent()) {
             redirectAttributes.addAttribute("failed", "true");
-            return "redirect:/socioProfile?socioId=" + socioId;
+            return "redirect:/socioProfile" ;
         }
         Socio socio = socioOpt.get();
         Utente utente = socio.getUtente();
@@ -126,7 +151,8 @@ public class socioProfileController {
 
     @GetMapping("/modificaPassword")
     public String mostraModificaPassword(
-            @RequestParam("socioId") Integer socioId,
+            @RequestParam("socioIdPassword") Integer socioId,
+            @RequestParam("segretario") Optional<String> segretario,
             Model model
     ) {
         Optional<Socio> socioOpt = socioService.findSocioById(socioId);
@@ -138,6 +164,9 @@ public class socioProfileController {
         // Aggiunge l'ID e la password del socio al modello
         model.addAttribute("socioId", socioId);
         model.addAttribute("passwordAttuale", socio.getPassword());
+        if(segretario.isPresent()){
+            model.addAttribute("segretario", "true");
+        }
 
         // Restituisce la vista per la modifica della password
         return "modificaPassword";
@@ -148,33 +177,105 @@ public class socioProfileController {
     @PostMapping("/modificaPassword")
     public String modificaPassword(
             @RequestParam("socioId") Integer socioId,
-            @RequestParam("currentPassword") String passwordAttuale,
+            @RequestParam("currentPassword") Optional<String> passwordAttuale,
+            @RequestParam("segretario") Optional<String> segretario,
             @RequestParam("newPassword") String passwordNuova,
-            HttpServletResponse response
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
+        redirectAttributes.addAttribute("socioId", socioId);
+        Optional<Socio> socioOpt = socioService.findById(socioId);
         if (!socioOpt.isPresent()) {
             return "redirect:/errorPage"; // Gestire l'errore in modo più specifico
         }
         Socio socio = socioOpt.get();
-        if (passwordAttuale.equals(passwordNuova)) {
-            // Crea un cookie per segnalare che la nuova password è uguale a quella attuale
-            Cookie cookie = new Cookie("alreadyPresent", "true");
-            response.addCookie(cookie);
-            return "redirect:/modificaPassword";
+        if(!segretario.isPresent()){
+            if (passwordAttuale.equals(passwordNuova)) {
+                //  segnalare che la nuova password è uguale a quella attuale
+                redirectAttributes.addAttribute("alreadyPresent", "true");
+                return "redirect:/modificaPassword";
+            }
+
         }
         if(socioService.validatePassword(passwordNuova)){
-            socio.setPassword(passwordNuova);
-            socioRepository.save(socio);
-            return "redirect:/socioProfile?socioId=" + socioId;
-        }
-        else{
-            // Crea un cookie per segnalare che la nuova password non è valida
-            Cookie cookie = new Cookie("failed", "true");
-            response.addCookie(cookie);
+            boolean updateSuccess = socioService.updateSocioPassword(socioId, passwordNuova);
+            if (updateSuccess) {
+                if(segretario.isPresent()){
+                    model.addAttribute("segretario", "true");
+                }
+                return "redirect:/socioProfile";
+            } else {
+                //segnalare che la modifica della password non è andata a buon fine
+                redirectAttributes.addAttribute("failed", "true");
+                return "redirect:/modificaPassword";
+            }
+        } else {
+            //segnalare che la nuova password non è valida
+            redirectAttributes.addAttribute("failed", "true");
             return "redirect:/modificaPassword";
         }
 
+    }
+
+    @PostMapping("/segretarioModificaSocio")
+    public String modificaSocioInfo(
+            @RequestParam("socioId") Integer socioId,
+            @RequestParam("cfSocio") String cf,
+            @RequestParam("password") String password,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        final String PASSWORD = "PASSWORD"; // Assumed constant password value
+
+        if (!segretarioService.validateCommonPassword(password)) {
+            redirectAttributes.addAttribute("socioId", socioId);
+            redirectAttributes.addAttribute("failSocioMod", "true");
+            return "redirect:/socioProfile";
+        }
+        redirectAttributes.addAttribute("segretario", "true");
+
+
+        Optional<Utente> utenteOpt = utenteService.findByCf(cf);
+        if (utenteOpt.isPresent()) {
+            Optional<Socio> socioOpt = socioService.findById(utenteOpt.get().getId());
+            if (socioOpt.isPresent()) {
+                redirectAttributes.addAttribute("socioId", socioOpt.get().getId());
+                return "redirect:/socioProfile";
+            }
+        }
+        redirectAttributes.addAttribute("socioId", socioId);
+        redirectAttributes.addAttribute("failSocioMod", "true");
+        return "redirect:/socioProfile";
+
+    }
+
+    @PostMapping("/eliminaSocio") //TODO: GESTIRE TRANSAZIONALITà
+    public String eliminaSocio(
+            @RequestParam("socioIdElimina") Integer socioId,
+            @CookieValue("socio-id") Integer socioIdCookie,
+            @RequestParam("segretario") Optional<String> segretario,
+            HttpServletResponse response,
+            RedirectAttributes redirectAttributes
+    ) {
+        Optional<Socio> socioOpt = socioService.findById(socioId);
+        if (socioOpt.isPresent()) {
+            socioService.deleteSocioAndUser(socioId);
+        } else {
+            redirectAttributes.addAttribute("fail", "true");
+            redirectAttributes.addAttribute("socioId", socioId);
+            return "redirect:/socioProfile";
+        }
+
+        if (segretario.isPresent() && segretario.get().equals("true") && !socioId.equals(socioIdCookie)) {
+            // Se l'utente è un segretario, reindirizza al profilo del segretario
+            return "redirect:/socioProfile?socioId=" + socioIdCookie;
+        } else {
+            // Se l'utente non è un segretario o è un segretario che sta eliminando il suo profilo, reindirizza alla homepage
+            Cookie socioCookie = new Cookie("socio-id", null);
+            socioCookie.setMaxAge(0);// Invalida il cookie
+            response.addCookie(socioCookie);
+            return "redirect:/";
+        }
     }
 }
 

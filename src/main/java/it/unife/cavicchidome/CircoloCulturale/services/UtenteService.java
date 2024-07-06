@@ -144,4 +144,9 @@ public class UtenteService {
     public Optional<Utente> findById(Integer utenteId) {
         return utenteRepository.findById(utenteId);
     }
+
+    @Transactional
+    public Optional<Utente> findByCf(String cf) {
+        return utenteRepository.findByCf(cf);
+    }
 }
