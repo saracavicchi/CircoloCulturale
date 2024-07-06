@@ -1,6 +1,9 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.persistence.EntityManager;
@@ -32,20 +35,19 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class SocioService {
 
-    @PersistenceContext
-    private EntityManager em;
-
     private final UtenteService utenteService;
     private final TesseraService tesseraService;
     private final SocioRepository socioRepository;
+    private final UtenteRepository utenteRepository;
 
     @Value("${file.upload-dir}")
     String uploadDir;
 
-    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService) {
+    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
         this.socioRepository = socioRepository;
         this.utenteService = utenteService;
         this.tesseraService = tesseraService;
+        this.utenteRepository = utenteRepository;
     }
 
     @Transactional
@@ -234,7 +236,6 @@ public class SocioService {
     }
 
     public void sendEmail(Socio socio) {
-        /*
         final String username = "indirizzomail";
         final String password = "app password"; // replace with your password
 
@@ -283,7 +284,7 @@ public class SocioService {
     }
     @Transactional
     public boolean updateSocioPassword(Integer socioId, String newPassword) {
-        Optional<Socio> socioOpt = findById(socioId);
+        Optional<Socio> socioOpt = findSocioById(socioId);
         if (socioOpt.isPresent()) {
             Socio socio = socioOpt.get();
             socio.setPassword(newPassword);

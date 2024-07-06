@@ -66,7 +66,7 @@ public class socioProfileController {
     ) {
 
         // Recupera i dati del socio tramite il suo ID
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent() || socioOpt.get().getDeleted()==true) {
             return "redirect:/"; //TODO: gestire l'errore in modo più specifico
         }
@@ -184,7 +184,7 @@ public class socioProfileController {
             Model model
     ) {
         redirectAttributes.addAttribute("socioId", socioId);
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent()) {
             return "redirect:/errorPage"; // Gestire l'errore in modo più specifico
         }
