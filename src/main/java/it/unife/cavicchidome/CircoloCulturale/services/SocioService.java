@@ -7,6 +7,7 @@ import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,7 +59,7 @@ public class SocioService {
         }
     }
 
-    public void setSocioFromCookie(HttpServletRequest request,
+    public Optional<Socio> setSocioFromCookie(HttpServletRequest request,
                                    HttpServletResponse response,
                                    Model model) {
         Cookie[] cookies = request.getCookies();
@@ -72,6 +73,7 @@ public class SocioService {
                 }
                 if (socio.isPresent()) {
                     model.addAttribute("socio", socio.get());
+                    return socio;
                 } else {
                     Cookie invalidateCookie = new Cookie("socio-id", null);
                     invalidateCookie.setMaxAge(0);
@@ -79,6 +81,7 @@ public class SocioService {
                 }
             }
         }
+        return Optional.empty();
     }
 
     @Transactional
@@ -131,6 +134,42 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
+    @Transactional
+    public Socio editSocioAndUtente(Integer socioId,
+                                    Integer utenteId,
+                                    Optional<String> name,
+                                    Optional<String> surname,
+                                    Optional<String> cf,
+                                    Optional<LocalDate> dob,
+                                    Optional<String> birthplace,
+                                    Optional<String> country,
+                                    Optional<String> province,
+                                    Optional<String> city,
+                                    Optional<String> street,
+                                    Optional<String> houseNumber,
+                                    Optional<String> email,
+                                    Optional<String> phoneNumber,
+                                    Optional<MultipartFile> profilePicture) throws ValidationException, EntityNotFoundException {
+        utenteService.editUtente(utenteId, name, surname, cf, dob, birthplace, country, province, city, street, houseNumber);
+        return editSocio(socioId, email, phoneNumber, profilePicture);
+    }
+
+    @Transactional
+    public Socio editSocio(Integer socioId,
+                           Optional<String> email,
+                           Optional<String> phoneNumber,
+                           Optional<MultipartFile> profilePicture) throws ValidationException, EntityNotFoundException {
+        Socio oldSocio = socioRepository.getReferenceById(socioId);
+        email.ifPresent(oldSocio::setEmail);
+        phoneNumber.ifPresent(oldSocio::setTelefono);
+        profilePicture.ifPresent(picture -> {
+            String filename = saveSocioProfilePicture(picture, oldSocio.getUtente().getCf());
+            oldSocio.setUrlFoto(filename);
+        });
+        Socio newSocio = validateSocio(oldSocio);
+        return socioRepository.save(newSocio);
+    }
+
     Socio validateAndParseSocio(String email,
                                 String password,
                                 String phoneNumber) throws ValidationException {
@@ -164,6 +203,10 @@ public class SocioService {
          */
 
         return new Socio(email, password, phoneNumber);
+    }
+
+    public Socio validateSocio(Socio socio) throws ValidationException {
+        return validateAndParseSocio(socio.getEmail(), socio.getPassword(), socio.getTelefono());
     }
 
     String saveSocioProfilePicture (MultipartFile picture, String cf) {

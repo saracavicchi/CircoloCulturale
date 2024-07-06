@@ -4,6 +4,7 @@ import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentExc
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,11 @@ public class UtenteService {
 
     UtenteService(UtenteRepository utenteRepository) {
         this.utenteRepository = utenteRepository;
+    }
+
+    Utente validateUtente(Utente utente) throws ValidationException {
+        String[] indirizzoSplit = utente.getIndirizzo().split(", ");
+        return validateAndParseUtente(utente.getNome(), utente.getCognome(), utente.getCf(), utente.getDataNascita(), utente.getLuogoNascita(), indirizzoSplit[0], indirizzoSplit[1], indirizzoSplit[2], indirizzoSplit[3], indirizzoSplit[4]);
     }
 
     Utente validateAndParseUtente(String name,
@@ -85,6 +91,31 @@ public class UtenteService {
         }
 
         return new Utente(cf, dob, birthplace, name, surname, country + ", " + province + ", " + city + ", " + street + ", " + houseNumber, false);
+    }
+
+    @Transactional
+    public Utente editUtente(Integer utenteId,
+                             Optional<String> name,
+                             Optional<String> surname,
+                             Optional<String> cf,
+                             Optional<LocalDate> dob,
+                             Optional<String> birthplace,
+                             Optional<String> country,
+                             Optional<String> province,
+                             Optional<String> city,
+                             Optional<String> street,
+                             Optional<String> houseNumber) throws ValidationException, EntityNotFoundException {
+        Utente oldUtente = utenteRepository.getReferenceById(utenteId);
+        name.ifPresent(oldUtente::setNome);
+        surname.ifPresent(oldUtente::setCognome);
+        cf.ifPresent(oldUtente::setCf);
+        dob.ifPresent(oldUtente::setDataNascita);
+        birthplace.ifPresent(oldUtente::setLuogoNascita);
+        if (country.isPresent() && province.isPresent() && city.isPresent() && street.isPresent() && houseNumber.isPresent()) {
+            oldUtente.setIndirizzo(country.get() + ", " + province.get() + ", " + city.get() + ", " + street.get() + ", " + houseNumber.get());
+        }
+        Utente newUtente = validateUtente(oldUtente);
+        return utenteRepository.save(newUtente);
     }
 
     @Transactional

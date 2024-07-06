@@ -101,48 +101,27 @@ public class socioProfileController {
         Socio socio = socioOpt.get();
         Utente utente = socio.getUtente();
 
-
-        // Update the Utente entity with new values
-        utente.setNome(name);
-        utente.setCognome(surname);
-        utente.setCf(cf);
-        utente.setDataNascita(dob);
-        utente.setLuogoNascita(birthplace);
-        String indirizzo = String.join(", ", state, province, city, street, houseNumber);
-        utente.setIndirizzo(indirizzo);
-
-        // Validate the updated Utente and Socio information
-        if (!utenteService.validateUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber) ||
-                !socioService.validateSocioInfo(email, socio.getPassword(), phoneNumber)) {
+        try {
+            socioService.editSocioAndUtente(socio.getId(),
+                    utente.getId(),
+                    Optional.of(name),
+                    Optional.of(surname),
+                    Optional.of(cf),
+                    Optional.of(dob),
+                    Optional.of(birthplace),
+                    Optional.of(state),
+                    Optional.of(province),
+                    Optional.of(city),
+                    Optional.of(street),
+                    Optional.of(houseNumber),
+                    Optional.of(email),
+                    Optional.of(phoneNumber),
+                    Optional.of(photo));
+            return "redirect:/socioProfile?socioId=" + socioId;
+        } catch (Exception exc) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/socioProfile?socioId=" + socioId;
         }
-
-        // Handle photo upload
-        String filename = null;
-        if (photo != null && !photo.isEmpty()) {
-            filename = socioService.createPhotoName(photo, cf);
-            try {
-                Path path = Paths.get(uploadDir, filename);
-                photo.transferTo(path);
-                socio.setUrlFoto(filename); // Assuming Socio has a setPhoto method
-            } catch (IOException e) {
-                e.printStackTrace();
-                redirectAttributes.addAttribute("failed", "true");
-                return "redirect:/socioProfile?socioId=" + socioId;
-            }
-        }
-
-        // Update the Socio entity with new values
-        socio.setEmail(email);
-        socio.setTelefono(phoneNumber);
-        // Assuming Socio has setEmail and setPhoneNumber methods
-
-        // Save the updated entities
-        utenteRepository.save(utente);
-        socioRepository.save(socio);
-
-        return "redirect:/socioProfile?socioId=" + socioId;
     }
 
     @GetMapping("/modificaPassword")
@@ -150,7 +129,7 @@ public class socioProfileController {
             @RequestParam("socioId") Integer socioId,
             Model model
     ) {
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent()) {
             return "redirect:/errorPage"; //TODO: Gestire l'errore in modo più specifico
         }
@@ -173,7 +152,7 @@ public class socioProfileController {
             @RequestParam("newPassword") String passwordNuova,
             HttpServletResponse response
     ) {
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent()) {
             return "redirect:/errorPage"; // Gestire l'errore in modo più specifico
         }
