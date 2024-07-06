@@ -154,17 +154,42 @@ public class CorsoService {
             if (socio.getDocente() == null) {
                 // Socio is not a Docente, proceed to save Docente information
                 Docente docente = new Docente();
-                docente.setSocio(socio); // Assuming Docente has a socio field
+                docente.setSocio(socio);
                 docente.setStipendio(BigDecimal.valueOf(stipendi.get(i)));
                 docenteRepository.save(docente);
                 docenti.add(docente);
             }
             else{
-                socio.getDocente().setStipendio(BigDecimal.valueOf(stipendi.get(i)));
+                if (BigDecimal.valueOf(stipendi.get(i)).compareTo(socio.getDocente().getStipendio()) > 0)
+                    socio.getDocente().setStipendio(BigDecimal.valueOf(stipendi.get(i)));
                 docenti.add(socio.getDocente());
             }
 
         }
+        //Controllo sovrapposizione oraria di corsi che si tengono nella stessa sala
+        boolean sovrapposizione = false;
+        for (int i = 0; i < giorni.size(); i++) {
+            Integer giorno = giorni.get(i);
+            LocalTime inizio = orarioInizio.get(i);
+            LocalTime fine = orarioFine.get(i);
+
+            // Trova corsi nel CalendarioCorso che si sovrappongono per orario
+            List<CalendarioCorso> corsiSovrapposti = calendarioCorsoRepository.findCorsiSovrapposti(Weekday.values()[giorno] , inizio, fine);
+            for (CalendarioCorso calendarioCorso : corsiSovrapposti) {
+                Corso corsoSovrapposto = calendarioCorso.getIdCorso();
+                if (corsoSovrapposto.getIdSala().equals(idSala)) {
+                    sovrapposizione = true;
+                    break;
+                }
+            }
+            if (sovrapposizione) break;
+        }
+
+        if (sovrapposizione) {
+            // Gestisci la sovrapposizione (es. restituendo false o lanciando un'eccezione)
+            return false;
+        }
+
 
 
         // Step 6: Save Course Information
@@ -232,5 +257,8 @@ public class CorsoService {
     }
 
 
-
+    @Transactional
+    public Optional<Corso> findById(Integer idCorso) {
+        return corsoRepository.findById(idCorso);
+    }
 }

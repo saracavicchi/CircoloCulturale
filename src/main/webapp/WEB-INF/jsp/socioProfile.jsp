@@ -216,7 +216,7 @@
 <body>
 <h1>Ciao, ${utente.nome}, ecco le tue informazioni personali</h1>
 <div>
-    <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/> 
+    <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
 </div>
 <form id="profileForm" name="profileForm" action="socioProfile" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="socioId" value="${socio.id}" />

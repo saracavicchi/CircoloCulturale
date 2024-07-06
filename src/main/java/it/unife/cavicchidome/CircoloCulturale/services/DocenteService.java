@@ -45,6 +45,9 @@ public class DocenteService {
 
     @Transactional
     public Optional<Docente> findById(Integer docenteId) {
+
         return docenteRepository.findById(docenteId);
     }
+
+
 }

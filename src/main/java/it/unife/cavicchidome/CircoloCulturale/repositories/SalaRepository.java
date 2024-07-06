@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface SalaRepository extends JpaRepository<Sala, Integer> {
     Optional<Sala>  findById(Integer idSala);
+    List<Sala> findAll();
 }

@@ -234,8 +234,8 @@ public class SocioService {
     }
 
     @Transactional
-    public List<Object[]> findSociInfo() {
-        return socioRepository.findSociInfo();
+    public List<Object[]> findSociNotSegretari() {
+        return socioRepository.findSociNotSegretari();
     }
 
     @Transactional(readOnly = true)

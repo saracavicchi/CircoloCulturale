@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     Optional<Corso> findByCategoriaAndGenereAndLivello(String categoria, String genere, String livello);
+
+    Optional<Corso> findById(Integer idCorso);
 }
 
 

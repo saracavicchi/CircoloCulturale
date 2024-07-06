@@ -319,7 +319,7 @@
     <c:forEach items="${sale}" var="sala">
         <option value="${sala.id}">${sala.numeroSala}</option>
     </c:forEach>
-</select><br>
+    </select><br>
     Foto: <input type="file" name="foto" enctype="multipart/form-data"><br>
     <p>Docenti selezionati:</p>
     <div id="selectedDocentiContainer"></div>
