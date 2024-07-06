@@ -56,4 +56,8 @@ public class CalendarioCorso {
         this.orarioFine = orarioFine;
     }
 
+    public Weekday getGiornoSettimana() {
+        return this.id.getGiornoSettimana();
+    }
+
 }

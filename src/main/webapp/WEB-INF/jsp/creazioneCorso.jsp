@@ -15,7 +15,7 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
-            initDocentiSelection();
+            updateDocentiSelection();
 
         });
         function initCreaCorsoForm() {
@@ -171,11 +171,13 @@
             }
 
             // Colora il bordo del campo o dei campi che hanno dato errore
-            var fields = erroredField.split(', ');
-            for (var i = 0; i < fields.length; i++) {
-                var fieldElement = document.getElementById(fields[i]);
-                if (fieldElement) {
-                    fieldElement.style.border = '1px solid red';
+            if(erroredField != "") {
+                var fields = erroredField.split(', ');
+                for (var i = 0; i < fields.length; i++) {
+                    var fieldElement = document.getElementById(fields[i]);
+                    if (fieldElement) {
+                        fieldElement.style.border = '1px solid red';
+                    }
                 }
             }
         }
@@ -185,6 +187,7 @@
                 return;
             }
             errorDisplayed=false;
+            erroredField="";
             // Rimuovi il messaggio di errore
             var errorMessageElement = document.getElementById('error-message');
             if (errorMessageElement) {
@@ -233,9 +236,6 @@
             }
         }
 
-        function initDocentiSelection() {
-            updateDocentiSelection();
-        }
 
 
         function updateDocentiSelection() {

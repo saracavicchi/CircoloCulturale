@@ -1,4 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Docente;
@@ -16,6 +19,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.ui.Model;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,6 +107,7 @@ public class CorsoController {
             @RequestParam("idCorso") Integer idCorso,
             Model model
     ) {
+
         // Recupera le informazioni del corso tramite il suo ID
         Optional<Corso> corso = corsoService.findById(idCorso);
         if (!corso.isPresent()) {
@@ -125,9 +133,7 @@ public class CorsoController {
         List<Object[]> sociInfo = socioService.findSociNotSegretari();
         model.addAttribute("sociInfo", sociInfo);
 
-        // Aggiungi i giorni della settimana al model come interi
-        //List<Integer> giorniSettimana = Arrays.asList(1, 2, 3, 4, 5); // Assuming 1 = Monday, 2 = Tuesday, etc.
-        //model.addAttribute("giorniSettimana", giorniSettimana);
+
 
         return "editCorso"; // Nome della JSP da visualizzare
     }
