@@ -37,7 +37,26 @@
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', removeError);
             }
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var success = urlParams.get('success');
+            var cancelled = urlParams.get('cancelled');
+            var error = urlParams.get('error');
+            if (success) {
+                var successElement = document.createElement('h2');
+                successElement.textContent = "Registrazione avvenuta con successo!";
+                successElement.style.color = 'green';
+                successElement.style.textAlign = 'center';
+                document.getElementsByTagName('h1')[0].appendChild(successElement);
+            } else if (cancelled || error) {
+                var cancelledElement = document.createElement('h2');
+                cancelledElement.textContent = "Pagamento fallito, rivolgersi alla segreteria con l'identificativo Tessera mandato per email";
+                cancelledElement.style.color = 'red';
+                cancelledElement.style.textAlign = 'center';
+                document.getElementsByTagName('h1')[0].appendChild(cancelledElement);
+            }
         }
+
         //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";

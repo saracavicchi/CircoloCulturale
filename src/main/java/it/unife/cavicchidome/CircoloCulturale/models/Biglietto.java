@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -117,4 +118,8 @@ public class Biglietto {
 
     static public final double COSTO_DEFAULT = 10.0;
     static public final double SCONTO = 0.5;
+
+    public BigDecimal getBigliettoPrice() {
+        return BigDecimal.valueOf(Biglietto.COSTO_DEFAULT * (this.getSconto() ? Biglietto.SCONTO : 1));
+    }
 }

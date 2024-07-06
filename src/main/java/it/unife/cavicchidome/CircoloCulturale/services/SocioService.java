@@ -6,6 +6,8 @@ import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,9 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class SocioService {
 
+    @PersistenceContext
+    private EntityManager em;
+
     private final UtenteService utenteService;
     private final TesseraService tesseraService;
-    SocioRepository socioRepository;
+    private final SocioRepository socioRepository;
 
     @Value("${file.upload-dir}")
     String uploadDir;
@@ -187,8 +192,8 @@ public class SocioService {
     }
 
     public void sendEmail(Socio socio) {
-        final String username = "indirizzomail";
-        final String password = "app password"; // replace with your password
+        final String username = "circoloculturaleCD@gmail.com";
+        final String password = "fcqn ntzj hzsw agnu"; // replace with your password
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");

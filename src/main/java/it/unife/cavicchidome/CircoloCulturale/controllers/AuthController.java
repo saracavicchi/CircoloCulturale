@@ -125,8 +125,9 @@ public class AuthController {
     ) {
         try {
             Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
-            redirectAttributes.addAttribute("registered", "true");
-            return "redirect:/login";
+            redirectAttributes.addAttribute("tessera-id", socio.getTessera().getId());
+            redirectAttributes.addAttribute("redirect", "/signup");
+            return "redirect:/payment";
         } catch (ValidationException validExc) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";

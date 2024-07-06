@@ -11,8 +11,10 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -99,6 +101,14 @@ public class BigliettoService {
         biglietto.setIdSaggio(saggio);
 
         return bigliettoRepository.save(biglietto);
+    }
+
+    public BigDecimal getBigliettoPrice(Biglietto biglietto) {
+        return BigDecimal.valueOf(Biglietto.COSTO_DEFAULT * (biglietto.getSconto() ? Biglietto.SCONTO : 1));
+    }
+
+    public List<Biglietto> findAllBiglietti() {
+        return bigliettoRepository.findAll();
     }
 
     public Optional<Biglietto> findBigliettoById(Integer id) {

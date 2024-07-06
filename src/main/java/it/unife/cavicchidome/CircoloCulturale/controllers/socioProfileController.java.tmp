@@ -55,7 +55,7 @@ public class socioProfileController {
             @RequestParam("socioId") Integer socioId
     ) {
         // Recupera i dati del socio tramite il suo ID
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent()) {
             return "redirect:/errorPage"; //TODO: gestire l'errore in modo più specifico
         }
@@ -93,7 +93,7 @@ public class socioProfileController {
             RedirectAttributes redirectAttributes
     ) {
         System.out.println("socioId: " + socioId);
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent()) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/socioProfile?socioId=" + socioId;

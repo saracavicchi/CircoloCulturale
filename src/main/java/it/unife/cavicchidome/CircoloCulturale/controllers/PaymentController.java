@@ -60,9 +60,29 @@ public class PaymentController {
                                  @RequestParam(name = "expiry") Optional<LocalDate> expiry,
                                  @RequestParam(name = "ccv") Optional<String> ccv,
                                  @RequestParam(name = "redirect", defaultValue = "/") String redirect,
+                                 @RequestParam Optional<Boolean> cancelled,
                                  RedirectAttributes redirectAttributes,
                                  HttpServletRequest request,
                                  HttpServletResponse response) {
+
+        if (cancelled.isPresent()) {
+            redirectAttributes.addAttribute("cancelled", "true");
+            return "redirect:" + redirect;
+        }
+
+        // Check if the pan is 16 digits long, the expiry date is in the future and the ccv is 3 digits long
+        if (pan.isPresent() && expiry.isPresent() && ccv.isPresent()) {
+            if (pan.get().length() != 16 || expiry.get().isBefore(LocalDate.now()) || ccv.get().length() != 3) {
+                redirectAttributes.addAttribute("failed", "true");
+                if (bigliettoId.isPresent())
+                    redirectAttributes.addAttribute("biglietto-id", "" + bigliettoId);
+                else if (tesseraId.isPresent())
+                    redirectAttributes.addAttribute("tessera-id", tesseraId.get());
+                redirectAttributes.addAttribute("redirect", redirect);
+                return "redirect:/payment";
+            }
+        }
+
         if (bigliettoId.isPresent()) {
             try {
                 bigliettoService.purchaseBiglietto(bigliettoId.get());
@@ -77,16 +97,19 @@ public class PaymentController {
         }
 
         if (tesseraId.isPresent()) {
-            Optional<Tessera> tessera = tesseraService.findTesseraById(tesseraId.get());
-            if (tessera.isPresent()) {
-                if (tesseraService.purchaseTessera(tessera.get(), tesseraCvc.get(), request, response)) {
-                    redirectAttributes.addAttribute("purchaseSuccess", "true");
-                    return "redirect:" + redirect;
-                }
+            try {
+                tesseraService.purchaseTessera(tesseraId.get());
+                redirectAttributes.addAttribute("success", "true");
+                return "redirect:" + redirect;
+            } catch (Exception e) {
+                redirectAttributes.addAttribute("failed", "true");
+                redirectAttributes.addAttribute("tessera-id", tesseraId.get());
+                redirectAttributes.addAttribute("redirect", redirect);
+                return "redirect:/payment";
             }
         }
 
-        redirectAttributes.addAttribute("purchaseError", "true");
+        redirectAttributes.addAttribute("error", "true");
         return "redirect:" + redirect;
     }
 }

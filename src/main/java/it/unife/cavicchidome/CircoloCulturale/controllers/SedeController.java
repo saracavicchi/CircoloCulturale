@@ -32,7 +32,7 @@ public class SedeController {
                        HttpServletResponse response,
                        Model model) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         // TODO: fix JSP return
         if (sedeId.isPresent()) {
