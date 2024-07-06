@@ -206,6 +206,22 @@ public class SocioService {
         return new Socio(email, password, phoneNumber);
     }
 
+    public boolean validatePassword(String password) {
+        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
+        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
+    }
+
+    public boolean validateEmail(String email) {
+        // Crea un'istanza di EmailValidator
+        EmailValidator emailValidator = EmailValidator.getInstance();
+        return emailValidator.isValid(email);
+    }
+
+    public boolean validatePhoneNumber(String phoneNumber) {
+        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
+        return phoneNumber != null && phoneNumber.matches("^[0-9]{10}$");
+    }
+
     public Socio validateSocio(Socio socio) throws ValidationException {
         return validateAndParseSocio(socio.getEmail(), socio.getPassword(), socio.getTelefono());
     }

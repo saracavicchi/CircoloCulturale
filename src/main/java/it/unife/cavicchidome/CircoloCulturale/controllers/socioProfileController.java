@@ -118,7 +118,7 @@ public class socioProfileController {
         if(segretario.isPresent()){
             model.addAttribute("segretario", "true");
         }
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (!socioOpt.isPresent()) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/socioProfile" ;
@@ -237,7 +237,7 @@ public class socioProfileController {
 
         Optional<Utente> utenteOpt = utenteService.findByCf(cf);
         if (utenteOpt.isPresent()) {
-            Optional<Socio> socioOpt = socioService.findById(utenteOpt.get().getId());
+            Optional<Socio> socioOpt = socioService.findSocioById(utenteOpt.get().getId());
             if (socioOpt.isPresent()) {
                 redirectAttributes.addAttribute("socioId", socioOpt.get().getId());
                 return "redirect:/socioProfile";
@@ -257,7 +257,7 @@ public class socioProfileController {
             HttpServletResponse response,
             RedirectAttributes redirectAttributes
     ) {
-        Optional<Socio> socioOpt = socioService.findById(socioId);
+        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
         if (socioOpt.isPresent()) {
             socioService.deleteSocioAndUser(socioId);
         } else {
