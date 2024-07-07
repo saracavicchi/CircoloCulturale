@@ -2,7 +2,7 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 
 import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -317,6 +317,11 @@ public class CorsoService {
     }
 
     @Transactional
+    public Boolean isEnrolled(Corso corso, Socio socio) {
+        return corso.getSoci().contains(socio);
+    }
+
+    @Transactional
     public Boolean isAvailable(Corso corso) {
         return (corso.getIdSala().getCapienza() > corso.getSoci().size());
     }
@@ -338,7 +343,21 @@ public class CorsoService {
     }
 
     @Transactional
-    public Optional<Corso> findById(Integer idCorso) {
+    public Optional<Corso> findCorsoById(Integer idCorso) {
         return corsoRepository.findById(idCorso);
+    }
+
+    @Transactional
+    public void enroll(Integer socioId, Integer corsoId) throws EntityNotFoundException {
+        Corso corso = corsoRepository.getReferenceById(corsoId);
+        if (corso == null) {
+            throw new EntityNotFoundException("Corso not found");
+        }
+        Socio socio = socioRepository.getReferenceById(socioId);
+        if (socio == null) {
+            throw new EntityNotFoundException("Socio not found");
+        }
+        corso.getSoci().add(socio);
+        corsoRepository.save(corso);
     }
 }

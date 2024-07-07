@@ -2,6 +2,7 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Docente;
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -105,7 +106,7 @@ public class CorsoController {
     ) {
 
         // Recupera le informazioni del corso tramite il suo ID
-        Optional<Corso> corso = corsoService.findById(idCorso);
+        Optional<Corso> corso = corsoService.findCorsoById(idCorso);
         if (!corso.isPresent()) {
             // TODO:Gestisci il caso in cui il corso non viene trovato (es. reindirizzamento a una pagina di errore)
             return "redirect:/paginaErrore";
@@ -144,13 +145,16 @@ public class CorsoController {
                             HttpServletRequest request,
                             HttpServletResponse response) {
 
-        socioService.setSocioFromCookie(request, response, model);
+        Optional<Socio> socio = socioService.setSocioFromCookie(request, response, model);
 
         if (corsoId.isPresent()) {
-            Optional<Corso> corso = corsoService.findById(corsoId.get());
+            Optional<Corso> corso = corsoService.findCorsoById(corsoId.get());
             if (corso.isPresent()) {
                 model.addAttribute("corso", corso.get());
                 model.addAttribute("availability", corsoService.isAvailable(corso.get()));
+                if (socio.isPresent()) {
+                    model.addAttribute("isEnrolled", corsoService.isEnrolled(corso.get(), socio.get()));
+                }
                 return "corso-info";
             }
         }
@@ -160,5 +164,21 @@ public class CorsoController {
         model.addAttribute("livelli", corsoService.getLivelli());
         model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, socioId));
         return "corsi";
+    }
+
+    @PostMapping("/iscrizione")
+    public String enrollCorso (@RequestParam(name = "socio-id") Integer socioId,
+                               @RequestParam(name = "corso-id") Integer corsoId,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+
+        try {
+            corsoService.enroll(socioId, corsoId);
+            redirectAttributes.addAttribute("success", "true");
+            return "redirect:/corso/info?id=" + corsoId;
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("error", "true");
+            return "redirect:/corso/info?id=" + corsoId;
+        }
     }
 }

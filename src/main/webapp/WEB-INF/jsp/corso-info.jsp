@@ -13,14 +13,29 @@
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <script>
-        function corsoEnrollButtonAction () {
-            let enrollButton = document.getElementById("corsoEnrollButton")
-            enrollButton.addEventListener("click", function () {
-                window.location.href = ("/corso/iscrizione?id=" + enrollButton.value)
-            })
+        function addMessages() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                const content = document.querySelector('.content');
+                const errorParagraph = document.createElement('p');
+                errorParagraph.style.color = 'red';
+                errorParagraph.textContent = "Errore nell'iscrizione al saggio";
+                content.insertBefore(errorParagraph, content.querySelector('h1'));
+            }
+
+            const success = urlParams.get('success');
+            if (success) {
+                const content = document.querySelector('.content');
+                const successParagraph = document.createElement('p');
+                successParagraph.style.color = 'green';
+                successParagraph.textContent = "Iscrizione avvenuta con successo";
+                content.insertBefore(successParagraph, content.querySelector('h1'));
+            }
         }
 
-        window.addEventListener("load", corsoEnrollButtonAction)
+        window.addEventListener('DOMContentLoaded', addMessages);
+
     </script>
 </head>
 <body>
@@ -47,9 +62,13 @@
                         <li>${docente.socio.utente.nome} ${docente.socio.utente.cognome}</li>
                     </c:forEach>
                 </ul>
-                <% if (request.getAttribute("socio") != null) {
+                <% if (request.getAttribute("socio") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
                     if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
-                        <button id="corsoEnrollButton" value="${corso.id}">Iscriviti</button>
+                        <form action="/corso/iscrizione" method="post">
+                            <input type="hidden" name="socio-id" value="${socio.id}">
+                            <input type="hidden" name="corso-id" value="${corso.id}">
+                            <input type="submit" value="Iscriviti">
+                        </form>
                 <%  } else { %>
                         <p style="color:red">Posti non disponibili</p>
                         <button disabled>Iscriviti</button>

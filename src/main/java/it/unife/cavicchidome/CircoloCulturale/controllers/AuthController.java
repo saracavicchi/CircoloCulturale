@@ -100,7 +100,10 @@ public class AuthController {
     }
 
     @GetMapping("/signup")
-    public String viewSignup() {
+    public String viewSignup(HttpServletRequest request, HttpServletResponse response, Model model) {
+        if (socioService.setSocioFromCookie(request, response, model).isPresent()) {
+            return "redirect:/";
+        }
         return "signup";
     }
 
@@ -127,9 +130,6 @@ public class AuthController {
             HttpServletRequest request,
             Model model
     ) {
-        //if (socioService.setSocioFromCookie(request, response, model) != null) {
-            //return "redirect:/";
-        //}
         try {
             Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
             redirectAttributes.addAttribute("tessera-id", socio.getTessera().getId());
