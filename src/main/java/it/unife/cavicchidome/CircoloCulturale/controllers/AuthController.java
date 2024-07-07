@@ -1,5 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
@@ -7,7 +9,6 @@ import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
-import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,17 +23,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
-import java.io.File;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.Files;
 import java.io.IOException;
 
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.format.annotation.DateTimeFormat;
-import java.util.regex.Pattern;
+
 import java.time.LocalDate;
 
 
@@ -115,7 +112,7 @@ public class AuthController {
             @RequestParam String cf,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
             @RequestParam String birthplace,
-            @RequestParam String state,
+            @RequestParam String country,
             @RequestParam String province,
             @RequestParam String city,
             @RequestParam String street,
@@ -126,47 +123,19 @@ public class AuthController {
             @RequestParam("photo") MultipartFile photo,
             RedirectAttributes redirectAttributes
     ) {
-        // Valida i dati del form di registrazione
-        if (!(utenteService.validateUserInfo(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber) &&
-                socioService.validateSocioInfo(email, password, phoneNumber))) {
+        try {
+            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
+            redirectAttributes.addAttribute("tessera-id", socio.getTessera().getId());
+            redirectAttributes.addAttribute("redirect", "/signup");
+            return "redirect:/payment";
+        } catch (ValidationException validExc) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";
-        }
-        String filename = null;
-
-        // Registra utente se non presente nel Database
-        if(utenteService.findByCf(cf) == null){
-
-            if(photo != null && !photo.isEmpty()){
-                filename = socioService.createPhotoName(photo, cf);
-
-                try {
-                    Path path = Paths.get(uploadDir, filename);
-                    photo.transferTo(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    redirectAttributes.addAttribute("failed", "true");
-                    return "redirect:/signup";
-                }
-
-            }
-
-
-            Utente utente = utenteService.createUtente(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber);
-            Socio socio = socioService.createSocio(utente, email, password, phoneNumber, filename);
-            Tessera tessera = tesseraService.createTessera(socio);
-            socioService.sendEmail(socio);
-
-        }
-        else{
+        } catch (EntityAlreadyPresentException entityExc) {
             redirectAttributes.addAttribute("failed", "true");
             redirectAttributes.addAttribute("alreadyPresent", "true");
             return "redirect:/signup";
         }
-        // Reindirizza l'utente alla pagina di login
-        return "redirect:/login";
-
-
     }
 
 

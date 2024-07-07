@@ -35,31 +35,10 @@ public class HomepageController {
                         HttpServletResponse response,
                         Model model) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         model.addAttribute("saggi", saggioService.getNextMonth());
         return "index";
-    }
-
-    @GetMapping("/sedi")
-    public String sedi(@RequestParam(name = "id") Optional<Integer> sedeId,
-                       HttpServletRequest request,
-                       HttpServletResponse response,
-                       Model model) {
-
-        socioService.getSocioFromCookie(request, response, model);
-
-        // TODO: fix JSP return
-        if (sedeId.isPresent()) {
-            Optional<Sede> sede = sedeService.findSedeById(sedeId.get());
-            if (sede.isPresent()) {
-                model.addAttribute("sede", sede.get());
-            }
-            return "sede-info";
-        } else {
-            model.addAttribute("sedi", sedeService.getAllSedi());
-            return "sedi";
-        }
     }
 
     @GetMapping("/home")

@@ -70,4 +70,14 @@ public class Tessera {
         this.statoPagamento = statoPagamento;
     }
 
+    public Tessera() {
+    }
+
+    public Tessera(String id, LocalDate dataEmissione, BigDecimal costo, Character statoPagamento) {
+        this.id = id;
+        this.dataEmissione = dataEmissione;
+        this.costo = costo;
+        this.statoPagamento = statoPagamento;
+    }
+
 }

@@ -6,68 +6,12 @@
   Per modificare questo modello usa File | Impostazioni | Modelli di file.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>CircoloCulturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #FFCBA4; /* Intermediate orange */
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            color: #FFA500; /* Intermediate orange */
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        form {
-            width: 500px;
-            margin: 0 auto;
-            padding: 30px;
-            background-color: #FFDEAD; /* Intermediate orange */
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-        }
-
-        form label {
-            display: block;
-            margin: 10px 0;
-            color: #FFA500; /* Intermediate orange */
-        }
-
-        form input[type="text"],
-        form input[type="email"],
-        form input[type="password"],
-        form input[type="date"],
-        form input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #FFA500; /* Intermediate orange */
-            border-radius: 5px;
-        }
-        form input[type="file"] {
-            margin-top: 20px;
-        }
-        form input[type="submit"] {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #FFA500; /* Intermediate orange */
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        form input[type="submit"]:hover {
-            background-color: #FFCBA4; /* Intermediate orange */
-        }
-
         .error-message,
         .specific-error {
             color: red;
@@ -75,13 +19,6 @@
             margin-top: 20px;
         }
 
-        h1 h2 {
-            text-align: center;
-        }
-        h2 {
-            color: #000000;
-            font-size: 20px;
-        }
         .registered {
             color: #FF0000;
             font-size: 20px;
@@ -100,7 +37,26 @@
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', removeError);
             }
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var success = urlParams.get('success');
+            var cancelled = urlParams.get('cancelled');
+            var error = urlParams.get('error');
+            if (success) {
+                var successElement = document.createElement('h2');
+                successElement.textContent = "Registrazione avvenuta con successo!";
+                successElement.style.color = 'green';
+                successElement.style.textAlign = 'center';
+                document.getElementsByTagName('h1')[0].appendChild(successElement);
+            } else if (cancelled || error) {
+                var cancelledElement = document.createElement('h2');
+                cancelledElement.textContent = "Pagamento fallito, rivolgersi alla segreteria con l'identificativo Tessera mandato per email";
+                cancelledElement.style.color = 'red';
+                cancelledElement.style.textAlign = 'center';
+                document.getElementsByTagName('h1')[0].appendChild(cancelledElement);
+            }
         }
+
         //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";
@@ -112,7 +68,7 @@
             var surname = form.surname.value;
             var dob = form.dob.value;
             var birthplace = form.birthplace.value;
-            var state = form.state.value;
+            var country = form.country.value;
             var province = form.province.value;
             var city = form.city.value;
             var street = form.street.value;
@@ -123,10 +79,10 @@
             //var photoUrl = form.photoUrl.value;
 
             // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
-            var regex = /^[A-Za-z\s\'\-]+$/;
-            if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(state) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
+            var regex = /^[A-Za-z\s]+$/;
+            if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(country) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
                 errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
-                erroredField = "name, surname, birthplace, state, province, city, street";
+                erroredField = "name, surname, birthplace, country, province, city, street";
                 return false;
             }
 
@@ -141,16 +97,16 @@
             }
 
             // Controlla se la somma dei caratteri di stato, provincia, città, via e numero civico non supera gli 80 caratteri
-            if ((state.length + province.length + city.length + street.length + houseNumber.length) > 80) {
+            if ((country.length + province.length + city.length + street.length + houseNumber.length) > 80) {
                 errorMsg = "La somma dei caratteri di stato, provincia, città, via e numero civico non deve superare gli 80 caratteri.";
-                erroredField = "state, province, city, street, houseNumber";
+                erroredField = "country, province, city, street, houseNumber";
                 return false;
             }
 
             // Controlla se il codice fiscale è composto sia da numeri che da lettere
-            var cfRegex = /^[0-9a-zA-Z]{16}$/;
+            var cfRegex = /^[0-9a-zA-Z]+$/;
             if (!cfRegex.test(cf)) {
-                errorMsg = "Il codice fiscale deve essere di 16 caratteri e composto sia da numeri che da lettere.";
+                errorMsg = "Il codice fiscale deve essere composto sia da numeri che da lettere.";
                 erroredField = "cf";
                 return false;
             }
@@ -162,8 +118,6 @@
                 errorField = "email";
                 return false;
             }
-
-
 
             // Controlla se il numero di telefono contiene solo numeri
             var phoneRegex = /^[0-9]{10}$/;
@@ -258,8 +212,6 @@
                 inputs[i].style.border = '';
             }
         }
-
-
     </script>
 </head>
 <body>
@@ -299,8 +251,8 @@
                 <label for="birthplace">Luogo di nascita (città):</label>
                 <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
 
-                <label for="state">Stato:</label>
-                <input type="text" id="state" name="state" required>
+                <label for="country">Stato:</label>
+                <input type="text" id="country" name="country" required>
 
                 <label for="province">Provincia:</label>
                 <input type="text" id="province" name="province" required>
@@ -326,7 +278,6 @@
                 <input type="file" id="photo" name="photo">
 
                 <input type="submit" name="confirm" value="Conferma">
-
             </form>
         </section>
     </main>

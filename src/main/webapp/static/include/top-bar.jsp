@@ -30,8 +30,8 @@
         <form action="/login" method="POST">
             <input name="cf" type="text" placeholder="Codice fiscale">
             <input name="password" type="password" placeholder="Password">
-            <input type="submit" value="Accedi">
-            <input type="button" id="signupButton" value="Registrati">
+            <input type="submit" value="accedi">
+            <input type="button" id="signupButton" value="registrati">
             <input type="hidden" id="redirectField" name="redirectTo" value="">
         </form>
         <% } %>
