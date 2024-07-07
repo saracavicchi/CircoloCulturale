@@ -40,14 +40,16 @@ public class SocioService {
     private final UtenteService utenteService;
     private final TesseraService tesseraService;
     private final SocioRepository socioRepository;
+    private final UtenteRepository utenteRepository;
 
     @Value("${file.upload-dir}")
     String uploadDir;
 
-    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService) {
+    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
         this.socioRepository = socioRepository;
         this.utenteService = utenteService;
         this.tesseraService = tesseraService;
+        this.utenteRepository = utenteRepository;
     }
 
     @Transactional
@@ -287,8 +289,6 @@ public class SocioService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
-         */
     }
 
     @Transactional

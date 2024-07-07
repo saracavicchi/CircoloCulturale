@@ -4,6 +4,7 @@ import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentExc
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
