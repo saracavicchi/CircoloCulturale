@@ -113,7 +113,7 @@ public class AuthController {
             @RequestParam String cf,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
             @RequestParam String birthplace,
-            @RequestParam String state,
+            @RequestParam String country,
             @RequestParam String province,
             @RequestParam String city,
             @RequestParam String street,
@@ -131,9 +131,10 @@ public class AuthController {
             //return "redirect:/";
         //}
         try {
-            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
-            redirectAttributes.addAttribute("registered", "true");
-            return "redirect:/login";
+            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
+            redirectAttributes.addAttribute("tessera-id", socio.getTessera().getId());
+            redirectAttributes.addAttribute("redirect", "/signup");
+            return "redirect:/payment";
         } catch (ValidationException validExc) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";

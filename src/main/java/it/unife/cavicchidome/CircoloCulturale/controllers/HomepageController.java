@@ -41,27 +41,6 @@ public class HomepageController {
         return "index";
     }
 
-    @GetMapping("/sedi")
-    public String sedi(@RequestParam(name = "id") Optional<Integer> sedeId,
-                       HttpServletRequest request,
-                       HttpServletResponse response,
-                       Model model) {
-
-        socioService.setSocioFromCookie(request, response, model);
-
-        // TODO: fix JSP return
-        if (sedeId.isPresent()) {
-            Optional<Sede> sede = sedeService.findSedeById(sedeId.get());
-            if (sede.isPresent()) {
-                model.addAttribute("sede", sede.get());
-            }
-            return "sede-info";
-        } else {
-            model.addAttribute("sedi", sedeService.getAllSedi());
-            return "sedi";
-        }
-    }
-
     @GetMapping("/home")
     public String viewHome(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId,
                            Model model) {

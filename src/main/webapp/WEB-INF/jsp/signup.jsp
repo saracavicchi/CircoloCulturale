@@ -26,7 +26,7 @@
         }
     </style>
     <script>
-
+        var errorDisplayed =false;
         window.onload = function() {
             // Aggiungi un listener per l'evento 'submit' al form
             document.getElementById('registrationForm').addEventListener('submit', submitForm);
@@ -37,7 +37,26 @@
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', removeError);
             }
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var success = urlParams.get('success');
+            var cancelled = urlParams.get('cancelled');
+            var error = urlParams.get('error');
+            if (success) {
+                var successElement = document.createElement('h2');
+                successElement.textContent = "Registrazione avvenuta con successo!";
+                successElement.style.color = 'green';
+                successElement.style.textAlign = 'center';
+                document.getElementsByTagName('h1')[0].appendChild(successElement);
+            } else if (cancelled || error) {
+                var cancelledElement = document.createElement('h2');
+                cancelledElement.textContent = "Pagamento fallito, rivolgersi alla segreteria con l'identificativo Tessera mandato per email";
+                cancelledElement.style.color = 'red';
+                cancelledElement.style.textAlign = 'center';
+                document.getElementsByTagName('h1')[0].appendChild(cancelledElement);
+            }
         }
+
         //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";
@@ -49,7 +68,7 @@
             var surname = form.surname.value;
             var dob = form.dob.value;
             var birthplace = form.birthplace.value;
-            var state = form.state.value;
+            var country = form.country.value;
             var province = form.province.value;
             var city = form.city.value;
             var street = form.street.value;
@@ -61,9 +80,9 @@
 
             // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
             var regex = /^[A-Za-z\s]+$/;
-            if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(state) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
+            if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(country) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
                 errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
-                erroredField = "name, surname, birthplace, state, province, city, street";
+                erroredField = "name, surname, birthplace, country, province, city, street";
                 return false;
             }
 
@@ -78,9 +97,9 @@
             }
 
             // Controlla se la somma dei caratteri di stato, provincia, città, via e numero civico non supera gli 80 caratteri
-            if ((state.length + province.length + city.length + street.length + houseNumber.length) > 80) {
+            if ((country.length + province.length + city.length + street.length + houseNumber.length) > 80) {
                 errorMsg = "La somma dei caratteri di stato, provincia, città, via e numero civico non deve superare gli 80 caratteri.";
-                erroredField = "state, province, city, street, houseNumber";
+                erroredField = "country, province, city, street, houseNumber";
                 return false;
             }
 
@@ -131,6 +150,7 @@
             if (validation) {
                 event.target.submit();
             } else {
+                errorDisplayed = true;
                 // Ottieni l'elemento h1
                 var h1Element = document.getElementsByTagName('h1')[0];
 
@@ -167,6 +187,10 @@
         }
 
         function removeError(event) {
+            if(!errorDisplayed) {
+                return;
+            }
+            errorDisplayed = false;
             // Rimuovi il messaggio di errore
             var errorMessageElement = document.getElementById('error-message');
             if (errorMessageElement) {
@@ -227,8 +251,8 @@
                 <label for="birthplace">Luogo di nascita (città):</label>
                 <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
 
-                <label for="state">Stato:</label>
-                <input type="text" id="state" name="state" required>
+                <label for="country">Stato:</label>
+                <input type="text" id="country" name="country" required>
 
                 <label for="province">Provincia:</label>
                 <input type="text" id="province" name="province" required>
