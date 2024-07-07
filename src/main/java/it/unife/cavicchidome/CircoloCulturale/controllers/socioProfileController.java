@@ -10,6 +10,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -60,10 +61,25 @@ public class socioProfileController {
     @GetMapping("/socioProfile")
     public String showSocioProfile(
             Model model,
-            @RequestParam("socioId") Integer socioId,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam("socioId") /*Optional<Integer>*/ Integer socioId,
             @RequestParam("segretario") Optional<String> segretario,
             RedirectAttributes redirectAttributes
     ) {
+
+//        Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
+//        Optional<Socio> socio;
+//        if (socioCookie.isEmpty() && socioId.isEmpty()) {
+//            return "redirect:/";
+//        } else if (socioId.isPresent()) {
+//            socio = socioService.findSocioById(socioId.get());
+//            if (socio.isEmpty()) {
+//                return "redirect:/";
+//            }
+//        } else if (socioCookie.isPresent()) {
+//            socio = socioCookie;
+//        }
 
         // Recupera i dati del socio tramite il suo ID
         Optional<Socio> socioOpt = socioService.findSocioById(socioId);
