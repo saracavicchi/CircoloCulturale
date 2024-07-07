@@ -12,7 +12,7 @@
     <title>Circolo Culturale</title>
 </head>
 <body>
-<%@include file="/static/" %>
+<%@include file="/static/"%>
 
 </body>
 </html>
