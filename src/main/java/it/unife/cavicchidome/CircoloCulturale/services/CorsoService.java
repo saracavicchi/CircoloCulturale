@@ -263,7 +263,7 @@ public class CorsoService {
                                    Optional<Integer> socioId) {
         List<Corso> corsi = corsoRepository.findAll();
 
-        if (category.isPresent()) {
+        if (category.isPresent() && !category.get().isEmpty()) {
             List<Corso> categoryFilteredCorsi = new ArrayList<>();
             for (Corso c : corsi) {
                 if (c.getCategoria().equals(category.get())) {
@@ -273,7 +273,7 @@ public class CorsoService {
             corsi = categoryFilteredCorsi;
         }
 
-        if (genre.isPresent()) {
+        if (genre.isPresent() && !genre.get().isEmpty()) {
             List<Corso> genreFilteredCorsi = new ArrayList<>();
             for (Corso c : corsi) {
                 if (c.getGenere().equals(genre.get())) {
@@ -283,7 +283,7 @@ public class CorsoService {
             corsi = genreFilteredCorsi;
         }
 
-        if (level.isPresent()) {
+        if (level.isPresent() && !level.get().isEmpty()) {
             List<Corso> levelFilteredCorsi = new ArrayList<>();
             for (Corso c : corsi) {
                 if (c.getLivello().equals(level.get())) {
@@ -316,6 +316,21 @@ public class CorsoService {
         return corsi;
     }
 
+
+    @Transactional
+    public List<String> getCategorie() {
+        return corsoRepository.findDistinctCategoria();
+    }
+
+    @Transactional
+    public List<String> getGeneri() {
+        return corsoRepository.findDistinctGenere();
+    }
+
+    @Transactional
+    public List<String> getLivelli() {
+        return corsoRepository.findDistinctLivello();
+    }
 
     @Transactional
     public Optional<Corso> findById(Integer idCorso) {

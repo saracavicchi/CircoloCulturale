@@ -136,9 +136,9 @@ public class CorsoController {
 
     @GetMapping("/info")
     public String viewCorsi(@RequestParam(name = "id") Optional<Integer> corsoId,
-                            @RequestParam(name = "category") Optional<String> courseCategory,
-                            @RequestParam(name = "genre") Optional<String> courseGenre,
-                            @RequestParam(name = "level") Optional<String> courseLevel,
+                            @RequestParam(name = "categoria") Optional<String> courseCategory,
+                            @RequestParam(name = "genere") Optional<String> courseGenre,
+                            @RequestParam(name = "livello") Optional<String> courseLevel,
                             @RequestParam(name = "id-socio") Optional<Integer> socioId,
                             Model model,
                             HttpServletRequest request,
@@ -153,6 +153,10 @@ public class CorsoController {
                 return "corso-info";
             }
         }
+
+        model.addAttribute("categorie", corsoService.getCategorie());
+        model.addAttribute("generi", corsoService.getGeneri());
+        model.addAttribute("livelli", corsoService.getLivelli());
         model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, socioId));
         return "corsi";
     }
