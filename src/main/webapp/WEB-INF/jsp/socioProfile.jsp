@@ -7,25 +7,11 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Profilo Socio</title>
-    <style>
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 300px;
-        }
-        form input, form button {
-            margin: 5px 0;
-        }
-    </style>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
     <script>
         var errorDisplayed =false;
         function divideIndirizzo(utente) {
@@ -294,11 +280,14 @@
     </script>
 </head>
 <body>
-<h1>Ciao, ${utente.nome}, ecco le tue informazioni personali</h1>
-<div>
-    <!-- <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/> -->
-</div>
-<form id="profileForm" name="profileForm" action="socioProfile" method="POST" enctype="multipart/form-data">
+    <%@ include file="/static/include/header.jsp"%>
+    <div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Profilo di ${socio.utente.nome} ${socio.utente.cognome}</h1>
+        </section>
+        <section class="content">
+            <form id="profileForm" name="profileForm" action="socioProfile" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="socioId" value="${socio.id}" />
 
     <label for="photo">Seleziona una nuova Foto Profilo:</label>
@@ -340,9 +329,11 @@
     <label for="phoneNumber">Numero di Telefono:</label>
     <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}" placeholder="Numero di Telefono" />
     <button type="submit">Aggiorna</button>
-</form>
-
-<form action="modificaPassword" method="GET">
+            </form>
+        </section>
+        <hr>
+        <section class="content">
+        <form action="modificaPassword" method="GET">
     <input type="hidden" name="socioIdPassword" value="${socio.id}" />
     <input type="hidden" name="segretario" value="${segretario}" />
     <button type="submit" >Modifica Password</button>
@@ -359,10 +350,27 @@
     <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
     <button type="submit">Disiscriviti</button>
 </form>
+        </section>
+    </main>
+    <aside class="smallright">
+        <section class="title">
+            <h1>Menù</h1>
+        </section>
+        <section class="content">
+
+        </section>
+    </aside>
+    </div>
+
+    <!-- <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/> -->
 
 
 
-<c:if test="${segretario == 'true'}">
+
+
+
+
+<!-- <c:if test="${segretario == 'true'}">
 <p id="modificaCredenziali">Inserisci le credenziali per modificare le informazioni di un socio:</p>
 
 <form id="socioModificaForm" name="socioModificaForm" action="segretarioModificaSocio" method="post">
@@ -377,7 +385,7 @@
 
     <button type="submit">Invia</button>
 </form>
-</c:if>
+</c:if> -->
 
 </body>
 </html>

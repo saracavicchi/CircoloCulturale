@@ -10,6 +10,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @Controller
+@RequestMapping("/socio")
 public class socioProfileController {
 
     private final SegretarioRepository segretarioRepository;
@@ -60,34 +62,39 @@ public class socioProfileController {
     }
 
 
-    @GetMapping("/socioProfile")
+    @GetMapping("/profile")
     public String showSocioProfile(
             Model model,
-            @RequestParam("socioId") Integer socioId,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam("socio-id") Optional<Integer> socioId,
             @RequestParam("segretario") Optional<String> segretario,
             RedirectAttributes redirectAttributes
     ) {
 
-        // Recupera i dati del socio tramite il suo ID
-        Optional<Socio> socioOpt = socioService.findById(socioId);
-        if (!socioOpt.isPresent() || socioOpt.get().getDeleted()==true) {
-            return "redirect:/"; //TODO: gestire l'errore in modo più specifico
-        }
-        Socio socio = socioOpt.get();
+        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response, model);
 
-        // Recupera i dati dell'utente associato al socio
-        Utente utente = socio.getUtente();
+        if (socioCookie.isEmpty() && socioId.isEmpty()) {
+            return "redirect:/";
+        }
+
+        Socio socio;
+        if (socioId.isPresent() && socioService.findById(socioId.get()).isPresent()) {
+            socio = socioService.findById(socioId.get()).get();
+        } else if (socioCookie.isPresent()) {
+            socio = socioCookie.get();
+        } else {
+            return "redirect:/";
+        }
 
         // Aggiunge i dati del socio e dell'utente al modello
         model.addAttribute("socio", socio);
-        model.addAttribute("utente", utente);
         String placeholderImagePath = uploadDir + "profilo.jpg"; // Costruisci il percorso completo del placeholder
         model.addAttribute("placeholderImagePath", placeholderImagePath);
 
-        redirectAttributes.addAttribute("socioId", socioId);
+        redirectAttributes.addAttribute("socioId", socio.getId());
         // Verifica se il Socio è anche un Segretario
-        Optional<Segretario> segretarioOpt = segretarioService.findById(socioId); // o segretarioRepository.findById(socioId)
-        if (segretarioOpt.isPresent() || segretario.isPresent()) {
+        if (socio.getSegretario() != null) {
             // Se il socio è anche un segretario, aggiungi attributo
             model.addAttribute("segretario", "true");
         }

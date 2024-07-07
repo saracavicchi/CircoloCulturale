@@ -43,7 +43,7 @@ public class SocioService {
         }
     }
 
-    public void getSocioFromCookie(HttpServletRequest request,
+    public Optional<Socio> getSocioFromCookie(HttpServletRequest request,
                                       HttpServletResponse response,
                                       Model model) {
         Cookie[] cookies = request.getCookies();
@@ -57,6 +57,7 @@ public class SocioService {
                 }
                 if (socio.isPresent()) {
                     model.addAttribute("socio", socio.get());
+                    return socio;
                 } else {
                     Cookie invalidateCookie = new Cookie("socio-id", null);
                     invalidateCookie.setMaxAge(0);
@@ -64,6 +65,7 @@ public class SocioService {
                 }
             }
         }
+        return Optional.empty();
     }
 
     @Transactional
