@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -121,8 +122,14 @@ public class AuthController {
             @RequestParam String password,
             @RequestParam String phoneNumber,
             @RequestParam("photo") MultipartFile photo,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            HttpServletResponse response,
+            HttpServletRequest request,
+            Model model
     ) {
+        //if (socioService.setSocioFromCookie(request, response, model) != null) {
+            //return "redirect:/";
+        //}
         try {
             Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
             redirectAttributes.addAttribute("registered", "true");

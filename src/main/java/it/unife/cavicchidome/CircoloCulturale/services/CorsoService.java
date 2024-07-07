@@ -316,6 +316,11 @@ public class CorsoService {
         return corsi;
     }
 
+    @Transactional
+    public Boolean isAvailable(Corso corso) {
+        return (corso.getIdSala().getCapienza() > corso.getSoci().size());
+    }
+
 
     @Transactional
     public List<String> getCategorie() {

@@ -150,6 +150,7 @@ public class CorsoController {
             Optional<Corso> corso = corsoService.findById(corsoId.get());
             if (corso.isPresent()) {
                 model.addAttribute("corso", corso.get());
+                model.addAttribute("availability", corsoService.isAvailable(corso.get()));
                 return "corso-info";
             }
         }
