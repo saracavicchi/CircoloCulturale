@@ -129,9 +129,9 @@ public class UtenteService {
                             String city,
                             String street,
                             String houseNumber) throws ValidationException, EntityAlreadyPresentException {
-        Utente alreadyPresent = utenteRepository.findByCf(cf);
-        if (alreadyPresent != null) {
-            throw new EntityAlreadyPresentException(alreadyPresent);
+        Optional<Utente> alreadyPresent = utenteRepository.findByCf(cf);
+        if (alreadyPresent.isPresent()) {
+            throw new EntityAlreadyPresentException(alreadyPresent.get());
         }
 
         Utente utente = validateAndParseUtente(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber);
