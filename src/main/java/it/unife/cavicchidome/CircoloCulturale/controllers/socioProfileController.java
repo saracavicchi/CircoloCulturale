@@ -97,6 +97,30 @@ public class socioProfileController {
         return "socio-profile";
     }
 
+    @GetMapping("/saggi")
+    public String getSocioSaggi(Model model,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
+        if (socioCookie.isEmpty()) {
+            return "redirect:/";
+        }
+        model.addAttribute("saggi", socioCookie.get().getSaggi());
+        return "socio-saggi";
+    }
+
+    @GetMapping("/corsi")
+    public String getSocioCorsi(Model model,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
+        if (socioCookie.isEmpty()) {
+            return "redirect:/";
+        }
+        model.addAttribute("corsi", socioCookie.get().getCorsi());
+        return "socio-corsi";
+    }
+
     @PostMapping("/socioProfile") //TODO: RENDERE TRANSAZIONALE
     public String changeSocioData(
             @RequestParam("socioId") Integer socioId,
