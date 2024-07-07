@@ -36,7 +36,7 @@
             <section class="content clearfix">
                 <c:forEach items="${sedi}" var="sede">
                     <article>
-                        <h1><a href="/sedi?id=${sede.id}">${sede.nome}</a></h1>
+                        <h1><a href="/sede/info?id=${sede.id}">${sede.nome}</a></h1>
                         <h2>${sede.indirizzo}</h2>
                     </article>
                 </c:forEach>

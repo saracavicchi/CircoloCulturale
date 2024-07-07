@@ -20,7 +20,7 @@
     <section id="accountInfo">
         <% if (request.getAttribute("socio") != null) { %>
         <p>
-            ${socio.utente.nome} ${socio.utente.cognome}
+            <a href="/socio/profile">${socio.utente.nome} ${socio.utente.cognome}</a>
         </p>
         <form action="/logout" method="POST">
             <input type="submit" value="Esci">

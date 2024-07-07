@@ -7,13 +7,15 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Socio" %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Profilo Socio</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
     <script>
-        var errorDisplayed =false;
+        var errorDisplayed = false;
+
         function divideIndirizzo(utente) {
             const parti = utente.indirizzo.split(', ');
             const risultato = {
@@ -26,7 +28,8 @@
             console.log(risultato)
             return risultato;
         }
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             initializeAddressFields();
             initProfileForm();
             checkSegretarioAndSetupForm();
@@ -90,13 +93,13 @@
 
         function addFocusListenersToInputs(inputs, formName) {
             for (var i = 0; i < inputs.length; i++) {
-                inputs[i].addEventListener('focus', function() {
+                inputs[i].addEventListener('focus', function () {
                     removeError(formName);
                 });
             }
         }
 
-       //campo/i che ha generato l'errore
+        //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";
 
@@ -158,8 +161,8 @@
             // Controlla se il numero di telefono contiene solo numeri
             var phoneRegex = /^[0-9]{10}$/;
             if (phoneNumber && !phoneRegex.test(phoneNumber)) {
-                errorMsg="Il numero di telefono deve contenere solo 10 numeri.";
-                erroredField="phoneNumber";
+                errorMsg = "Il numero di telefono deve contenere solo 10 numeri.";
+                erroredField = "phoneNumber";
                 return false;
             }
 
@@ -168,7 +171,7 @@
             return true;
         }
 
-        function validateCF(cf){
+        function validateCF(cf) {
             // Controlla se il codice fiscale è composto sia da numeri che da lettere
             var cfRegex = /^[0-9a-zA-Z]{16}$/;
             if (!cfRegex.test(cf)) {
@@ -182,7 +185,7 @@
             // Impedisci l'invio del form
             event.preventDefault();
 
-            var cf= document.getElementById('cfSocio').value;
+            var cf = document.getElementById('cfSocio').value;
 
             // Chiama la funzione validateForm
             var validation = validateCF(cf);
@@ -249,10 +252,10 @@
         }
 
         function removeError(formName) {
-            if(!errorDisplayed){
+            if (!errorDisplayed) {
                 return;
             }
-            errorDisplayed=false;
+            errorDisplayed = false;
             // Rimuovi il messaggio di errore
             var errorMessageElement = document.getElementById('error-message');
             if (errorMessageElement) {
@@ -276,98 +279,127 @@
         }
 
 
-
     </script>
 </head>
 <body>
-    <%@ include file="/static/include/header.jsp"%>
-    <div id="main-content">
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
     <main class="midleft">
         <section class="title">
             <h1>Profilo di ${socio.utente.nome} ${socio.utente.cognome}</h1>
         </section>
         <section class="content">
             <form id="profileForm" name="profileForm" action="socioProfile" method="POST" enctype="multipart/form-data">
-    <input type="hidden" name="socioId" value="${socio.id}" />
+                <input type="hidden" name="socioId" value="${socio.id}"/>
 
-    <label for="photo">Seleziona una nuova Foto Profilo:</label>
-    <input type="file" id="photo" name="photo">
+                <label for="photo">Seleziona una nuova Foto Profilo:</label>
+                <input type="file" id="photo" name="photo">
 
-    <label for="name">Nome:</label>
-    <input type="text" id="name" name="name" value="${utente.nome}" placeholder="Nome" />
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" value="${utente.nome}" placeholder="Nome"/>
 
-    <label for="surname">Cognome:</label>
-    <input type="text" id="surname" name="surname" value="${utente.cognome}" placeholder="Cognome" />
+                <label for="surname">Cognome:</label>
+                <input type="text" id="surname" name="surname" value="${utente.cognome}" placeholder="Cognome"/>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="${socio.email}" placeholder="Email" />
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="${socio.email}" placeholder="Email"/>
 
-    <label for="cf">Codice Fiscale:</label>
-    <input type="text" id="cf" name="cf" value="${utente.cf}" placeholder="Codice Fiscale" />
+                <label for="cf">Codice Fiscale:</label>
+                <input type="text" id="cf" name="cf" value="${utente.cf}" placeholder="Codice Fiscale"/>
 
-    <label for="dob">Data di nascita:</label>
-    <input type="date" id="dob" name="dob" value="${utente.dataNascita}" placeholder="Data di nascita" />
+                <label for="dob">Data di nascita:</label>
+                <input type="date" id="dob" name="dob" value="${utente.dataNascita}" placeholder="Data di nascita"/>
 
-    <label for="birthplace">Luogo di nascita (città):</label>
-    <input type="text" id="birthplace" name="birthplace" value="${utente.luogoNascita}" placeholder="Luogo di nascita (città)" />
+                <label for="birthplace">Luogo di nascita (città):</label>
+                <input type="text" id="birthplace" name="birthplace" value="${utente.luogoNascita}"
+                       placeholder="Luogo di nascita (città)"/>
 
-    <label for="state">Stato:</label>
-    <input type="text" id="state" name="state" placeholder="Stato" />
+                <label for="state">Stato:</label>
+                <input type="text" id="state" name="state" placeholder="Stato"/>
 
-    <label for="province">Provincia:</label>
-    <input type="text" id="province" name="province" placeholder="Provincia" />
+                <label for="province">Provincia:</label>
+                <input type="text" id="province" name="province" placeholder="Provincia"/>
 
-    <label for="city">Città:</label>
-    <input type="text" id="city" name="city" placeholder="Città" />
+                <label for="city">Città:</label>
+                <input type="text" id="city" name="city" placeholder="Città"/>
 
-    <label for="street">Via:</label>
-    <input type="text" id="street" name="street" placeholder="Via" />
+                <label for="street">Via:</label>
+                <input type="text" id="street" name="street" placeholder="Via"/>
 
-    <label for="houseNumber">Numero Civico:</label>
-    <input type="text" id="houseNumber" name="houseNumber" placeholder="Numero Civico" />
+                <label for="houseNumber">Numero Civico:</label>
+                <input type="text" id="houseNumber" name="houseNumber" placeholder="Numero Civico"/>
 
-    <label for="phoneNumber">Numero di Telefono:</label>
-    <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}" placeholder="Numero di Telefono" />
-    <button type="submit">Aggiorna</button>
+                <label for="phoneNumber">Numero di Telefono:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}"
+                       placeholder="Numero di Telefono"/>
+                <button type="submit">Aggiorna</button>
             </form>
         </section>
         <hr>
         <section class="content">
-        <form action="modificaPassword" method="GET">
-    <input type="hidden" name="socioIdPassword" value="${socio.id}" />
-    <input type="hidden" name="segretario" value="${segretario}" />
-    <button type="submit" >Modifica Password</button>
-</form>
-<c:if test="${param.failSocioMod == 'true'}">
-    <p id="ErroreMsg" >Errore nell'operazione, riprovare</p>
-</c:if>
+            <form action="modificaPassword" method="GET">
+                <input type="hidden" name="socioIdPassword" value="${socio.id}"/>
+                <input type="hidden" name="segretario" value="${segretario}"/>
+                <button type="submit">Modifica Password</button>
+            </form>
+            <c:if test="${param.failSocioMod == 'true'}">
+                <p id="ErroreMsg">Errore nell'operazione, riprovare</p>
+            </c:if>
 
-<p>Disiscrizione dal Circolo Culturale</p>
-<form action="eliminaSocio" method="POST">
-    <input type="hidden" name="socioIdElimina" value="${socio.id}" />
-    <input type="hidden" name="segretario" value="${segretario}" />
-    <label for="confirmUnsubscribe">Sei sicuro?</label>
-    <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
-    <button type="submit">Disiscriviti</button>
-</form>
+            <p>Disiscrizione dal Circolo Culturale</p>
+            <form action="eliminaSocio" method="POST">
+                <input type="hidden" name="socioIdElimina" value="${socio.id}"/>
+                <input type="hidden" name="segretario" value="${segretario}"/>
+                <label for="confirmUnsubscribe">Sei sicuro?</label>
+                <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
+                <button type="submit">Disiscriviti</button>
+            </form>
         </section>
     </main>
     <aside class="smallright">
         <section class="title">
-            <h1>Menù</h1>
+            <h1>Menù socio</h1>
         </section>
         <section class="content">
-
+            <ul>
+                <li><a href="/socio/profile">Profilo</a></li>
+                <li><a href="/socio/saggi">Saggi</a></li>
+                <li><a href="/socio/iscrizioni">Iscrizioni</a></li>
+                <li><a href="/socio/prenotazioni">Prenotazioni</a></li>
+            </ul>
         </section>
     </aside>
-    </div>
+    <% if (request.getAttribute("socio") != null && ((Socio) request.getAttribute("socio")).getDocente() != null) { %>
+    <aside class="smallright">
+        <section class="title">
+            <h1>Menù docente</h1>
+        </section>
+        <section class="content">
+            <ul>
+                <li><a href="/docente/lezioni">Lezioni</a></li>
+                <li><a href="/docente/lezioni/aggiungi">Aggiungi Lezione</a></li>
+            </ul>
+        </section>
+    </aside>
+    <% } %>
+    <% if (request.getAttribute("socio") != null && ((Socio) request.getAttribute("socio")).getSegretario() != null) { %>
+    <aside class="smallright">
+        <section class="title">
+            <h1>Menù segretario</h1>
+        </section>
+        <section class="content">
+            <ul>
+                <li><a href="/segretario/soci">Soci</a></li>
+                <li><a href="/segretario/saggi">Saggi</a></li>
+                <li><a href="/segretario/corsi">Corsi</a></li>
+                <li><a href="/segretario/prenotazioni">Prenotazioni</a></li>
+            </ul>
+        </section>
+    </aside>
+    <% } %>
+</div>
 
-    <!-- <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/> -->
-
-
-
-
-
+<!-- <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/> -->
 
 
 <!-- <c:if test="${segretario == 'true'}">

@@ -2,7 +2,6 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
-import it.unife.cavicchidome.CircoloCulturale.models.Segretario;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SegretarioRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SegretarioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
@@ -19,17 +18,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -72,15 +66,15 @@ public class socioProfileController {
             RedirectAttributes redirectAttributes
     ) {
 
-        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response, model);
+        Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
 
         if (socioCookie.isEmpty() && socioId.isEmpty()) {
             return "redirect:/";
         }
 
         Socio socio;
-        if (socioId.isPresent() && socioService.findById(socioId.get()).isPresent()) {
-            socio = socioService.findById(socioId.get()).get();
+        if (socioId.isPresent() && socioService.findSocioById(socioId.get()).isPresent()) {
+            socio = socioService.findSocioById(socioId.get()).get();
         } else if (socioCookie.isPresent()) {
             socio = socioCookie.get();
         } else {
@@ -99,8 +93,8 @@ public class socioProfileController {
             model.addAttribute("segretario", "true");
         }
 
-        // Restituisce la vista socioProfile.jsp con i dati
-        return "socioProfile";
+        // Restituisce la vista socio-profile.jsp con i dati
+        return "socio-profile";
     }
 
     @PostMapping("/socioProfile") //TODO: RENDERE TRANSAZIONALE
