@@ -256,6 +256,66 @@ public class CorsoService {
         }
     }
 
+    @Transactional
+    public List<Corso> filterCorsi(Optional<String> category,
+                                   Optional<String> genre,
+                                   Optional<String> level,
+                                   Optional<Integer> socioId) {
+        List<Corso> corsi = corsoRepository.findAll();
+
+        if (category.isPresent()) {
+            List<Corso> categoryFilteredCorsi = new ArrayList<>();
+            for (Corso c : corsi) {
+                if (c.getCategoria().equals(category.get())) {
+                    categoryFilteredCorsi.add(c);
+                }
+            }
+            corsi = categoryFilteredCorsi;
+        }
+
+        if (genre.isPresent()) {
+            List<Corso> genreFilteredCorsi = new ArrayList<>();
+            for (Corso c : corsi) {
+                if (c.getGenere().equals(genre.get())) {
+                    genreFilteredCorsi.add(c);
+                }
+            }
+            corsi = genreFilteredCorsi;
+        }
+
+        if (level.isPresent()) {
+            List<Corso> levelFilteredCorsi = new ArrayList<>();
+            for (Corso c : corsi) {
+                if (c.getLivello().equals(level.get())) {
+                    levelFilteredCorsi.add(c);
+                }
+            }
+            corsi = levelFilteredCorsi;
+        }
+
+        if (socioId.isPresent()) {
+            List<Corso> docenteFilteredCorsi = new ArrayList<>();
+            for (Corso c : corsi) {
+                for (Docente d : c.getDocenti()) {
+                    if (d.getSocio().getId().equals(socioId.get())) {
+                        docenteFilteredCorsi.add(c);
+                        break;
+                    }
+                }
+            }
+
+            List<Corso> segretarioFilteredCorsi = new ArrayList<>();
+            for (Corso c : docenteFilteredCorsi) {
+                if (c.getIdSala().getIdSede().getSegretario().getId().equals(socioId.get())) {
+                    segretarioFilteredCorsi.add(c);
+                }
+            }
+            corsi = segretarioFilteredCorsi;
+        }
+
+        return corsi;
+    }
+
 
     @Transactional
     public Optional<Corso> findById(Integer idCorso) {

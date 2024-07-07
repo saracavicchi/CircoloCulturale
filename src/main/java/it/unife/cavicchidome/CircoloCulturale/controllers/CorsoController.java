@@ -1,16 +1,13 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Docente;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
-import org.springframework.data.jpa.repository.Query;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.beans.factory.annotation.Autowired;
 import it.unife.cavicchidome.CircoloCulturale.services.SalaService;
 import it.unife.cavicchidome.CircoloCulturale.services.DocenteService;
 import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
@@ -19,23 +16,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.ui.Model;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/corso")
 public class CorsoController {
-    private SalaService salaService;
-    private DocenteService docenteService;
-    private SocioService socioService;
-    private CorsoService corsoService;
+
+    private final SalaService salaService;
+    private final DocenteService docenteService;
+    private final SocioService socioService;
+    private final CorsoService corsoService;
 
     public CorsoController(
             CorsoService corsoService,
@@ -49,7 +45,7 @@ public class CorsoController {
         this.corsoService = corsoService;
     }
 
-    @GetMapping("/creazioneCorso")
+    @GetMapping("/crea")
     public String creaCorso(Model model) {
 
         //TODO: Aggiungi controllo per verificare che si tratta di ADMIN
@@ -65,10 +61,10 @@ public class CorsoController {
         List<Integer> giorniSettimana = Arrays.asList(1, 2, 3, 4, 5); // Assuming 1 = Monday, 2 = Tuesday, etc.
         model.addAttribute("giorniSettimana", giorniSettimana);
 
-        return "creazioneCorso";
+        return "creazione-corso";
     }
 
-    @PostMapping("/creazioneCorso")
+    @PostMapping("/crea")
     public String creaCorso(@RequestParam("descrizione") String descrizione,
                             @RequestParam("genere") String genere,
                             @RequestParam("livello") String livello,
@@ -102,7 +98,7 @@ public class CorsoController {
         return "redirect:/"; //TODO: Adjust "successView" to your actual success view name
     }
 
-    @GetMapping("/editCorso")
+    @GetMapping("/modifica")
     public String viewEdit(
             @RequestParam("idCorso") Integer idCorso,
             Model model
@@ -135,6 +131,29 @@ public class CorsoController {
 
 
 
-        return "editCorso"; // Nome della JSP da visualizzare
+        return "modifica-corso"; // Nome della JSP da visualizzare
+    }
+
+    @GetMapping("/info")
+    public String viewCorsi(@RequestParam(name = "id") Optional<Integer> corsoId,
+                            @RequestParam(name = "category") Optional<String> courseCategory,
+                            @RequestParam(name = "genre") Optional<String> courseGenre,
+                            @RequestParam(name = "level") Optional<String> courseLevel,
+                            @RequestParam(name = "id-socio") Optional<Integer> socioId,
+                            Model model,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
+
+        socioService.setSocioFromCookie(request, response, model);
+
+        if (corsoId.isPresent()) {
+            Optional<Corso> corso = corsoService.findById(corsoId.get());
+            if (corso.isPresent()) {
+                model.addAttribute("corso", corso.get());
+                return "corso-info";
+            }
+        }
+        model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, socioId));
+        return "corsi";
     }
 }
