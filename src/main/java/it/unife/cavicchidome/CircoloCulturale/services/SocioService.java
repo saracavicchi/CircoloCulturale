@@ -37,7 +37,7 @@ public class SocioService {
     private final UtenteRepository utenteRepository;
     SocioRepository socioRepository;
 
-    @Value("${file.upload-dir}")
+    @Value("${file.corso.upload-dir}")
     String uploadDir;
 
     SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
@@ -236,6 +236,11 @@ public class SocioService {
     @Transactional
     public List<Object[]> findSociNotSegretari() {
         return socioRepository.findSociNotSegretari();
+    }
+
+    @Transactional
+    public List<Object[]> findSociNotDocentiAndNotSegretariByIdCorso(Integer idCorso) {
+        return socioRepository.findSociNotDocentiAndNotSegretariByIdCorso(idCorso);
     }
 
     @Transactional(readOnly = true)

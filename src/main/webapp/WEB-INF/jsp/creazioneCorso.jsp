@@ -12,6 +12,7 @@
     <title>Crea Corso</title>
     <script>
         var errorDisplayed = false;
+
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
@@ -269,6 +270,7 @@
                 var docenteStipendio = document.createElement('input');
                 docenteStipendio.setAttribute('type', 'number');
                 docenteStipendio.setAttribute('name', 'stipendi');
+                docenteStipendio.setAttribute('title', 'Per favore inserire un importo corretto senza cifre decimali.');
                 docenteStipendio.setAttribute('required', '');
                 docenteStipendio.setAttribute('min', '10000');
                 docenteStipendio.setAttribute('max', '100000');
@@ -311,24 +313,29 @@
     Livello: <input type="text" id="livello" name="livello" required><br>
     <!-- Categoria: <input type="text" id="categoria" name="categoria" required><br> -->
     Categoria:
-    <input type="radio" id="danza" name="categoria" value="danza" required>
+    <input type="radio" id="danza" name="categoria" value="Danza" required>
     <label for="danza">Danza</label><br>
-    <input type="radio" id="musica" name="categoria" value="musica" required>
+    <input type="radio" id="musica" name="categoria" value="Musica" required>
     <label for="musica">Musica</label><br>
+
+
     Sala: <select name="idSala" required>
     <c:forEach items="${sale}" var="sala">
         <option value="${sala.id}">${sala.numeroSala}</option>
     </c:forEach>
     </select><br>
-    Foto: <input type="file" name="foto" enctype="multipart/form-data"><br>
+    <label for="photo">Seleziona una foto per il corso:</label>
+    Foto: <input type="file" id="photo" name="photo" enctype="multipart/form-data"><br>
+
     <p>Docenti selezionati:</p>
     <div id="selectedDocentiContainer"></div>
     Docenti: <select name="docenti" multiple onchange="updateDocentiSelection()">
     <c:forEach items="${sociInfo}" var="socioD">
         <option value="${socioD[0]}">${socioD[1]} ${socioD[2]} (${socioD[0]})</option>
     </c:forEach>
-</select>
+    </select>
     <div id="docentiStipendiContainer"></div>
+
     Calendario Settimanale: <br>
     <c:forEach items="${giorniSettimana}" var="giorno">
         <div>

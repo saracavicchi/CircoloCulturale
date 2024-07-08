@@ -33,7 +33,7 @@ public class socioProfileController {
     private SocioService socioService;
     private UtenteRepository utenteRepository;
     private SocioRepository socioRepository;
-    @Value("${file.upload-dir}")
+    @Value("${file.socio.upload-dir}")
     private String uploadDir;
 
     socioProfileController(
@@ -67,8 +67,8 @@ public class socioProfileController {
         // Aggiunge i dati del socio e dell'utente al modello
         model.addAttribute("socio", socio);
         model.addAttribute("utente", utente);
-        String placeholderImagePath = uploadDir + "profilo.jpg"; // Costruisci il percorso completo del placeholder
-        model.addAttribute("placeholderImagePath", placeholderImagePath);
+        model.addAttribute("uploadDir", uploadDir);
+        model.addAttribute("placeholderImage", "profilo.jpg");
 
         // Restituisce la vista socioProfile.jsp con i dati
         return "socioProfile";

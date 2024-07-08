@@ -8,5 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface DocenteRepository extends JpaRepository<Docente, Integer> {
+    @Query("SELECT d.id, d.stipendio FROM Docente d JOIN d.corsi c WHERE c.id = :corsoId")
+    List<Object[]> findDocentiByCorsoId(Integer corsoId);
+
 
 }

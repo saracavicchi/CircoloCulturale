@@ -42,8 +42,6 @@ public class AuthController {
     UtenteRepository utenteRepository;
     TesseraService tesseraService;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     AuthController(
             SocioRepository socioRepository,

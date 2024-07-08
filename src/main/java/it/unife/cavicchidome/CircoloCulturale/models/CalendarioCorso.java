@@ -14,7 +14,7 @@ public class CalendarioCorso {
 
     @MapsId("idCorso")
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    //@OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_corso", nullable = false)
     private Corso idCorso;
 
@@ -23,6 +23,9 @@ public class CalendarioCorso {
 
     @Column(name = "orario_fine", nullable = false)
     private LocalTime orarioFine;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active;
 
     public CalendarioCorsoId getId() {
         return id;
@@ -54,6 +57,14 @@ public class CalendarioCorso {
 
     public void setOrarioFine(LocalTime orarioFine) {
         this.orarioFine = orarioFine;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Weekday getGiornoSettimana() {
