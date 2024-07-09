@@ -27,7 +27,7 @@ public class Segretario {
     @Column(name = "admin", nullable = false)
     private Boolean admin = false;
 
-    @Column(name = "stipendio", nullable = false, precision = 7, scale = 2)
+    @Column(name = "stipendio", nullable = false, precision = 6, scale = 0)
     private BigDecimal stipendio;
 
     @Column(name = "active", nullable = false)
