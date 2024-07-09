@@ -32,10 +32,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             initializeAddressFields();
             initProfileForm();
-            checkSegretarioAndSetupForm();
             handleEliminaSocioFormSubmission();
-            var failSocioMod = "${param.failSocioMod}";
-            if (failSocioMod == 'true') {
+            var urlParams = new URLSearchParams(window.location.search);
+            var failed = urlParams.get('failed');
+            if (failed === "true") {
                 scrollToErrorMsg();
             }
         });
@@ -53,7 +53,6 @@
         }
 
         function handleEliminaSocioFormSubmission() {
-
             document.getElementById('modificaCredenziali').addEventListener('submit', confirmDisiscrizione);
         }
 
@@ -82,15 +81,6 @@
             }
         }
 
-        function checkSegretarioAndSetupForm() {
-            var socioModificaForm = document.getElementById('socioModificaForm');
-            if (socioModificaForm) {
-                socioModificaForm.addEventListener('submit', submitSegretarioForm);
-                var inputs = socioModificaForm.getElementsByTagName('input');
-                addFocusListenersToInputs(inputs, 'socioModificaForm');
-            }
-        }
-
         function addFocusListenersToInputs(inputs, formName) {
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', function () {
@@ -102,6 +92,43 @@
         //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";
+
+        function validatePassword() {
+            var form = document.modificaPassword;
+            if (form.getElementById("old-password") != null) {
+                var oldPassword = form.getElementById("old-password").value;
+                if (oldPassword == null) {
+                    errorMsg = "Inserisci la vecchia password.";
+                    erroredField = "old-password";
+                    return false;
+                }
+            }
+            var newPassword = form.getElementById("new-password").value;
+            if (newPassword == null) {
+                errorMsg = "Inserisci una nuova password.";
+                erroredField = "new-password";
+                return false;
+            }
+            if (newPassword.length < 8 || newPassword.length > 50) {
+                errorMsg = "La password deve essere lunga tra 8 e 50 caratteri.";
+                erroredField = "new-password";
+                return false;
+            }
+            var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,50}$/;
+            if (newPassword.match(regex) == null) {
+                errorMsg = "La password deve contenere almeno una lettera maiuscola, una lettera minuscola e un numero.";
+                erroredField = "new-password";
+                return false;
+            }
+            if (form.getElementById("old-password") != null) {
+                var oldPassword = form.getElementById("old-password").value;
+                if (oldPassword == newPassword) {
+                    errorMsg = "La nuova password non può essere uguale alla vecchia password.";
+                    erroredField = "new-password";
+                    return false;
+                }
+            }
+        }
 
         function validateForm() {
             var form = document.profileForm;
@@ -179,27 +206,6 @@
                 return false;
             }
             return true;
-        }
-
-        function submitSegretarioForm(event) {
-            // Impedisci l'invio del form
-            event.preventDefault();
-
-            var cf = document.getElementById('cfSocio').value;
-
-            // Chiama la funzione validateForm
-            var validation = validateCF(cf);
-
-            if (!validation) {
-                erroredField = "cfSocio";
-
-                var Element = document.getElementById('modificaCredenziali');
-                displayErrorMessages(Element);
-
-            } else {  // Se la validazione ha esito positivo, invia il form
-                // Usa l'ID del form per inviarlo direttamente
-                document.getElementById('socioModificaForm').submit();
-            }
         }
 
         function submitForm(event) {
@@ -290,8 +296,8 @@
         </section>
         <section class="content">
             <img src="${socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
-            <form id="profileForm" name="profileForm" action="socioProfile" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="socioId" value="${socio.id}"/>
+            <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="socio-id" value="${socio.id}"/>
 
                 <label for="photo">Seleziona una nuova Foto Profilo:</label>
                 <input type="file" id="photo" name="photo">
@@ -338,14 +344,13 @@
         </section>
         <hr>
         <section class="content">
-            <form action="modificaPassword" method="GET">
-                <input type="hidden" name="socioIdPassword" value="${socio.id}"/>
-                <input type="hidden" name="segretario" value="${segretario}"/>
+            <form name="modificaPassword" action="modificaPassword" method="POST">
+                <input type="hidden" name="socio-id" value="${socio.id}"/>
+                <% if (request.getAttribute("socio") != null && ((Socio)request.getAttribute("socio")).getSegretario() == null) { %>
+                <label for="old-password">Vecchia password</label><input type="password" id="old-password" name="old-password" required/> <% } %>
+                <label for="new-password">Nuova password</label><input type="password" id="new-password" name="new-password" required/>
                 <button type="submit">Modifica Password</button>
             </form>
-            <c:if test="${param.failSocioMod == 'true'}">
-                <p id="ErroreMsg">Errore nell'operazione, riprovare</p>
-            </c:if>
 
             <p>Disiscrizione dal Circolo Culturale</p>
             <form action="eliminaSocio" method="POST">
@@ -359,26 +364,6 @@
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>
-
-<img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
-
-
-<!-- <c:if test="${segretario == 'true'}">
-<p id="modificaCredenziali">Inserisci le credenziali per modificare le informazioni di un socio:</p>
-
-<form id="socioModificaForm" name="socioModificaForm" action="segretarioModificaSocio" method="post">
-
-    <input type="hidden" name="socioId" value="${socio.id}" />
-
-    <label for="cfSocio">Codice Fiscale:</label>
-    <input type="text" id="cfSocio" name="cfSocio" placeholder="Codice Fiscale" required>
-
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" placeholder="Password" required>
-
-    <button type="submit">Invia</button>
-</form>
-</c:if> -->
 
 </body>
 </html>

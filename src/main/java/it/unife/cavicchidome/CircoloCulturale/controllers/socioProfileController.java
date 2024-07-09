@@ -45,28 +45,27 @@ public class socioProfileController {
             Model model,
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam("socio-id") Optional<Integer> socioId,
-            @RequestParam("segretario") Optional<String> segretario,
-            RedirectAttributes redirectAttributes
+            @RequestParam("socio-id") Optional<Integer> socioId
     ) {
 
         Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
 
-        if (socioCookie.isEmpty() && socioId.isEmpty()) {
+        if (socioCookie.isEmpty()) {
             return "redirect:/";
         }
 
         Socio socio;
         if (socioId.isPresent() && socioService.findSocioById(socioId.get()).isPresent()) {
-            socio = socioService.findSocioById(socioId.get()).get();
-        } else if (socioCookie.isPresent()) {
-            socio = socioCookie.get();
+            if (socioCookie.get().getSegretario() != null) {
+                socio = socioService.findSocioById(socioId.get()).get();
+            } else {
+                return "redirect:/forbidden";
+            }
         } else {
-            return "redirect:/";
+            socio = socioCookie.get();
         }
 
         // Aggiunge i dati del socio e dell'utente al modello
-        model.addAttribute("socio", socio);
         if (socio.getUrlFoto() == null || socio.getUrlFoto().isEmpty()) {
             socio.setUrlFoto("profilo.jpg");
         }
@@ -102,7 +101,7 @@ public class socioProfileController {
 
     @PostMapping("/profile") //TODO: RENDERE TRANSAZIONALE
     public String changeSocioData(
-            @RequestParam("socioId") Optional<Integer> socioId,
+            @RequestParam("socio-id") Optional<Integer> socioId,
             @RequestParam String name,
             @RequestParam String surname,
             @RequestParam String cf,
@@ -115,29 +114,42 @@ public class socioProfileController {
             @RequestParam String houseNumber,
             @RequestParam String email,
             @RequestParam String phoneNumber,
-            @RequestParam("segretario") Optional<Integer> segretarioId,
             @RequestParam("photo") MultipartFile photo,
-
             RedirectAttributes redirectAttributes,
-            Model model,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        redirectAttributes.addAttribute("socioId", socioId);
-        if(segretario.isPresent()){
-            model.addAttribute("segretario", "true");
+        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response);
+
+        if (socioCookie.isEmpty()) {
+            return "redirect:/";
         }
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
-        if (!socioOpt.isPresent()) {
-            redirectAttributes.addAttribute("failed", "true");
-            return "redirect:/socioProfile" ;
+
+        Socio socio;
+        String redirectTo;
+        if (socioId.isPresent()) {
+            if (socioId.get().equals(socioCookie.get().getId())) {
+                socio = socioCookie.get();
+                redirectTo = "";
+            } else if (socioService.findSocioById(socioId.get()).isPresent()) {
+                if (socioCookie.get().getSegretario() != null) {
+                    socio = socioService.findSocioById(socioId.get()).get();
+                    redirectTo = "?socio-id=" + socioId.get();
+                } else {
+                    return "redirect:/forbidden";
+                }
+            } else {
+                redirectAttributes.addAttribute("failed", "true");
+                return "redirect:/socio/profile?socio-id=" + socioId.get();
+            }
+        } else {
+            socio = socioCookie.get();
+            redirectTo = "";
         }
-        Socio socio = socioOpt.get();
-        Utente utente = socio.getUtente();
 
         try {
             socioService.editSocioAndUtente(socio.getId(),
-                    utente.getId(),
+                    socio.getUtente().getId(),
                     Optional.of(name),
                     Optional.of(surname),
                     Optional.of(cf),
@@ -151,112 +163,63 @@ public class socioProfileController {
                     Optional.of(email),
                     Optional.of(phoneNumber),
                     Optional.of(photo));
-            return "redirect:/socioProfile?socioId=" + socioId;
-        } catch (Exception exc) {
+            redirectAttributes.addAttribute("success", "true");
+            return "redirect:/socio/profile" + redirectTo;
+        } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addAttribute("failed", "true");
-            return "redirect:/socioProfile?socioId=" + socioId;
+            return "redirect:/socio/profile" + redirectTo;
         }
     }
-
-    @GetMapping("/modificaPassword")
-    public String mostraModificaPassword(
-            @RequestParam("socioIdPassword") Integer socioId,
-            @RequestParam("segretario") Optional<String> segretario,
-            Model model
-    ) {
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
-        if (!socioOpt.isPresent()) {
-            return "redirect:/errorPage"; //TODO: Gestire l'errore in modo più specifico
-        }
-        Socio socio = socioOpt.get();
-
-        // Aggiunge l'ID e la password del socio al modello
-        model.addAttribute("socioId", socioId);
-        model.addAttribute("passwordAttuale", socio.getPassword());
-        if(segretario.isPresent()){
-            model.addAttribute("segretario", "true");
-        }
-
-        // Restituisce la vista per la modifica della password
-        return "modificaPassword";
-    }
-
-
 
     @PostMapping("/modificaPassword")
     public String modificaPassword(
-            @RequestParam("socioId") Integer socioId,
-            @RequestParam("currentPassword") Optional<String> passwordAttuale,
-            @RequestParam("segretario") Optional<String> segretario,
-            @RequestParam("newPassword") String passwordNuova,
+            @RequestParam("socio-id") Optional<Integer> socioId,
+            @RequestParam("old-password") Optional<String> passwordAttuale,
+            @RequestParam("new-password") String passwordNuova,
             RedirectAttributes redirectAttributes,
-            Model model
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-        redirectAttributes.addAttribute("socioId", socioId);
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
-        if (!socioOpt.isPresent()) {
-            return "redirect:/errorPage"; // Gestire l'errore in modo più specifico
-        }
-        Socio socio = socioOpt.get();
-        if(!segretario.isPresent()){
-            if (passwordAttuale.equals(passwordNuova)) {
-                //  segnalare che la nuova password è uguale a quella attuale
-                redirectAttributes.addAttribute("alreadyPresent", "true");
-                return "redirect:/modificaPassword";
-            }
+        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response);
 
+        if (socioCookie.isEmpty()) {
+            return "redirect:/";
         }
-        if(socioService.validatePassword(passwordNuova)){
-            boolean updateSuccess = socioService.updateSocioPassword(socioId, passwordNuova);
-            if (updateSuccess) {
-                if(segretario.isPresent()){
-                    model.addAttribute("segretario", "true");
+
+        Socio socio;
+        String redirectTo;
+
+        if (socioId.isPresent()) {
+            if (socioId.get().equals(socioCookie.get().getId())) {
+                socio = socioCookie.get();
+                redirectTo = "";
+            } else if (socioService.findSocioById(socioId.get()).isPresent()) {
+                if (socioCookie.get().getSegretario() != null) {
+                    socio = socioService.findSocioById(socioId.get()).get();
+                    redirectTo = "?socio-id=" + socioId.get();
+                } else {
+                    return "redirect:/forbidden";
                 }
-                return "redirect:/socioProfile";
             } else {
-                //segnalare che la modifica della password non è andata a buon fine
-                redirectAttributes.addAttribute("failed", "true");
-                return "redirect:/modificaPassword";
+                redirectAttributes.addAttribute("passwordFailed", "true");
+                return "redirect:/socio/profile?socio-id=" + socioId.get();
             }
         } else {
-            //segnalare che la nuova password non è valida
-            redirectAttributes.addAttribute("failed", "true");
-            return "redirect:/modificaPassword";
+            socio = socioCookie.get();
+            redirectTo = "";
         }
 
+        try {
+            socioService.updateSocioPassword(socio.getId(), passwordAttuale, passwordNuova);
+            redirectAttributes.addAttribute("passwordSuccess", "true");
+            return "redirect:/socio/profile" + redirectTo;
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addAttribute("passwordFailed", "true");
+            return "redirect:/socio/profile" + redirectTo;
+        }
     }
-
-//    @PostMapping("/segretarioModificaSocio")
-//    public String modificaSocioInfo(
-//            @RequestParam("socioId") Integer socioId,
-//            @RequestParam("cfSocio") String cf,
-//            @RequestParam("password") String password,
-//            Model model,
-//            RedirectAttributes redirectAttributes
-//    ) {
-//        final String PASSWORD = "PASSWORD"; // Assumed constant password value
-//
-//        if (!segretarioService.validateCommonPassword(password)) {
-//            redirectAttributes.addAttribute("socioId", socioId);
-//            redirectAttributes.addAttribute("failSocioMod", "true");
-//            return "redirect:/socioProfile";
-//        }
-//        redirectAttributes.addAttribute("segretario", "true");
-//
-//
-//        Optional<Utente> utenteOpt = utenteService.findByCf(cf);
-//        if (utenteOpt.isPresent()) {
-//            Optional<Socio> socioOpt = socioService.findSocioById(utenteOpt.get().getId());
-//            if (socioOpt.isPresent()) {
-//                redirectAttributes.addAttribute("socioId", socioOpt.get().getId());
-//                return "redirect:/socioProfile";
-//            }
-//        }
-//        redirectAttributes.addAttribute("socioId", socioId);
-//        redirectAttributes.addAttribute("failSocioMod", "true");
-//        return "redirect:/socioProfile";
-//
-//    }
 
     @PostMapping("/eliminaSocio") //TODO: GESTIRE TRANSAZIONALITà
     public String eliminaSocio(

@@ -75,7 +75,30 @@ public class SocioService {
                     System.err.println(nfexc.getMessage());
                 }
                 if (socio.isPresent()) {
-                    model.addAttribute("socio", socio.get());
+                    model.addAttribute("socioHeader", socio.get());
+                    return socio;
+                } else {
+                    Cookie invalidateCookie = new Cookie("socio-id", null);
+                    invalidateCookie.setMaxAge(0);
+                    response.addCookie(invalidateCookie);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Socio> getSocioFromCookie(HttpServletRequest request,
+                                                HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("socio-id")) {
+                Optional<Socio> socio = Optional.empty();
+                try {
+                    socio = socioRepository.findById(Integer.parseInt(cookie.getValue()));
+                } catch (NumberFormatException nfexc) {
+                    System.err.println(nfexc.getMessage());
+                }
+                if (socio.isPresent()) {
                     return socio;
                 } else {
                     Cookie invalidateCookie = new Cookie("socio-id", null);
@@ -162,15 +185,15 @@ public class SocioService {
                            Optional<String> email,
                            Optional<String> phoneNumber,
                            Optional<MultipartFile> profilePicture) throws ValidationException, EntityNotFoundException {
-        Socio oldSocio = socioRepository.getReferenceById(socioId);
-        email.ifPresent(oldSocio::setEmail);
-        phoneNumber.ifPresent(oldSocio::setTelefono);
+        Socio socio = socioRepository.getReferenceById(socioId);
+        email.ifPresent(socio::setEmail);
+        phoneNumber.ifPresent(socio::setTelefono);
         profilePicture.ifPresent(picture -> {
-            String filename = saveSocioProfilePicture(picture, oldSocio.getUtente().getCf());
-            oldSocio.setUrlFoto(filename);
+            String filename = saveSocioProfilePicture(picture, socio.getUtente().getCf());
+            socio.setUrlFoto(filename);
         });
-        Socio newSocio = validateSocio(oldSocio);
-        return socioRepository.save(newSocio);
+        validateSocio(socio);
+        return socioRepository.save(socio);
     }
 
     Socio validateAndParseSocio(String email,
@@ -185,7 +208,7 @@ public class SocioService {
         }
 
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        if (!validatePassword(password)) {
+        if (!validatePassword(Optional.empty(), password)) {
             throw new ValidationException("Password non valida");
         }
 
@@ -208,9 +231,12 @@ public class SocioService {
         return new Socio(email, password, phoneNumber);
     }
 
-    public boolean validatePassword(String password) {
+    public boolean validatePassword(Optional<String> oldPassword, String newPassword) {
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
+        return newPassword != null &&
+                newPassword.length() <= 50 &&
+                newPassword.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$") &&
+                (oldPassword.isPresent() ? !oldPassword.get().equals(newPassword) : true);
     }
 
     public boolean validateEmail(String email) {
@@ -301,15 +327,15 @@ public class SocioService {
         });
     }
     @Transactional
-    public boolean updateSocioPassword(Integer socioId, String newPassword) {
-        Optional<Socio> socioOpt = findSocioById(socioId);
-        if (socioOpt.isPresent()) {
-            Socio socio = socioOpt.get();
+    public void updateSocioPassword(Integer socioId, Optional<String> oldPassword, String newPassword) throws EntityNotFoundException, ValidationException {
+        Socio socio = socioRepository.getReferenceById(socioId);
+
+        if (validatePassword(oldPassword, newPassword)) {
             socio.setPassword(newPassword);
             socioRepository.save(socio);
-            return true; // Operation successful
+        } else {
+            throw new ValidationException("Password non valida");
         }
-        return false; // Socio not found
     }
 
     @Transactional

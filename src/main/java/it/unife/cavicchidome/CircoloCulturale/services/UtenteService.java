@@ -105,17 +105,17 @@ public class UtenteService {
                              Optional<String> city,
                              Optional<String> street,
                              Optional<String> houseNumber) throws ValidationException, EntityNotFoundException {
-        Utente oldUtente = utenteRepository.getReferenceById(utenteId);
-        name.ifPresent(oldUtente::setNome);
-        surname.ifPresent(oldUtente::setCognome);
-        cf.ifPresent(oldUtente::setCf);
-        dob.ifPresent(oldUtente::setDataNascita);
-        birthplace.ifPresent(oldUtente::setLuogoNascita);
+        Utente utente = utenteRepository.getReferenceById(utenteId);
+        name.ifPresent(utente::setNome);
+        surname.ifPresent(utente::setCognome);
+        cf.ifPresent(utente::setCf);
+        dob.ifPresent(utente::setDataNascita);
+        birthplace.ifPresent(utente::setLuogoNascita);
         if (country.isPresent() && province.isPresent() && city.isPresent() && street.isPresent() && houseNumber.isPresent()) {
-            oldUtente.setIndirizzo(country.get() + ", " + province.get() + ", " + city.get() + ", " + street.get() + ", " + houseNumber.get());
+            utente.setIndirizzo(country.get() + ", " + province.get() + ", " + city.get() + ", " + street.get() + ", " + houseNumber.get());
         }
-        Utente newUtente = validateUtente(oldUtente);
-        return utenteRepository.save(newUtente);
+        validateUtente(utente);
+        return utenteRepository.save(utente);
     }
 
     @Transactional
