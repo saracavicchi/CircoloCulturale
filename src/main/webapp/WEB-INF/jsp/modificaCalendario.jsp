@@ -16,10 +16,7 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
-            var fail = "${param.fail}";
-            if (fail == 'true') {
-                scrollToErrorMsg();
-            }
+
             var docentiOverlap = "${param.docentiOverlap}";
             if (docentiOverlap == 'true') {
                 warningDocentiOverlap();
@@ -144,6 +141,16 @@
                 specificErrorElement.id = 'specific-error';
                 specificErrorElement.textContent = errorMsg;
                 Element.appendChild(specificErrorElement);
+            }
+            if(errorMessageElement){
+                scrollToErrorMsg();
+            }
+
+        }
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('error-message');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
             }
         }
 
