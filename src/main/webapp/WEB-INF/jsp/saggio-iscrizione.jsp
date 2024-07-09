@@ -163,7 +163,7 @@
                 event.target.submit();
             } else {
                 // Ottieni l'elemento h1
-                var h1Element = document.getElementsByTagName('h1')[0];
+                var formElement = document.getElementById('ticketSaggioForm');
 
                 // Controlla se il messaggio di errore esiste già
                 var errorMessageElement = document.getElementById('error-message');
@@ -171,18 +171,20 @@
 
                 // Se il messaggio di errore non esiste, crealo
                 if (!errorMessageElement) {
-                    errorMessageElement = document.createElement('h2');
+                    errorMessageElement = document.createElement('p');
+                    errorMessageElement.style.color = 'red';
                     errorMessageElement.id = 'error-message';
                     errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                    h1Element.appendChild(errorMessageElement);
+                    document.querySelector('.content').insertBefore(errorMessageElement, formElement);
                 }
 
                 // Se il messaggio di errore specifico non esiste, crealo
                 if (!specificErrorElement) {
-                    specificErrorElement = document.createElement('h2');
+                    specificErrorElement = document.createElement('p');
+                    specificErrorElement.style.color = 'red';
                     specificErrorElement.id = 'specific-error';
                     specificErrorElement.textContent = errorMsg;
-                    h1Element.appendChild(specificErrorElement);
+                    document.querySelector('.content').insertBefore(specificErrorElement, formElement);
                 }
 
                 // Colora il bordo del campo o dei campi che hanno dato errore

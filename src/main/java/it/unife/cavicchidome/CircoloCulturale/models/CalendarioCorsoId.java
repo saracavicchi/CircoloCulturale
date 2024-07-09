@@ -2,6 +2,8 @@ package it.unife.cavicchidome.CircoloCulturale.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
@@ -13,8 +15,10 @@ public class CalendarioCorsoId implements Serializable {
     @Column(name = "id_corso", nullable = false)
     private Integer idCorso;
 
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "giorno_settimana", columnDefinition = "weekday")
-    private Object giornoSettimana;
+    private Weekday giornoSettimana;
 
     public Integer getIdCorso() {
         return idCorso;
@@ -24,13 +28,14 @@ public class CalendarioCorsoId implements Serializable {
         this.idCorso = idCorso;
     }
 
-    public Object getGiornoSettimana() {
+    public Weekday getGiornoSettimana() {
         return giornoSettimana;
     }
 
-    public void setGiornoSettimana(Object giornoSettimana) {
+    public void setGiornoSettimana(Weekday giornoSettimana) {
         this.giornoSettimana = giornoSettimana;
     }
+
 
     @Override
     public boolean equals(Object o) {

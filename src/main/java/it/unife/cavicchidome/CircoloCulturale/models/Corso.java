@@ -1,5 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -13,6 +15,7 @@ import java.util.Set;
 })
 public class Corso {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -39,7 +42,7 @@ public class Corso {
     @Column(name = "active", nullable = false)
     private Boolean active = false;
 
-    @OneToMany(mappedBy = "idCorso")
+    @OneToMany(mappedBy = "idCorso", cascade = CascadeType.ALL)
     private Set<CalendarioCorso> calendarioCorso = new LinkedHashSet<>();
 
     @ManyToMany

@@ -10,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -40,7 +42,7 @@ public class SocioService {
     private final SocioRepository socioRepository;
     private final UtenteRepository utenteRepository;
 
-    @Value("${file.upload-dir}")
+    @Value("${file.corso.upload-dir}")
     String uploadDir;
 
     SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
@@ -183,7 +185,7 @@ public class SocioService {
         }
 
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        if (password == null || password.length() > 50 || !password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$")) {
+        if (!validatePassword(password)) {
             throw new ValidationException("Password non valida");
         }
 
@@ -308,6 +310,25 @@ public class SocioService {
             return true; // Operation successful
         }
         return false; // Socio not found
+    }
+
+    @Transactional
+    public List<Object[]> findSociNotSegretari() {
+        return socioRepository.findSociNotSegretari();
+    }
+
+    @Transactional
+    public List<Object[]> findSociNotDocentiAndNotSegretariByIdCorso(Integer idCorso) {
+        return socioRepository.findSociNotDocentiAndNotSegretariByIdCorso(idCorso);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsSocioWithCf(String cf) {
+        Optional<Utente> utente = utenteRepository.findByCf(cf);
+        if (!utente.isPresent()) {
+            return false;
+        }
+        return socioRepository.findById(utente.get().getId()).isPresent();
     }
 
 

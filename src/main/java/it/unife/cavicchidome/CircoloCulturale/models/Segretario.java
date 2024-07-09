@@ -14,7 +14,7 @@ public class Segretario {
     private Integer id;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id", nullable = false)
     private Socio socio;
@@ -27,7 +27,7 @@ public class Segretario {
     @Column(name = "admin", nullable = false)
     private Boolean admin = false;
 
-    @Column(name = "stipendio", nullable = false, precision = 7, scale = 2)
+    @Column(name = "stipendio", nullable = false, precision = 6, scale = 0)
     private BigDecimal stipendio;
 
     @Column(name = "active", nullable = false)

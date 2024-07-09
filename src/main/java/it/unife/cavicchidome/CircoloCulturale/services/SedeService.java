@@ -26,4 +26,9 @@ public class SedeService {
     public Optional<Sede> findSedeById(Integer id) {
         return sedeRepository.findById(id);
     }
+
+    @Transactional
+    public Optional<Sede> findSedeByIdSala(Integer idSala) {
+        return sedeRepository.findSedeByIdSala(idSala);
+    }
 }

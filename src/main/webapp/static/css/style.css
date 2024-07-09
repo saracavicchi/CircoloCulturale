@@ -130,14 +130,14 @@ input[type="button"]:hover, input[type="submit"]:hover {
 }
 
 #banner>nav>ul>li:hover {
-     display: inline-block;
-     list-style-type: none;
-     border: 2px solid var(--border);
-     border-radius: 5px;
-     background: var(--content-bg);
-     margin: 0 5px;
-     padding: 3px 7px;
- }
+    display: inline-block;
+    list-style-type: none;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    background: var(--content-bg);
+    margin: 0 5px;
+    padding: 3px 7px;
+}
 
 #banner>nav>ul>li>a {
     display: block;

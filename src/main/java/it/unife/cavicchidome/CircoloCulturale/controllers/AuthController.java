@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,8 +43,6 @@ public class AuthController {
     UtenteRepository utenteRepository;
     TesseraService tesseraService;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     AuthController(
             SocioRepository socioRepository,
@@ -99,7 +98,10 @@ public class AuthController {
     }
 
     @GetMapping("/signup")
-    public String viewSignup() {
+    public String viewSignup(HttpServletRequest request, HttpServletResponse response, Model model) {
+        if (socioService.setSocioFromCookie(request, response, model).isPresent()) {
+            return "redirect:/";
+        }
         return "signup";
     }
 
@@ -121,7 +123,10 @@ public class AuthController {
             @RequestParam String password,
             @RequestParam String phoneNumber,
             @RequestParam("photo") MultipartFile photo,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            HttpServletResponse response,
+            HttpServletRequest request,
+            Model model
     ) {
         try {
             Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
