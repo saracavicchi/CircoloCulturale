@@ -34,6 +34,13 @@
 
         });
 
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('ErroreMsg');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
+        }
+
         function initEditCorsoForm() {
             var editCorsoForm = document.getElementById('editCorsoForm');
             if (editCorsoForm) {

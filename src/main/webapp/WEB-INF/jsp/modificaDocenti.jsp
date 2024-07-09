@@ -30,7 +30,22 @@
             if (fail == 'true') {
                 scrollToErrorMsg();
             }
+            var docentiOverlap = "${param.docentiOverlap}";
+            if (docentiOverlap == 'true') {
+                warningDocentiOverlap();
+            }
         });
+
+        function warningDocentiOverlap() {
+            alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
+        }
+
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('ErroreMsg');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
+        }
 
         function gestisciStipendiDocenti() {
             var selectDocenti = document.getElementsByName('nuoviDocenti')[0];
@@ -185,6 +200,7 @@
 %>
 <form id="modificaDocentiForm" action="modificaDocenti" method="post">
     <input type="hidden" name="idCorso" value="${corso.id}"/>
+    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
     <p>Seleziona i docenti da eliminare<p>
     <c:forEach var="docente" items="${docentiCorso}">
         <div>
@@ -193,7 +209,7 @@
     <input type="number" name="stipendiAttuali" value="${docente.stipendio}" title="Per favore inserire un importo corretto senza cifre decimali" required/>
         </div>
     </c:forEach>
-
+    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
     <h2>Aggiungi Nuovi Docenti</h2>
     <select name="nuoviDocenti" multiple="multiple" onchange="gestisciStipendiDocenti()">
         <c:forEach var="socio" items="${sociInfo}">

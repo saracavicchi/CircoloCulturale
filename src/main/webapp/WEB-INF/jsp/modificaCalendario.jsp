@@ -22,6 +22,13 @@
             }
 
         });
+
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('ErroreMsg');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
+        }
         function initCreaCorsoForm() {
             var creaCorsoForm = document.getElementById('modificaCalendarioForm');
             if (creaCorsoForm) {

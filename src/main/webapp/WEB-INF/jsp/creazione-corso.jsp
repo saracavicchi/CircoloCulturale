@@ -17,8 +17,28 @@
 
             initCreaCorsoForm();
             updateDocentiSelection();
+            var fail = "${param.fail}";
+            if (fail == 'true') {
+                scrollToErrorMsg();
+            }
+            var docentiOverlap = "${param.docentiOverlap}";
+            if (docentiOverlap == 'true') {
+                warningDocentiOverlap();
+            }
+
 
         });
+
+        function warningDocentiOverlap() {
+            alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
+        }
+
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('ErroreMsg');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
+        }
         function initCreaCorsoForm() {
             var creaCorsoForm = document.getElementById('creaCorsoForm');
             if (creaCorsoForm) {
@@ -308,6 +328,7 @@
     }
 %>
 <form id="creaCorsoForm" action="crea" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
     Descrizione: <input type="text" id="descrizione" name="descrizione" required><br>
     Genere: <input type="text" id="genere" name="genere" required><br>
     Livello: <input type="text" id="livello" name="livello" required><br>
@@ -334,6 +355,7 @@
         <option value="${socioD[0]}">${socioD[1]} ${socioD[2]} (${socioD[0]})</option>
     </c:forEach>
     </select>
+    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
     <div id="docentiStipendiContainer"></div>
 
     Calendario Settimanale: <br>

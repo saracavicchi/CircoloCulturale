@@ -83,6 +83,7 @@ public class CorsoController {
                             @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioInizio,
                             @RequestParam("orariFine") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioFine,
                             @RequestParam ("stipendi")List<Integer> stipendi,
+                            @RequestParam("docentiOverlap") String docentiOverlap,
                             Model model,
                             RedirectAttributes redirectAttributes
     ) {
@@ -101,8 +102,12 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/creazione-corso";
         }
-
-        return "redirect:/corso/info"; //TODO: Adjust "successView" to your actual success view name
+        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti);
+        if (!checkDocentiSchedule && docentiOverlap.equals("null")) {
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+            return "redirect:/corso/crea";
+        }
+        return "redirect:/corso/corsi"; //TODO: Adjust "successView" to your actual success view name
     }
 
     @GetMapping("/info")
@@ -232,8 +237,14 @@ public class CorsoController {
             @RequestParam("stipendiAttuali") List<Integer> stipendiAttuali,
             @RequestParam("nuoviDocenti") Optional<List<String>> docentiCf,
             @RequestParam("stipendi") Optional<List<Integer>> stipendi,
+            @RequestParam("docentiOverlap")String docentiOverlap,
             RedirectAttributes redirectAttributes
     ) {
+        if(docentiOverlap.equals("null") && docentiCf.isPresent() && !corsoService.checkDocentiScheduleOverlap(docentiCf.get())){
+            System.out.println(corsoService.checkDocentiScheduleOverlap(docentiCf.get()));
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+            return "redirect:/corso/modificaDocenti?idCorso=" + idCorso;
+        }
 
         boolean updateSuccess = corsoService.updateDocenti(idCorso, deletedDocentiId, docentiCf, stipendiAttuali, stipendi);
 
@@ -241,6 +252,7 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
+
 
 
 

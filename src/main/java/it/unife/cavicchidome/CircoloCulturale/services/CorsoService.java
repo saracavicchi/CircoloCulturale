@@ -185,6 +185,7 @@ public class CorsoService {
             }
 
         }
+
         if(checkScheduleOverlap(null, giorni, orarioInizio, orarioFine, idSala) == false){
             return false;
         }
@@ -329,6 +330,64 @@ public class CorsoService {
             return false;
         }
         else return true;
+    }
+
+    public boolean checkScheduleOverlap(Optional<Corso> corso, List<CalendarioCorso> calendarioCorso, Integer idSala) {
+        //Controllo sovrapposizione oraria di corsi che si tengono nella stessa sala
+        boolean sovrapposizione = false;
+        for (int i = 0; i < calendarioCorso.size(); i++) {
+            Integer giorno = calendarioCorso.get(i).getId().getGiornoSettimana().getDayNumber();
+            LocalTime inizio = calendarioCorso.get(i).getOrarioInizio();
+            LocalTime fine = calendarioCorso.get(i).getOrarioFine();
+
+            // Trova corsi nel CalendarioCorso che si sovrappongono per orario
+            List<CalendarioCorso> corsiSovrapposti = calendarioCorsoRepository.findCorsiSovrapposti(Weekday.fromDayNumber(giorno) , inizio, fine, idSala );
+            for (CalendarioCorso calendario : corsiSovrapposti) {
+                System.out.println(calendario.getIdCorso().getDescrizione());
+                Corso corsoSovrapposto = calendario.getIdCorso();
+                if (calendario.getIdCorso().getActive()==true && corsoSovrapposto.getActive()==true) {
+                    if(corso.isPresent() && corso.get().getId().equals(corsoSovrapposto.getId())){
+                        continue; //si esclude corso stesso dal controllo di sovrapposizione
+                    }
+                    sovrapposizione = true;
+                    break;
+                }
+            }
+            if (sovrapposizione) break;
+        }
+
+        if (sovrapposizione) {
+            // Gestisci la sovrapposizione (es. restituendo false o lanciando un'eccezione)
+            return false;
+        }
+        else return true;
+    }
+
+    @Transactional
+    public boolean checkDocentiScheduleOverlap(List<String> docentiCf){
+        for(String cf: docentiCf){
+            Optional<Docente> docente = docenteRepository.findByCf(cf);
+            if(!docente.isPresent()) {
+                return false; //TODO: gestire caso in cui docente non esiste: eccezione
+            }
+            Integer idDocente = docente.get().getId();
+            Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
+            if(corsiInsegnati.isPresent()){
+                for(Corso corso: corsiInsegnati.get()){
+                    if(corso.getActive()){
+                        Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
+                        List<CalendarioCorso> calendarioCorso = new ArrayList<>(calendarioCorsoSet);
+                        if(!checkScheduleOverlap(Optional.of(corso), calendarioCorso, corso.getIdSala().getId())){
+                            return false;
+                        }
+
+                    }
+                }
+            }
+
+        }
+
+        return true;
     }
 
     public String saveCorsoPicture (MultipartFile picture, String categoria, Integer idCorso) {
