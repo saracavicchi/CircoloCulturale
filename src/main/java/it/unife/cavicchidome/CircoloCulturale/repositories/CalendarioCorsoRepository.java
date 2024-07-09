@@ -25,4 +25,14 @@ public interface CalendarioCorsoRepository extends JpaRepository<CalendarioCorso
     @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.id.giornoSettimana = :giorno AND cc.active = true")
     Optional<CalendarioCorso> findByCorsoAndGiornoSettimanaId(Integer corsoId, Weekday giorno);
 
+    @Query("SELECT cc FROM CalendarioCorso cc JOIN cc.idCorso c WHERE cc.id.giornoSettimana = :giorno AND cc.active = true AND (" +
+            "(cc.orarioInizio < :fine AND cc.orarioFine > :inizio) OR " + // Sovrappone l'inizio o la fine
+            "(cc.orarioInizio >= :inizio AND cc.orarioFine <= :fine))") // Inizia e finisce all'interno
+    Optional<List<CalendarioCorso>> findCorsiContemporanei(Weekday giorno, LocalTime inizio, LocalTime fine);
+
+    @Query("SELECT cc FROM CalendarioCorso cc JOIN cc.idCorso c WHERE cc.id.giornoSettimana = :giorno AND cc.idCorso.id = :idCorso AND cc.active = true AND cc.idCorso.active =true AND (" +
+            "(cc.orarioInizio < :fine AND cc.orarioFine > :inizio) OR " + // Sovrappone l'inizio o la fine
+            "(cc.orarioInizio >= :inizio AND cc.orarioFine <= :fine))") // Inizia e finisce all'interno
+    Optional<CalendarioCorso> findSeCorsoContemporaneo(Weekday giorno, Integer idCorso, LocalTime inizio, LocalTime fine); //solo calendari e corsi active
+
 }

@@ -95,6 +95,11 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/creazione-corso"; // Adjust "errorView" to your actual error view name
         }
+        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
+        if (!checkDocentiSchedule && docentiOverlap.equals("null")) {
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+            return "redirect:/corso/crea";
+        }
 
         // If validation passes, proceed to save course information
         boolean saveSuccess = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
@@ -102,11 +107,7 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/creazione-corso";
         }
-        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti);
-        if (!checkDocentiSchedule && docentiOverlap.equals("null")) {
-            redirectAttributes.addAttribute("docentiOverlap", "true");
-            return "redirect:/corso/crea";
-        }
+
         return "redirect:/corso/corsi"; //TODO: Adjust "successView" to your actual success view name
     }
 
@@ -296,8 +297,15 @@ public class CorsoController {
             @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orariInizio,
             @RequestParam("orariFine") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orariFine,
             @RequestParam("idSala") Integer idSala,
+            @RequestParam("docentiOverlap") String docentiOverlap,
             RedirectAttributes redirectAttributes
     ) {
+        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(idCorso, giorni, orariInizio, orariFine);
+        System.out.println(checkDocentiSchedule);
+        if (!checkDocentiSchedule && docentiOverlap.equals("null")) {
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+            return "redirect:/corso/modificaCalendario?idCorso=" + idCorso;
+        }
         boolean updateSuccess = corsoService.updateCourseSchedule(idCorso, giorni, orariInizio, orariFine, idSala);
 
         if (!updateSuccess) {

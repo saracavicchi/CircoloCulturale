@@ -20,8 +20,16 @@
             if (fail == 'true') {
                 scrollToErrorMsg();
             }
+            var docentiOverlap = "${param.docentiOverlap}";
+            if (docentiOverlap == 'true') {
+                warningDocentiOverlap();
+            }
 
         });
+
+        function warningDocentiOverlap() {
+            alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
+        }
 
         function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
@@ -180,6 +188,7 @@
 %>
 <form id="modificaCalendarioForm" action="modificaCalendario" method="post">
     <input type="hidden" name="idCorso" value="${corso.id}"/>
+    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
 
     <label>Sala:</label>
     <select name="idSala" required>
