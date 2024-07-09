@@ -172,6 +172,13 @@
 </head>
 <body>
 <h2>Modifica le informazioni del corso</h2>
+<% String fail;
+    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+%>
+<p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
+<%
+    }
+%>
 <div>
     <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
 </div>
@@ -196,7 +203,7 @@
     <input type="radio" id="musica" name="categoria" value="Musica" <c:if test="${corso.categoria == 'Musica'}">checked</c:if> required>
     <label for="musica">Musica</label><br>
 
-    <input type="submit" value="Modifica queste informazioni"/>
+    <button type="submit">Salva Modifiche</button>
 </form>
 <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
 <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>

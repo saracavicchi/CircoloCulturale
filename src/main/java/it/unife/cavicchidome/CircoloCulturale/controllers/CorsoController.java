@@ -183,31 +183,16 @@ public class CorsoController {
             RedirectAttributes redirectAttributes
     ) {
         // Validate course data first
-        boolean isValid = corsoService.validateBasicInfo(descrizione, genere, livello, categoria);
+        boolean isValid = corsoService.updateBasicCourseInfo(idCorso, descrizione, genere, livello, categoria);
         if (!isValid) {
             // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/"; //TODO: vedere come gestire meglio
+            return "redirect:/corso/modificaBase"; //TODO: vedere come gestire meglio
         }
+        redirectAttributes.addAttribute("successMessage", "Corso aggiornato con successo.");
 
-        Optional<Corso> corsoOpt = corsoService.findById(idCorso);
-        if (!corsoOpt.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Corso non trovato.");
-            return "redirect:/paginaErrore"; //TODO: GESTIRE MEGLIO
-        }
+        return "redirect:/corso/info"; //pagina visualizzazione corsi
 
-        //TODO: Rendere transazionale
-        //TODO: verificare unique
-        Corso corso = corsoOpt.get();
-        corso.setDescrizione(descrizione);
-        corso.setGenere(genere);
-        corso.setLivello(livello);
-        corso.setCategoria(categoria);
-
-
-        corsoRepository.save(corso); // Assuming you have a save method in your service
-
-        return "redirect:/"; //TODO: pagina visualizzazione corsi
     }
 
     @GetMapping("/modificaDocenti")
@@ -254,13 +239,13 @@ public class CorsoController {
 
         if (!updateSuccess) {
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
+            return "redirect:/corso/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
 
 
 
-
-        return "redirect:/"; //TODO: Adjust the redirect as necessary
+        redirectAttributes.addAttribute("successMessage", "Docenti aggiornati con successo.");
+        return "redirect:/corso/info";
     }
 
 
@@ -305,12 +290,12 @@ public class CorsoController {
 
         if (!updateSuccess) {
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/modificaCalendario?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
+            return "redirect:/corso/modificaCalendario?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
 
 
 
         redirectAttributes.addAttribute("successMessage", "Calendario aggiornato con successo.");
-        return "redirect:/"; //TODO: pagina visualizzazione corsi
+        return "redirect:/corso/info";
     }
 }

@@ -172,6 +172,13 @@
 </head>
 <body>
 <h2>Docenti Correnti</h2>
+<% String fail;
+    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+%>
+<p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
+<%
+    }
+%>
 <form id="modificaDocentiForm" action="modificaDocenti" method="post">
     <input type="hidden" name="idCorso" value="${corso.id}"/>
     <p>Seleziona i docenti da eliminare<p>
