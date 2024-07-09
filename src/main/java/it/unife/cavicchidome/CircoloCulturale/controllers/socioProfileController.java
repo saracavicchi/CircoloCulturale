@@ -100,9 +100,9 @@ public class socioProfileController {
         return "socio-corsi";
     }
 
-    @PostMapping("/socioProfile") //TODO: RENDERE TRANSAZIONALE
+    @PostMapping("/profile") //TODO: RENDERE TRANSAZIONALE
     public String changeSocioData(
-            @RequestParam("socioId") Integer socioId,
+            @RequestParam("socioId") Optional<Integer> socioId,
             @RequestParam String name,
             @RequestParam String surname,
             @RequestParam String cf,
@@ -115,11 +115,13 @@ public class socioProfileController {
             @RequestParam String houseNumber,
             @RequestParam String email,
             @RequestParam String phoneNumber,
-            @RequestParam("segretario") Optional<String> segretario,
+            @RequestParam("segretario") Optional<Integer> segretarioId,
             @RequestParam("photo") MultipartFile photo,
 
             RedirectAttributes redirectAttributes,
-            Model model
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
         redirectAttributes.addAttribute("socioId", socioId);
         if(segretario.isPresent()){

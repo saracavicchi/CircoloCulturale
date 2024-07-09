@@ -42,7 +42,7 @@
 
         function initializeAddressFields() {
             var utente = {
-                indirizzo: "${utente.indirizzo}"
+                indirizzo: "${socio.utente.indirizzo}"
             };
             var risultato = divideIndirizzo(utente);
             document.getElementById('state').value = risultato.state;
@@ -289,6 +289,7 @@
             <h1>Profilo di ${socio.utente.nome} ${socio.utente.cognome}</h1>
         </section>
         <section class="content">
+            <img src="${socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
             <form id="profileForm" name="profileForm" action="socioProfile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socioId" value="${socio.id}"/>
 
@@ -296,22 +297,22 @@
                 <input type="file" id="photo" name="photo">
 
                 <label for="name">Nome:</label>
-                <input type="text" id="name" name="name" value="${utente.nome}" placeholder="Nome"/>
+                <input type="text" id="name" name="name" value="${socio.utente.nome}" placeholder="Nome"/>
 
                 <label for="surname">Cognome:</label>
-                <input type="text" id="surname" name="surname" value="${utente.cognome}" placeholder="Cognome"/>
+                <input type="text" id="surname" name="surname" value="${socio.utente.cognome}" placeholder="Cognome"/>
 
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" value="${socio.email}" placeholder="Email"/>
 
                 <label for="cf">Codice Fiscale:</label>
-                <input type="text" id="cf" name="cf" value="${utente.cf}" placeholder="Codice Fiscale"/>
+                <input type="text" id="cf" name="cf" value="${socio.utente.cf}" placeholder="Codice Fiscale"/>
 
                 <label for="dob">Data di nascita:</label>
-                <input type="date" id="dob" name="dob" value="${utente.dataNascita}" placeholder="Data di nascita"/>
+                <input type="date" id="dob" name="dob" value="${socio.utente.dataNascita}" placeholder="Data di nascita"/>
 
                 <label for="birthplace">Luogo di nascita (città):</label>
-                <input type="text" id="birthplace" name="birthplace" value="${utente.luogoNascita}"
+                <input type="text" id="birthplace" name="birthplace" value="${socio.utente.luogoNascita}"
                        placeholder="Luogo di nascita (città)"/>
 
                 <label for="state">Stato:</label>
@@ -359,7 +360,7 @@
     <%@include file="/static/include/aside.jsp"%>
 </div>
 
-<!-- <img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/> -->
+<img src="${empty socio.urlFoto ? placeholderImagePath : socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
 
 
 <!-- <c:if test="${segretario == 'true'}">

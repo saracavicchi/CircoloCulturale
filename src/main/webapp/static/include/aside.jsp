@@ -1,5 +1,6 @@
 <aside class="smallright">
     <section class="title">
+        <!-- TODO: sistemare encoding UTF-8 -->
         <h1>Menù socio</h1>
     </section>
     <section class="content">
