@@ -58,7 +58,7 @@ public class Socio {
             inverseJoinColumns = @JoinColumn(name = "id_corso"))
     private Set<Corso> corsi = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "idSocio")
+    @OneToOne(mappedBy = "idSocio", cascade = CascadeType.ALL)
     private Tessera tessera;
 
     public Integer getId() {

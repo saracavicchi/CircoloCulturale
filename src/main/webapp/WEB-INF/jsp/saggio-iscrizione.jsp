@@ -15,7 +15,7 @@
     <script>
         <% if (request.getAttribute("socio") != null) { %>
         function autocompileSocio () {
-            let socioIdField = document.enrollSaggioForm["socio-id"];
+            let socioIdField = document.ticketSaggioForm["socio-id"];
             socioIdField.disabled = false;
 
             let nameField = document.getElementById("name");
@@ -53,7 +53,7 @@
         }
 
         function cleanUnlockFields () {
-            let socioIdField = document.enrollSaggioForm["socio-id"];
+            let socioIdField = document.ticketSaggioForm["socio-id"];
             socioIdField.disabled = true;
             let fields = ["name", "surname", "cf", "dob", "birthplace", "state", "province", "city", "street", "houseNumber"];
             fields.forEach(field => {
@@ -90,7 +90,7 @@
         var erroredField = "";
 
         function validateForm() {
-            var form = document.enrollSaggioForm;
+            var form = document.ticketSaggioForm;
             var cf = form.cf.value;
             var name = form.name.value;
             var surname = form.surname.value;
@@ -163,7 +163,7 @@
                 event.target.submit();
             } else {
                 // Ottieni l'elemento h1
-                var h1Element = document.getElementsByTagName('h1')[0];
+                var formElement = document.getElementById('ticketSaggioForm');
 
                 // Controlla se il messaggio di errore esiste già
                 var errorMessageElement = document.getElementById('error-message');
@@ -171,18 +171,20 @@
 
                 // Se il messaggio di errore non esiste, crealo
                 if (!errorMessageElement) {
-                    errorMessageElement = document.createElement('h2');
+                    errorMessageElement = document.createElement('p');
+                    errorMessageElement.style.color = 'red';
                     errorMessageElement.id = 'error-message';
                     errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                    h1Element.appendChild(errorMessageElement);
+                    document.querySelector('.content').insertBefore(errorMessageElement, formElement);
                 }
 
                 // Se il messaggio di errore specifico non esiste, crealo
                 if (!specificErrorElement) {
-                    specificErrorElement = document.createElement('h2');
+                    specificErrorElement = document.createElement('p');
+                    specificErrorElement.style.color = 'red';
                     specificErrorElement.id = 'specific-error';
                     specificErrorElement.textContent = errorMsg;
-                    h1Element.appendChild(specificErrorElement);
+                    document.querySelector('.content').insertBefore(specificErrorElement, formElement);
                 }
 
                 // Colora il bordo del campo o dei campi che hanno dato errore
@@ -211,7 +213,7 @@
             }
 
             // Ottieni tutti gli elementi input del form
-            var inputs = document.getElementById('enrollSaggioForm').getElementsByTagName('input');
+            var inputs = document.getElementById('ticketSaggioForm').getElementsByTagName('input');
 
             // Itera su ogni elemento input
             for (var i = 0; i < inputs.length; i++) {
@@ -222,9 +224,9 @@
 
         window.addEventListener("load", function () {
         // Aggiungi un listener per l'evento 'submit' al form
-        document.getElementById('enrollSaggioForm').addEventListener('submit', submitForm);
+        document.getElementById('ticketSaggioForm').addEventListener('submit', submitForm);
         // Ottieni tutti gli elementi input del form
-        var inputs = document.getElementById('enrollSaggioForm').getElementsByTagName('input');
+        var inputs = document.getElementById('ticketSaggioForm').getElementsByTagName('input');
 
         // Aggiungi un listener per l'evento 'input' a ogni elemento input
         for (var i = 0; i < inputs.length; i++) {
@@ -240,7 +242,7 @@
                 <h1>Modulo di iscrizione al saggio</h1>
             </section>
             <section class="content">
-                <form id="enrollSaggioForm" name="enrollSaggioForm" action="/saggio/iscrizione" method="POST">
+                <form id="ticketSaggioForm" name="ticketSaggioForm" action="/saggio/iscrizione" method="POST">
                     <h1>${saggio.nome}</h1>
                     <h2>${saggio.descrizione}</h2>
                     <p>${saggio.data} dalle ${saggio.orarioInizio} alle ${saggio.orarioFine}</p>

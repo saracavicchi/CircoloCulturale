@@ -6,10 +6,15 @@ import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.antlr.v4.runtime.misc.LogManager;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,8 +39,8 @@ public class SocioService {
 
     private final UtenteService utenteService;
     private final TesseraService tesseraService;
+    private final SocioRepository socioRepository;
     private final UtenteRepository utenteRepository;
-    SocioRepository socioRepository;
 
     @Value("${file.corso.upload-dir}")
     String uploadDir;
@@ -57,7 +62,7 @@ public class SocioService {
         }
     }
 
-    public void setSocioFromCookie(HttpServletRequest request,
+    public Optional<Socio> setSocioFromCookie(HttpServletRequest request,
                                    HttpServletResponse response,
                                    Model model) {
         Cookie[] cookies = request.getCookies();
@@ -71,6 +76,7 @@ public class SocioService {
                 }
                 if (socio.isPresent()) {
                     model.addAttribute("socio", socio.get());
+                    return socio;
                 } else {
                     Cookie invalidateCookie = new Cookie("socio-id", null);
                     invalidateCookie.setMaxAge(0);
@@ -78,13 +84,13 @@ public class SocioService {
                 }
             }
         }
+        return Optional.empty();
     }
 
     @Transactional
     public Optional<Socio> findSocioById(int id) {
         return socioRepository.findById(id);
     }
-
 
     @Transactional
     public Socio newSocio(
@@ -131,6 +137,42 @@ public class SocioService {
         return socioRepository.save(socio);
     }
 
+    @Transactional
+    public Socio editSocioAndUtente(Integer socioId,
+                                    Integer utenteId,
+                                    Optional<String> name,
+                                    Optional<String> surname,
+                                    Optional<String> cf,
+                                    Optional<LocalDate> dob,
+                                    Optional<String> birthplace,
+                                    Optional<String> country,
+                                    Optional<String> province,
+                                    Optional<String> city,
+                                    Optional<String> street,
+                                    Optional<String> houseNumber,
+                                    Optional<String> email,
+                                    Optional<String> phoneNumber,
+                                    Optional<MultipartFile> profilePicture) throws ValidationException, EntityNotFoundException {
+        utenteService.editUtente(utenteId, name, surname, cf, dob, birthplace, country, province, city, street, houseNumber);
+        return editSocio(socioId, email, phoneNumber, profilePicture);
+    }
+
+    @Transactional
+    public Socio editSocio(Integer socioId,
+                           Optional<String> email,
+                           Optional<String> phoneNumber,
+                           Optional<MultipartFile> profilePicture) throws ValidationException, EntityNotFoundException {
+        Socio oldSocio = socioRepository.getReferenceById(socioId);
+        email.ifPresent(oldSocio::setEmail);
+        phoneNumber.ifPresent(oldSocio::setTelefono);
+        profilePicture.ifPresent(picture -> {
+            String filename = saveSocioProfilePicture(picture, oldSocio.getUtente().getCf());
+            oldSocio.setUrlFoto(filename);
+        });
+        Socio newSocio = validateSocio(oldSocio);
+        return socioRepository.save(newSocio);
+    }
+
     Socio validateAndParseSocio(String email,
                                 String password,
                                 String phoneNumber) throws ValidationException {
@@ -154,10 +196,39 @@ public class SocioService {
             }
         }
 
+        // Controlla se l'URL della foto è un URL valido e non supera gli 80 caratteri
+        /*if (photoUrl != null && !photoUrl.isEmpty()){
+            if (photoUrl.length() > 80 || !photoUrl.matches("^(ftp|http|https):\\/\\/[^ \"]+$")) {
+                return false;
+            }
+        }
+
+         */
+
         return new Socio(email, password, phoneNumber);
     }
 
-    public String saveSocioProfilePicture (MultipartFile picture, String cf) {
+    public boolean validatePassword(String password) {
+        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
+        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
+    }
+
+    public boolean validateEmail(String email) {
+        // Crea un'istanza di EmailValidator
+        EmailValidator emailValidator = EmailValidator.getInstance();
+        return emailValidator.isValid(email);
+    }
+
+    public boolean validatePhoneNumber(String phoneNumber) {
+        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
+        return phoneNumber != null && phoneNumber.matches("^[0-9]{10}$");
+    }
+
+    public Socio validateSocio(Socio socio) throws ValidationException {
+        return validateAndParseSocio(socio.getEmail(), socio.getPassword(), socio.getTelefono());
+    }
+
+    String saveSocioProfilePicture (MultipartFile picture, String cf) {
 
         if (picture == null || picture.isEmpty()) {
             return null;
@@ -183,7 +254,6 @@ public class SocioService {
     }
 
     public void sendEmail(Socio socio) {
-        /*
         final String username = "indirizzomail";
         final String password = "app password"; // replace with your password
 
@@ -219,18 +289,27 @@ public class SocioService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
-         */
     }
 
     @Transactional
-    public Optional<Socio> findById(Integer socioId) {
-        return socioRepository.findById(socioId);
+    public void deleteSocioAndUser(Integer socioId) {
+        socioRepository.findById(socioId).ifPresent(socio -> {
+            socio.setDeleted(true); // Imposta il socio come eliminato
+            socio.getUtente().setDeleted(true); // Imposta l'utente corrispondente come eliminato
+            socioRepository.save(socio); // Salva le modifiche nel database per il socio
+            utenteRepository.save(socio.getUtente()); // Salva le modifiche nel database per l'utente
+        });
     }
-
-    public boolean validatePassword(String password) {
-        // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
-        return password != null && password.length() <= 50 && password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,50}$");
+    @Transactional
+    public boolean updateSocioPassword(Integer socioId, String newPassword) {
+        Optional<Socio> socioOpt = findSocioById(socioId);
+        if (socioOpt.isPresent()) {
+            Socio socio = socioOpt.get();
+            socio.setPassword(newPassword);
+            socioRepository.save(socio);
+            return true; // Operation successful
+        }
+        return false; // Socio not found
     }
 
     @Transactional

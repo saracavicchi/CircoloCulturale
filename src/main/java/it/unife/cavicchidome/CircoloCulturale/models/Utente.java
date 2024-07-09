@@ -40,7 +40,7 @@ public class Utente {
     @OneToMany(mappedBy = "idUtente")
     private Set<Biglietto> biglietti = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "utente")
+    @OneToOne(mappedBy = "utente", cascade = CascadeType.ALL)
     private Socio socio;
 
     public Integer getId() {

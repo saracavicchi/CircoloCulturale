@@ -4,6 +4,7 @@ import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentExc
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,16 @@ public class UtenteService {
         this.utenteRepository = utenteRepository;
     }
 
+    Utente validateUtente(Utente utente) throws ValidationException {
+        String[] indirizzoSplit = utente.getIndirizzo().split(", ");
+        return validateAndParseUtente(utente.getNome(), utente.getCognome(), utente.getCf(), utente.getDataNascita(), utente.getLuogoNascita(), indirizzoSplit[0], indirizzoSplit[1], indirizzoSplit[2], indirizzoSplit[3], indirizzoSplit[4]);
+    }
+
     Utente validateAndParseUtente(String name,
                                   String surname,
                                   String cf,
                                   LocalDate dob,
-                                  String pob,
+                                  String birthplace,
                                   String country,
                                   String province,
                                   String city,
@@ -33,7 +39,7 @@ public class UtenteService {
         if (name == null || name.isEmpty()
                 || surname == null || surname.isEmpty()
                 || cf == null || cf.isEmpty()
-                || dob == null || pob == null || pob.isEmpty()
+                || dob == null || birthplace == null || birthplace.isEmpty()
                 || country == null || country.isEmpty()
                 || province == null || province.isEmpty()
                 || city == null || city.isEmpty()
@@ -58,7 +64,7 @@ public class UtenteService {
         }
 
         // Controlla che il luogo di nascita abbia al massimo 20 caratteri
-        if (pob.length() > 20) {
+        if (birthplace.length() > 20) {
             throw new ValidationException("Luogo di nascita troppo lungo");
         }
 
@@ -69,7 +75,7 @@ public class UtenteService {
 
         // Controlla che nome, cognome, luogo di nascita, stato, provincia, città e via siano formati solo da caratteri e non numeri
         String regex = "^[A-Za-z\\s]+$";
-        if (!name.matches(regex) || !surname.matches(regex) || !pob.matches(regex) || !country.matches(regex) || !province.matches(regex) || !city.matches(regex) || !street.matches(regex)) {
+        if (!name.matches(regex) || !surname.matches(regex) || !birthplace.matches(regex) || !country.matches(regex) || !province.matches(regex) || !city.matches(regex) || !street.matches(regex)) {
             throw new ValidationException("Campi non validi");
         }
 
@@ -84,7 +90,32 @@ public class UtenteService {
             throw new ValidationException("Codice fiscale non valido");
         }
 
-        return new Utente(cf, dob, pob, name, surname, country + ", " + province + ", " + city + ", " + street + ", " + houseNumber, false);
+        return new Utente(cf, dob, birthplace, name, surname, country + ", " + province + ", " + city + ", " + street + ", " + houseNumber, false);
+    }
+
+    @Transactional
+    public Utente editUtente(Integer utenteId,
+                             Optional<String> name,
+                             Optional<String> surname,
+                             Optional<String> cf,
+                             Optional<LocalDate> dob,
+                             Optional<String> birthplace,
+                             Optional<String> country,
+                             Optional<String> province,
+                             Optional<String> city,
+                             Optional<String> street,
+                             Optional<String> houseNumber) throws ValidationException, EntityNotFoundException {
+        Utente oldUtente = utenteRepository.getReferenceById(utenteId);
+        name.ifPresent(oldUtente::setNome);
+        surname.ifPresent(oldUtente::setCognome);
+        cf.ifPresent(oldUtente::setCf);
+        dob.ifPresent(oldUtente::setDataNascita);
+        birthplace.ifPresent(oldUtente::setLuogoNascita);
+        if (country.isPresent() && province.isPresent() && city.isPresent() && street.isPresent() && houseNumber.isPresent()) {
+            oldUtente.setIndirizzo(country.get() + ", " + province.get() + ", " + city.get() + ", " + street.get() + ", " + houseNumber.get());
+        }
+        Utente newUtente = validateUtente(oldUtente);
+        return utenteRepository.save(newUtente);
     }
 
     @Transactional
@@ -92,7 +123,7 @@ public class UtenteService {
                             String surname,
                             String cf,
                             LocalDate dob,
-                            String pob,
+                            String birthplace,
                             String country,
                             String province,
                             String city,
@@ -103,7 +134,7 @@ public class UtenteService {
             throw new EntityAlreadyPresentException(alreadyPresent);
         }
 
-        Utente utente = validateAndParseUtente(name, surname, cf, dob, pob, country, province, city, street, houseNumber);
+        Utente utente = validateAndParseUtente(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber);
         utente.setDeleted(false);
 
         return utenteRepository.save(utente);

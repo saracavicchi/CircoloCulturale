@@ -14,6 +14,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -97,7 +98,10 @@ public class AuthController {
     }
 
     @GetMapping("/signup")
-    public String viewSignup() {
+    public String viewSignup(HttpServletRequest request, HttpServletResponse response, Model model) {
+        if (socioService.setSocioFromCookie(request, response, model).isPresent()) {
+            return "redirect:/";
+        }
         return "signup";
     }
 
@@ -110,7 +114,7 @@ public class AuthController {
             @RequestParam String cf,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dob,
             @RequestParam String birthplace,
-            @RequestParam String state,
+            @RequestParam String country,
             @RequestParam String province,
             @RequestParam String city,
             @RequestParam String street,
@@ -119,12 +123,16 @@ public class AuthController {
             @RequestParam String password,
             @RequestParam String phoneNumber,
             @RequestParam("photo") MultipartFile photo,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            HttpServletResponse response,
+            HttpServletRequest request,
+            Model model
     ) {
         try {
-            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, state, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
-            redirectAttributes.addAttribute("registered", "true");
-            return "redirect:/login";
+            Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
+            redirectAttributes.addAttribute("tessera-id", socio.getTessera().getId());
+            redirectAttributes.addAttribute("redirect", "/signup");
+            return "redirect:/payment";
         } catch (ValidationException validExc) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";

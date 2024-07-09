@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
-/*
 @Controller
 @RequestMapping("/sede")
 public class SedeController {
@@ -32,7 +31,7 @@ public class SedeController {
                        HttpServletResponse response,
                        Model model) {
 
-        socioService.getSocioFromCookie(request, response, model);
+        socioService.setSocioFromCookie(request, response, model);
 
         // TODO: fix JSP return
         if (sedeId.isPresent()) {
@@ -47,4 +46,3 @@ public class SedeController {
         }
     }
 }
-*/
