@@ -16,11 +16,11 @@
         var errorMsg = "";
         function redirectToEditCorsoPage() {
             var courseId = '${corso.id}';
-            window.location.href = '/editCorso?idCorso=' + courseId;
+            window.location.href = '/corso/modificaBase?idCorso=' + courseId;
         }
         function redirectToEditCalendarioPage() {
             var courseId = '${corso.id}';
-            window.location.href = '/modificaCalendario?idCorso=' + courseId;
+            window.location.href = '/corso/modificaCalendario?idCorso=' + courseId;
         }
 
         document.addEventListener('DOMContentLoaded', function() {

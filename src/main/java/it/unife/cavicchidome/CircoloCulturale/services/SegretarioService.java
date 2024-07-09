@@ -13,11 +13,11 @@ import java.util.Optional;
 public class SegretarioService {
 
     SegretarioRepository segretarioRepository;
-    private final String commonPassword;
 
-    public SegretarioService(SegretarioRepository segretarioRepository, @Value("${segretario.common.password}") String commonPassword) {
+
+    //public SegretarioService(SegretarioRepository segretarioRepository, @Value("${segretario.common.password}") String commonPassword) {
+    public SegretarioService(SegretarioRepository segretarioRepository) {
         this.segretarioRepository = segretarioRepository;
-        this.commonPassword = commonPassword;
     }
 
     @Transactional
@@ -28,7 +28,7 @@ public class SegretarioService {
 
 
 
-    public boolean validateCommonPassword(String inputPassword) {
-        return this.commonPassword.equals(inputPassword);
-    }
+    //public boolean validateCommonPassword(String inputPassword) {
+       // return this.commonPassword.equals(inputPassword);
+    //}
 }

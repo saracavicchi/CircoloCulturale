@@ -3,9 +3,11 @@ import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Docente;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +15,8 @@ import it.unife.cavicchidome.CircoloCulturale.services.SalaService;
 import it.unife.cavicchidome.CircoloCulturale.services.DocenteService;
 import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,17 +33,23 @@ public class CorsoController {
     private final DocenteService docenteService;
     private final SocioService socioService;
     private final CorsoService corsoService;
+    private final CorsoRepository corsoRepository;
+
+    @Value("${file.corso.upload-dir}")
+    private String uploadDir;
 
     public CorsoController(
             CorsoService corsoService,
             SalaService salaService,
             DocenteService docenteService,
-            SocioService socioService
+            SocioService socioService,
+            CorsoRepository corsoRepository
     ) {
         this.salaService = salaService;
         this.docenteService = docenteService;
         this.socioService = socioService;
         this.corsoService = corsoService;
+        this.corsoRepository = corsoRepository;
     }
 
     @GetMapping("/crea")
@@ -71,7 +77,7 @@ public class CorsoController {
                             @RequestParam("livello") String livello,
                             @RequestParam("categoria") String categoria,
                             @RequestParam("idSala") Integer idSala,
-                            @RequestParam("foto") MultipartFile foto,
+                            @RequestParam("photo") MultipartFile foto,
                             @RequestParam("docenti") List<String> docenti,
                             @RequestParam("giorni") List<Integer> giorni,
                             @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioInizio,
@@ -86,53 +92,17 @@ public class CorsoController {
         if (!isValid) {
             // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/creazioneCorso"; // Adjust "errorView" to your actual error view name
+            return "redirect:/creazione-corso"; // Adjust "errorView" to your actual error view name
         }
 
         // If validation passes, proceed to save course information
         boolean saveSuccess = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
         if (!saveSuccess) {
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/creazioneCorso";
+            return "redirect:/creazione-corso";
         }
 
         return "redirect:/"; //TODO: Adjust "successView" to your actual success view name
-    }
-
-    @GetMapping("/modifica")
-    public String viewEdit(
-            @RequestParam("idCorso") Integer idCorso,
-            Model model
-    ) {
-
-        // Recupera le informazioni del corso tramite il suo ID
-        Optional<Corso> corso = corsoService.findCorsoById(idCorso);
-        if (!corso.isPresent()) {
-            // TODO:Gestisci il caso in cui il corso non viene trovato (es. reindirizzamento a una pagina di errore)
-            return "redirect:/paginaErrore";
-        }
-
-        // Aggiungi il corso al modello per poterlo visualizzare nella pagina JSP
-        model.addAttribute("corso", corso.get());
-
-        // Recupera e aggiungi al modello la lista dei docenti che insegnano il corso
-        Set<Docente> docenti = corso.get().getDocenti();
-        model.addAttribute("docenti", docenti);
-
-        // Recupera e aggiungi al modello il calendario di svolgimento del corso
-        Set<CalendarioCorso> calendario = corso.get().getCalendarioCorso();
-        model.addAttribute("calendario", calendario);
-
-        // Aggiungi al modello le informazioni aggiuntive necessarie per la pagina di modifica, come le sale disponibili
-        model.addAttribute("sale", salaService.findAll());
-
-        // Aggiungi al modello le informazioni sui soci (nome, cognome, cf) dei non segretari
-        List<Object[]> sociInfo = socioService.findSociNotSegretari();
-        model.addAttribute("sociInfo", sociInfo);
-
-
-
-        return "modifica-corso"; // Nome della JSP da visualizzare
     }
 
     @GetMapping("/info")
@@ -180,5 +150,167 @@ public class CorsoController {
             redirectAttributes.addAttribute("error", "true");
             return "redirect:/corso/info?id=" + corsoId;
         }
+    }
+
+    @GetMapping("/modificaBase")
+    public String viewEdit(
+            @RequestParam("idCorso") Integer idCorso,
+            Model model
+    ) {
+        // Recupera le informazioni del corso tramite il suo ID
+        Optional<Corso> corso = corsoService.findById(idCorso);
+        if (!corso.isPresent()) {
+            // TODO:Gestisci il caso in cui il corso non viene trovato (es. reindirizzamento a una pagina di errore)
+            return "redirect:/paginaErrore";
+        }
+        // Aggiungi il corso al modello per poterlo visualizzare nella pagina JSP
+        model.addAttribute("corso", corso.get());
+
+        model.addAttribute("uploadDir", uploadDir);
+        model.addAttribute("placeholderImage", "profilo.jpg");
+
+        return "modifica-corso"; // Nome della JSP da visualizzare
+    }
+
+    @PostMapping("/modificaBase")
+    public String updateCorso(
+            @RequestParam("idCorso") Integer idCorso,
+            @RequestParam("descrizione") String descrizione,
+            @RequestParam("genere") String genere,
+            @RequestParam("livello") String livello,
+            @RequestParam("categoria") String categoria,
+            @RequestParam("photo") Optional<MultipartFile> photo,
+            RedirectAttributes redirectAttributes
+    ) {
+        // Validate course data first
+        boolean isValid = corsoService.validateBasicInfo(descrizione, genere, livello, categoria);
+        if (!isValid) {
+            // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
+            redirectAttributes.addAttribute("fail", "true");
+            return "redirect:/"; //TODO: vedere come gestire meglio
+        }
+
+        Optional<Corso> corsoOpt = corsoService.findById(idCorso);
+        if (!corsoOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Corso non trovato.");
+            return "redirect:/paginaErrore"; //TODO: GESTIRE MEGLIO
+        }
+
+        //TODO: Rendere transazionale
+        //TODO: verificare unique
+        Corso corso = corsoOpt.get();
+        corso.setDescrizione(descrizione);
+        corso.setGenere(genere);
+        corso.setLivello(livello);
+        corso.setCategoria(categoria);
+
+
+        corsoRepository.save(corso); // Assuming you have a save method in your service
+
+        return "redirect:/"; //TODO: pagina visualizzazione corsi
+    }
+
+    @GetMapping("/modificaDocenti")
+    public String modificaDocenti(
+            @RequestParam("idCorso") Integer idCorso,
+            Model model
+    ) {
+        Optional<Corso> corsoOpt = corsoService.findById(idCorso);
+        if (!corsoOpt.isPresent()) {
+            // Gestisci il caso in cui il corso non viene trovato
+            return "redirect:/paginaErrore";
+        }
+        Corso corso = corsoOpt.get();
+
+        // Aggiungi il corso al modello
+        model.addAttribute("corso", corso);
+
+        // Aggiungi l'elenco dei docenti correnti al modello
+        List<Docente> docentiCorso = new ArrayList<>(corso.getDocenti());
+        Collections.sort(docentiCorso, Comparator.comparingInt(Docente::getId));
+        model.addAttribute("docentiCorso", docentiCorso);
+
+        // Ottieni e aggiungi l'elenco di tutti i docenti disponibili al modello
+        List<Docente> tuttiIDocenti = docenteService.findAll();
+        model.addAttribute("tuttiIDocenti", tuttiIDocenti);
+
+        List<Object[]> sociInfo = socioService.findSociNotDocentiAndNotSegretariByIdCorso(idCorso);
+        model.addAttribute("sociInfo", sociInfo);
+
+        return "modificaDocenti"; // Nome della JSP da visualizzare
+    }
+
+    @PostMapping("/modificaDocenti")
+    public String updateDocenti(
+            @RequestParam("idCorso") Integer idCorso,
+            @RequestParam("docentiDaEliminare") Optional<List<Integer>> deletedDocentiId,
+            @RequestParam("stipendiAttuali") List<Integer> stipendiAttuali,
+            @RequestParam("nuoviDocenti") Optional<List<String>> docentiCf,
+            @RequestParam("stipendi") Optional<List<Integer>> stipendi,
+            RedirectAttributes redirectAttributes
+    ) {
+
+        boolean updateSuccess = corsoService.updateDocenti(idCorso, deletedDocentiId, docentiCf, stipendiAttuali, stipendi);
+
+        if (!updateSuccess) {
+            redirectAttributes.addAttribute("fail", "true");
+            return "redirect:/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
+        }
+
+
+
+
+        return "redirect:/"; //TODO: Adjust the redirect as necessary
+    }
+
+
+
+    @GetMapping("/modificaCalendario")
+    public String viewModificaCalendario(
+            @RequestParam("idCorso") Integer idCorso,
+            Model model
+    ) {
+        Optional<Corso> corsoOpt = corsoService.findById(idCorso);
+        if (!corsoOpt.isPresent()) {
+            // Gestisci il caso in cui il corso non viene trovato
+            return "redirect:/paginaErrore";
+        }
+        Corso corso = corsoOpt.get();
+
+        // Aggiungi il corso al modello
+        model.addAttribute("corso", corso);
+        Set<CalendarioCorso> calendarioCorso = corso.getCalendarioCorso();
+        Set<CalendarioCorso> calendariAttivi = calendarioCorso.stream()
+                .filter(CalendarioCorso::getActive)
+                .collect(Collectors.toSet());
+        model.addAttribute("calendarioCorso", calendariAttivi);
+
+        // Aggiungi al modello le informazioni aggiuntive necessarie per la pagina di modifica, come le sale disponibili
+        model.addAttribute("sale", salaService.findAll());
+
+        // Restituisci il nome della JSP da visualizzare
+        return "modificaCalendario"; // Nome della JSP da visualizzare
+    }
+
+    @PostMapping("/modificaCalendario")
+    public String updateCalendario(
+            @RequestParam("idCorso") Integer idCorso,
+            @RequestParam("giorni") List<Integer> giorni,
+            @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orariInizio,
+            @RequestParam("orariFine") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orariFine,
+            @RequestParam("idSala") Integer idSala,
+            RedirectAttributes redirectAttributes
+    ) {
+        boolean updateSuccess = corsoService.updateCourseSchedule(idCorso, giorni, orariInizio, orariFine, idSala);
+
+        if (!updateSuccess) {
+            redirectAttributes.addAttribute("fail", "true");
+            return "redirect:/modificaCalendario?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
+        }
+
+
+
+        redirectAttributes.addAttribute("successMessage", "Calendario aggiornato con successo.");
+        return "redirect:/"; //TODO: pagina visualizzazione corsi
     }
 }

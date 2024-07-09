@@ -150,12 +150,12 @@
         }
         function redirectToEditDocentiPage() {
             var courseId = '${corso.id}';
-            window.location.href = '/modificaDocenti?idCorso=' + courseId;
+            window.location.href = '/corso/modificaDocenti?idCorso=' + courseId;
         }
 
         function redirectToEditCorsoPage() {
             var courseId = '${corso.id}';
-            window.location.href = '/editCorso?idCorso=' + courseId;
+            window.location.href = '/corso/modificaBase?idCorso=' + courseId;
         }
     </script>
 </head>

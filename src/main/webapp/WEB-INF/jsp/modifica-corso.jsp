@@ -14,12 +14,12 @@
     <script>
         function redirectToEditDocentiPage() {
             var courseId = '${corso.id}';
-            window.location.href = '/modificaDocenti?idCorso=' + courseId;
+            window.location.href = '/corso/modificaDocenti?idCorso=' + courseId;
         }
 
         function redirectToEditCalendarioPage() {
             var courseId = '${corso.id}';
-            window.location.href = '/modificaCalendario?idCorso=' + courseId;
+            window.location.href = '/corso/modificaCalendario?idCorso=' + courseId;
         }
 
         var errorDisplayed = false;
@@ -175,7 +175,7 @@
 <div>
     <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
 </div>
-<form id="editCorsoForm" action="editCorso" method="post">
+<form id="editCorsoForm" action="modificaBase" method="post">
     <input type="hidden" name="idCorso" value="${corso.id}"/>
 
     <label for="photo">Seleziona una nuova foto per il corso:</label>

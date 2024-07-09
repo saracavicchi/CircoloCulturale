@@ -34,12 +34,12 @@ import org.springframework.beans.factory.annotation.Value;
 public class socioProfileController {
 
     private final SegretarioRepository segretarioRepository;
-    private UtenteService utenteService;
-    private SocioService socioService;
-    private UtenteRepository utenteRepository;
-    private SocioRepository socioRepository;
-    private SegretarioService segretarioService;
-    @Value("${file.upload-dir}")
+    private final UtenteService utenteService;
+    private final SocioService socioService;
+    private final UtenteRepository utenteRepository;
+    private final SocioRepository socioRepository;
+    private final SegretarioService segretarioService;
+    @Value("${file.socio.upload-dir}")
     private String uploadDir;
 
     socioProfileController(
@@ -94,8 +94,8 @@ public class socioProfileController {
         // Aggiunge i dati del socio e dell'utente al modello
         model.addAttribute("socio", socio);
         model.addAttribute("utente", utente);
-        String placeholderImagePath = uploadDir + "profilo.jpg"; // Costruisci il percorso completo del placeholder
-        model.addAttribute("placeholderImagePath", placeholderImagePath);
+        model.addAttribute("uploadDir", uploadDir);
+        model.addAttribute("placeholderImage", "profilo.jpg");
 
         redirectAttributes.addAttribute("socioId", socioId);
         // Verifica se il Socio è anche un Segretario
@@ -243,11 +243,11 @@ public class socioProfileController {
     ) {
         final String PASSWORD = "PASSWORD"; // Assumed constant password value
 
-        if (!segretarioService.validateCommonPassword(password)) {
+        /*if (!segretarioService.validateCommonPassword(password)) {
             redirectAttributes.addAttribute("socioId", socioId);
             redirectAttributes.addAttribute("failSocioMod", "true");
             return "redirect:/socioProfile";
-        }
+        }*/
         redirectAttributes.addAttribute("segretario", "true");
 
 
