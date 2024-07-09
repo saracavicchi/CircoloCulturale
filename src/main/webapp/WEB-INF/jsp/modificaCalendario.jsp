@@ -16,7 +16,10 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
-
+            var fail = "${param.fail}";
+            if (fail == 'true') {
+                scrollToErrorMsg();
+            }
 
         });
         function initCreaCorsoForm() {

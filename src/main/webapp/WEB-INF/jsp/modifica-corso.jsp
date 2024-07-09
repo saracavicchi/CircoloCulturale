@@ -23,8 +23,15 @@
         }
 
         var errorDisplayed = false;
+
         document.addEventListener('DOMContentLoaded', function () {
             initEditCorsoForm();
+            handleCancellaCorsoFormSubmission()
+            var fail = "${param.fail}";
+            if (fail == 'true') {
+                scrollToErrorMsg();
+            }
+
         });
 
         function initEditCorsoForm() {
@@ -168,6 +175,19 @@
             }
         }
 
+        function handleCancellaCorsoFormSubmission() {
+
+            document.getElementById('cancellaCorsoForm').addEventListener('submit', confirmDisiscrizione);
+        }
+
+        function confirmDisiscrizione(event) {
+            var confirmDeletion = document.getElementById('confirmDeletion');
+            if (!confirmDeletion.checked) {
+                alert('Per favore, conferma se sei sicuro di voler cancellare il corso.');
+                event.preventDefault(); // Prevent form submission
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -207,6 +227,15 @@
 </form>
 <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
 <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+
+<p>Cancellazione Corso</p>
+<form id="cancellaCorsoForm" action="elimina" method="POST">
+    <input type="hidden" name="idCorso" value="${corso.id}" />
+    <label for="confirmDeletion">Sei sicuro?</label>
+    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+    <button type="submit">Cancella Corso</button>
+</form>
+
 
 </body>
 </html>

@@ -298,4 +298,19 @@ public class CorsoController {
         redirectAttributes.addAttribute("successMessage", "Calendario aggiornato con successo.");
         return "redirect:/corso/info";
     }
+
+    @PostMapping("/elimina")
+    public String eliminaCorso(
+            @RequestParam("idCorso") Integer idCorso,
+            RedirectAttributes redirectAttributes) {
+        boolean deleteSuccess = corsoService.deleteCourse(idCorso);
+
+        if (!deleteSuccess) {
+            redirectAttributes.addAttribute("fail", "true");
+            return "redirect:/corso/info?id=" + idCorso;
+        }
+
+        redirectAttributes.addAttribute("successMessage", "Corso eliminato con successo.");
+        return "redirect:/"; //TODO: vedere come gestire meglio
+    }
 }

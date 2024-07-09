@@ -46,6 +46,7 @@
             initProfileForm();
             checkSegretarioAndSetupForm();
             handleEliminaSocioFormSubmission();
+
             var failSocioMod = "${param.failSocioMod}";
             if (failSocioMod == 'true') {
                 scrollToErrorMsg();
@@ -66,8 +67,9 @@
 
         function handleEliminaSocioFormSubmission() {
 
-            document.getElementById('modificaCredenziali').addEventListener('submit', confirmDisiscrizione);
+            document.getElementById('eliminaSocioForm').addEventListener('submit', confirmDisiscrizione);
         }
+
 
         function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
@@ -353,7 +355,7 @@
 </c:if>
 
 <p>Disiscrizione dal Circolo Culturale</p>
-<form action="eliminaSocio" method="POST">
+<form id="eliminaSocioForm" action="eliminaSocio" method="POST">
     <input type="hidden" name="socioIdElimina" value="${socio.id}" />
     <input type="hidden" name="segretario" value="${segretario}" />
     <label for="confirmUnsubscribe">Sei sicuro?</label>

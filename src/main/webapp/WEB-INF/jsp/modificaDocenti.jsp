@@ -25,7 +25,11 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             initForm();
-           gestisciStipendiDocenti();
+            gestisciStipendiDocenti();
+            var fail = "${param.fail}";
+            if (fail == 'true') {
+                scrollToErrorMsg();
+            }
         });
 
         function gestisciStipendiDocenti() {

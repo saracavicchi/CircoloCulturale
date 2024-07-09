@@ -22,7 +22,7 @@ public interface CalendarioCorsoRepository extends JpaRepository<CalendarioCorso
     @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.active = true")
     List<CalendarioCorso> findByCorsoId( Integer corsoId);
 
-    @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.id.giornoSettimana = :giorno AND cc.active = true")
+    @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.id.giornoSettimana = :giorno")
     Optional<CalendarioCorso> findByCorsoAndGiornoSettimanaId(Integer corsoId, Weekday giorno);
 
 }

@@ -131,9 +131,17 @@ public class CorsoService {
             List<LocalTime> orarioInizio,
             List<LocalTime> orarioFine,
             MultipartFile photo) {
-        // Step 1: Check for existing course
-        if (corsoRepository.findByCategoriaAndGenereAndLivello(categoria, genere, livello).isPresent()) {
-            return false; // Course already exists
+
+        boolean reactivated = false;
+
+        Optional<Corso> corsoIdentical = corsoRepository.findByCategoriaAndGenereAndLivello(categoria, genere, livello);
+        if(corsoIdentical.isPresent() ) {
+            if(corsoIdentical.get().getActive() == true)
+                return false; //Corso Attivo già esistente
+            else {
+                corsoIdentical.get().setActive(true);
+                reactivated = true;
+            }
         }
 
         // Step 2: Fetch Sala
@@ -181,13 +189,19 @@ public class CorsoService {
         }
 
 
-
+        Corso corso;
         // Step 6: Save Course Information
-        Corso corso = new Corso();
+        if(!reactivated){
+            corso = new Corso();
+            corso.setGenere(genere);
+            corso.setLivello(livello);
+            corso.setCategoria(categoria);
+        }
+        else{
+            corso=corsoIdentical.get();
+        }
+
         corso.setDescrizione(descrizione);
-        corso.setGenere(genere);
-        corso.setLivello(livello);
-        corso.setCategoria(categoria);
         corso.setIdSala(sala);
         corso.setDocenti(docenti);
         corso.setActive(true);
@@ -607,9 +621,23 @@ public class CorsoService {
             }
         }
 
-
-
-
         return true; // Operazione completata con successo
+    }
+
+    @Transactional
+    public boolean deleteCourse(Integer idCorso) {
+        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        if (!corsoOpt.isPresent()) {
+            return false; // Corso non trovato
+        }
+        Corso corso = corsoOpt.get();
+        corso.setActive(false);
+        corso.setDocenti(null);
+        List<CalendarioCorso> calendarioCorso = calendarioCorsoRepository.findByCorsoId(idCorso);
+        for (CalendarioCorso calendario : calendarioCorso) {
+            calendario.setActive(false);
+        }
+        corsoRepository.save(corso);
+        return true;
     }
 }
