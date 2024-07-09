@@ -143,6 +143,7 @@ public class CorsoService {
                 reactivated = true;
             }
         }
+        System.out.println("reactivated: " + reactivated);
 
         // Step 2: Fetch Sala
         Sala sala = salaRepository.findById(idSala).orElse(null);
@@ -212,7 +213,7 @@ public class CorsoService {
         }
         corsoRepository.save(corso);
 
-        for (Integer giorno: giorni) {
+        /*for (Integer giorno: giorni) {
             CalendarioCorso calendarioCorso = new CalendarioCorso();
             CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
             calendarioCorsoId.setIdCorso(corso.getId()); // Assuming getId() method exists in Corso
@@ -230,7 +231,71 @@ public class CorsoService {
             calendarioCorso.setOrarioFine(orarioFine.get(giorno-1));
             calendarioCorso.setActive(true);
             calendarioCorsoRepository.save(calendarioCorso);
+        }*/
+
+        Set<CalendarioCorso> nuovoCalendarioCorso = new HashSet<>();
+        for (Integer giorno: giorni) {
+            Weekday weekday;
+            try{
+                weekday = Weekday.fromDayNumber(giorno);
+                System.out.println(weekday);
+            }catch (IllegalArgumentException e){
+                return false;
+            }
+
+            if(reactivated) {
+                Optional<CalendarioCorso> existingEntryOpt = calendarioCorsoRepository.findByCorsoAndGiornoSettimanaId(corso.getId(), weekday);
+
+                if (existingEntryOpt.isPresent()) {
+                    System.out.println(existingEntryOpt.get().getGiornoSettimana());
+                    CalendarioCorso existingEntry = existingEntryOpt.get();
+                    System.out.println(orarioInizio.get(giorno - 1));
+                    existingEntry.setOrarioInizio(orarioInizio.get(giorno - 1));
+                    existingEntry.setOrarioFine(orarioFine.get(giorno - 1));
+                    existingEntry.setActive(true);
+                    calendarioCorsoRepository.save(existingEntry);
+                    nuovoCalendarioCorso.add(existingEntry);
+                } else {
+                    // Create new entry
+                    CalendarioCorso newCalendario = new CalendarioCorso();
+                    CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
+                    ;
+                    calendarioCorsoId.setGiornoSettimana(weekday);
+                    calendarioCorsoId.setIdCorso(corso.getId());
+                    newCalendario.setId(calendarioCorsoId);
+                    newCalendario.setIdCorso(corso);
+                    newCalendario.setActive(true);
+                    newCalendario.setOrarioInizio(orarioInizio.get(giorno - 1));
+                    newCalendario.setOrarioFine(orarioFine.get(giorno - 1));
+                    calendarioCorsoRepository.save(newCalendario);
+                    nuovoCalendarioCorso.add(newCalendario);
+                }
+            }else{
+                CalendarioCorso newCalendario = new CalendarioCorso();
+                CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
+                ;
+                calendarioCorsoId.setGiornoSettimana(weekday);
+                calendarioCorsoId.setIdCorso(corso.getId());
+                newCalendario.setId(calendarioCorsoId);
+                newCalendario.setIdCorso(corso);
+                newCalendario.setActive(true);
+                newCalendario.setOrarioInizio(orarioInizio.get(giorno - 1));
+                newCalendario.setOrarioFine(orarioFine.get(giorno - 1));
+                calendarioCorsoRepository.save(newCalendario);
+                nuovoCalendarioCorso.add(newCalendario);
+            }
+
         }
+
+
+        if (!corso.getIdSala().equals(idSala)) {
+            Sala newSala = salaRepository.findById(idSala).orElseThrow(() -> new IllegalStateException("Sala not found"));
+            corso.setIdSala(newSala);
+
+        }
+
+        corso.setCalendarioCorso(nuovoCalendarioCorso);
+        corsoRepository.save(corso);
 
         return true;
     }

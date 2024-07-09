@@ -92,17 +92,17 @@ public class CorsoController {
         if (!isValid) {
             // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/creazione-corso"; // Adjust "errorView" to your actual error view name
+            return "redirect:/corso/creazione-corso"; // Adjust "errorView" to your actual error view name
         }
 
         // If validation passes, proceed to save course information
         boolean saveSuccess = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
         if (!saveSuccess) {
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/creazione-corso";
+            return "redirect:/corso/creazione-corso";
         }
 
-        return "redirect:/"; //TODO: Adjust "successView" to your actual success view name
+        return "redirect:/corso/info"; //TODO: Adjust "successView" to your actual success view name
     }
 
     @GetMapping("/info")
@@ -125,7 +125,7 @@ public class CorsoController {
                 if (socio.isPresent()) {
                     model.addAttribute("isEnrolled", corsoService.isEnrolled(corso.get(), socio.get()));
                 }
-                return "corso-info";
+                return "corso/info?id=" + corsoId;
             }
         }
 

@@ -307,7 +307,7 @@
 <%
     }
 %>
-<form id="creaCorsoForm" action="creazioneCorso" method="post" enctype="multipart/form-data">
+<form id="creaCorsoForm" action="crea" method="post" enctype="multipart/form-data">
     Descrizione: <input type="text" id="descrizione" name="descrizione" required><br>
     Genere: <input type="text" id="genere" name="genere" required><br>
     Livello: <input type="text" id="livello" name="livello" required><br>

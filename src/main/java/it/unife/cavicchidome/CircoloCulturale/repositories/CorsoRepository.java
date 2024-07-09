@@ -19,7 +19,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     @Query("SELECT DISTINCT c.livello FROM Corso c")
     List<String> findDistinctLivello();
 
-    @Query("SELECT c FROM Corso c WHERE c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello AND c.active = true")
+    @Query("SELECT c FROM Corso c WHERE c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello")
     Optional<Corso> findByCategoriaAndGenereAndLivello(@Param("categoria") String categoria, @Param("genere") String genere, @Param("livello") String livello);
 
     @Query("SELECT c FROM Corso c WHERE c.id = :idCorso AND c.active = true")
