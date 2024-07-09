@@ -15,10 +15,7 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaSaggioForm();
-            var failSocioMod = "${param.failSocioMod}";
-            if (failSocioMod == 'true') {
-                scrollToErrorMsg();
-            }
+
 
         });
         function initCreaSaggioForm() {
@@ -147,7 +144,7 @@
                     }
                 }
             }
-            if(errorMsg != "") {
+            if(errorMessageElement) {
                 scrollToErrorMsg();
             }
 
