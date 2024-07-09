@@ -41,17 +41,4 @@ public class HomepageController {
         return "index";
     }
 
-    @GetMapping("/home")
-    public String viewHome(@CookieValue(name = "socio-id", required = false) Optional<Integer> socioId,
-                           Model model) {
-        if (socioId.isPresent()) {
-            Optional<Socio> socio = socioService.findSocioById(socioId.get());
-            if (socio.isPresent()) {
-                model.addAttribute("socio", socio.get());
-            }
-            return "home";
-        } else {
-            return "redirect:/";
-        }
-    }
 }

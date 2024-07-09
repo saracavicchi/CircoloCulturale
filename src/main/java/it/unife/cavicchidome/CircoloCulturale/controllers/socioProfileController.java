@@ -10,6 +10,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -31,28 +32,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/socio")
 public class socioProfileController {
 
-    private final SegretarioRepository segretarioRepository;
-    private UtenteService utenteService;
-    private SocioService socioService;
-    private UtenteRepository utenteRepository;
-    private SocioRepository socioRepository;
-    private SegretarioService segretarioService;
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final SocioService socioService;
 
     socioProfileController(
-            UtenteService utenteService,
-            SocioService socioService,
-            UtenteRepository utenteRepository,
-            SocioRepository socioRepository,
-            SegretarioService segretarioService,
-            SegretarioRepository segretarioRepository) {
-        this.utenteService = utenteService;
+            SocioService socioService) {
         this.socioService = socioService;
-        this.utenteRepository = utenteRepository;
-        this.socioRepository = socioRepository;
-        this.segretarioService = segretarioService;
-        this.segretarioRepository = segretarioRepository;
     }
 
 
@@ -83,15 +67,10 @@ public class socioProfileController {
 
         // Aggiunge i dati del socio e dell'utente al modello
         model.addAttribute("socio", socio);
-        String placeholderImagePath = uploadDir + "profilo.jpg"; // Costruisci il percorso completo del placeholder
-        model.addAttribute("placeholderImagePath", placeholderImagePath);
-
-        redirectAttributes.addAttribute("socioId", socio.getId());
-        // Verifica se il Socio è anche un Segretario
-        if (socio.getSegretario() != null) {
-            // Se il socio è anche un segretario, aggiungi attributo
-            model.addAttribute("segretario", "true");
+        if (socio.getUrlFoto() == null || socio.getUrlFoto().isEmpty()) {
+            socio.setUrlFoto("profilo.jpg");
         }
+        model.addAttribute("socio", socio);
 
         // Restituisce la vista socio-profile.jsp con i dati
         return "socio-profile";
@@ -245,37 +224,37 @@ public class socioProfileController {
 
     }
 
-    @PostMapping("/segretarioModificaSocio")
-    public String modificaSocioInfo(
-            @RequestParam("socioId") Integer socioId,
-            @RequestParam("cfSocio") String cf,
-            @RequestParam("password") String password,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
-        final String PASSWORD = "PASSWORD"; // Assumed constant password value
-
-        if (!segretarioService.validateCommonPassword(password)) {
-            redirectAttributes.addAttribute("socioId", socioId);
-            redirectAttributes.addAttribute("failSocioMod", "true");
-            return "redirect:/socioProfile";
-        }
-        redirectAttributes.addAttribute("segretario", "true");
-
-
-        Optional<Utente> utenteOpt = utenteService.findByCf(cf);
-        if (utenteOpt.isPresent()) {
-            Optional<Socio> socioOpt = socioService.findSocioById(utenteOpt.get().getId());
-            if (socioOpt.isPresent()) {
-                redirectAttributes.addAttribute("socioId", socioOpt.get().getId());
-                return "redirect:/socioProfile";
-            }
-        }
-        redirectAttributes.addAttribute("socioId", socioId);
-        redirectAttributes.addAttribute("failSocioMod", "true");
-        return "redirect:/socioProfile";
-
-    }
+//    @PostMapping("/segretarioModificaSocio")
+//    public String modificaSocioInfo(
+//            @RequestParam("socioId") Integer socioId,
+//            @RequestParam("cfSocio") String cf,
+//            @RequestParam("password") String password,
+//            Model model,
+//            RedirectAttributes redirectAttributes
+//    ) {
+//        final String PASSWORD = "PASSWORD"; // Assumed constant password value
+//
+//        if (!segretarioService.validateCommonPassword(password)) {
+//            redirectAttributes.addAttribute("socioId", socioId);
+//            redirectAttributes.addAttribute("failSocioMod", "true");
+//            return "redirect:/socioProfile";
+//        }
+//        redirectAttributes.addAttribute("segretario", "true");
+//
+//
+//        Optional<Utente> utenteOpt = utenteService.findByCf(cf);
+//        if (utenteOpt.isPresent()) {
+//            Optional<Socio> socioOpt = socioService.findSocioById(utenteOpt.get().getId());
+//            if (socioOpt.isPresent()) {
+//                redirectAttributes.addAttribute("socioId", socioOpt.get().getId());
+//                return "redirect:/socioProfile";
+//            }
+//        }
+//        redirectAttributes.addAttribute("socioId", socioId);
+//        redirectAttributes.addAttribute("failSocioMod", "true");
+//        return "redirect:/socioProfile";
+//
+//    }
 
     @PostMapping("/eliminaSocio") //TODO: GESTIRE TRANSAZIONALITà
     public String eliminaSocio(
