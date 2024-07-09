@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
 </head>
 <body>
-    <%-- <%@include file="/static/include/header.jsp"%> --%>
+    <%@include file="/static/include/header.jsp"%>
     <div id="main-content">
         <main class="clearfix midleft">
             <section class="title">

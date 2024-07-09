@@ -217,7 +217,7 @@
     </script>
 </head>
 <body>
-<%-- <%@include file="/static/include/top-bar.jsp"%> --%>
+<%@include file="/static/include/top-bar.jsp"%>
 <div id="main-content">
     <main class="fullsize">
         <section class="title">
