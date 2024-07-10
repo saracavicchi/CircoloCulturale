@@ -1,3 +1,4 @@
+<%@page import="it.unife.cavicchidome.CircoloCulturale.models.Socio"%>
 <aside class="smallright">
     <section class="title">
         <!-- TODO: sistemare encoding UTF-8 -->
@@ -11,9 +12,7 @@
             <li><a href="/socio/prenotazioni">Prenotazioni</a></li>
         </ul>
     </section>
-</aside>
-<% if (request.getAttribute("socio") != null && ((Socio) request.getAttribute("socio")).getDocente() != null) { %>
-<aside class="smallright">
+<% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDocente() != null) { %>
     <section class="title">
         <h1>Menù docente</h1>
     </section>
@@ -23,10 +22,8 @@
             <li><a href="/docente/lezioni/aggiungi">Aggiungi Lezione</a></li>
         </ul>
     </section>
-</aside>
 <% } %>
-<% if (request.getAttribute("socio") != null && ((Socio) request.getAttribute("socio")).getSegretario() != null) { %>
-<aside class="smallright">
+<% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getSegretario() != null) { %>
     <section class="title">
         <h1>Menù segretario</h1>
     </section>
@@ -38,5 +35,5 @@
             <li><a href="/segretario/prenotazioni">Prenotazioni</a></li>
         </ul>
     </section>
-</aside>
 <% } %>
+</aside>

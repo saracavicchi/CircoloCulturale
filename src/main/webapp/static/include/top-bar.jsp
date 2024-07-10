@@ -18,7 +18,7 @@
 </script>
 <div id="top-bar">
     <section id="accountInfo">
-        <% if (request.getAttribute("socio") != null) { %>
+        <% if (request.getAttribute("socioHeader") != null) { %>
         <p>
             <a href="/socio/profile">${socioHeader.utente.nome} ${socioHeader.utente.cognome}</a>
         </p>

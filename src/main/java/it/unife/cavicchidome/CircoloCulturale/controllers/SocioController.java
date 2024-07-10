@@ -1,14 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.models.Utente;
-import it.unife.cavicchidome.CircoloCulturale.models.Segretario;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SegretarioRepository;
-import it.unife.cavicchidome.CircoloCulturale.services.SegretarioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
-import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.UtenteRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,17 +17,16 @@ import java.util.Optional;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
 @Controller
 @RequestMapping("/socio")
-public class socioProfileController {
+public class SocioController {
 
     private final SocioService socioService;
 
-    socioProfileController(
+    SocioController(
             SocioService socioService) {
         this.socioService = socioService;
     }
@@ -47,7 +39,7 @@ public class socioProfileController {
             HttpServletResponse response,
             @RequestParam("socio-id") Optional<Integer> socioId
     ) {
-
+        // TODO: far vedere se si tratta di socio cancellato
         Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
 
         if (socioCookie.isEmpty()) {
@@ -59,7 +51,7 @@ public class socioProfileController {
             if (socioCookie.get().getSegretario() != null) {
                 socio = socioService.findSocioById(socioId.get()).get();
             } else {
-                return "redirect:/forbidden";
+                return "redirect:/";
             }
         } else {
             socio = socioCookie.get();
@@ -136,7 +128,7 @@ public class socioProfileController {
                     socio = socioService.findSocioById(socioId.get()).get();
                     redirectTo = "?socio-id=" + socioId.get();
                 } else {
-                    return "redirect:/forbidden";
+                    return "redirect:/";
                 }
             } else {
                 redirectAttributes.addAttribute("failed", "true");
@@ -199,7 +191,7 @@ public class socioProfileController {
                     socio = socioService.findSocioById(socioId.get()).get();
                     redirectTo = "?socio-id=" + socioId.get();
                 } else {
-                    return "redirect:/forbidden";
+                    return "redirect:/";
                 }
             } else {
                 redirectAttributes.addAttribute("passwordFailed", "true");
@@ -221,33 +213,46 @@ public class socioProfileController {
         }
     }
 
-    @PostMapping("/eliminaSocio") //TODO: GESTIRE TRANSAZIONALITà
+    @PostMapping("/elimina") //TODO: GESTIRE TRANSAZIONALITà
     public String eliminaSocio(
-            @RequestParam("socioIdElimina") Integer socioId,
-            @CookieValue("socio-id") Integer socioIdCookie,
-            @RequestParam("segretario") Optional<String> segretario,
+            @CookieValue("socio-id") Optional<Integer> socioId,
             HttpServletResponse response,
+            HttpServletRequest request,
             RedirectAttributes redirectAttributes
     ) {
-        Optional<Socio> socioOpt = socioService.findSocioById(socioId);
-        if (socioOpt.isPresent()) {
-            socioService.deleteSocioAndUser(socioId);
-        } else {
-            redirectAttributes.addAttribute("fail", "true");
-            redirectAttributes.addAttribute("socioId", socioId);
-            return "redirect:/socioProfile";
-        }
+        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response);
 
-        if (segretario.isPresent() && segretario.get().equals("true") && !socioId.equals(socioIdCookie)) {
-            // Se l'utente è un segretario, reindirizza al profilo del segretario
-            return "redirect:/socioProfile?socioId=" + socioIdCookie;
-        } else {
-            // Se l'utente non è un segretario o è un segretario che sta eliminando il suo profilo, reindirizza alla homepage
-            Cookie socioCookie = new Cookie("socio-id", null);
-            socioCookie.setMaxAge(0);// Invalida il cookie
-            response.addCookie(socioCookie);
+        if (socioCookie.isEmpty()) {
             return "redirect:/";
         }
+
+        Socio socio;
+        String redirectTo;
+
+        if (socioId.isPresent()) {
+            if (socioId.get().equals(socioCookie.get().getId())) {
+                socio = socioCookie.get();
+                redirectTo = "";
+            } else if (socioService.findSocioById(socioId.get()).isPresent()) {
+                if (socioCookie.get().getSegretario() != null) {
+                    socio = socioService.findSocioById(socioId.get()).get();
+                    redirectTo = "?socio-id=" + socioId.get();
+                } else {
+                    return "redirect:/";
+                }
+            } else {
+                redirectAttributes.addAttribute("deleteFailed", "true");
+                return "redirect:/socio/profile?socio-id=" + socioId.get();
+            }
+        } else {
+            socio = socioCookie.get();
+            redirectTo = "";
+        }
+
+        socioService.deleteSocioAndUser(socio.getId());
+
+        redirectAttributes.addAttribute("deleteSuccess", "true");
+        return "redirect:/socio/profile" + redirectTo;
     }
 }
 

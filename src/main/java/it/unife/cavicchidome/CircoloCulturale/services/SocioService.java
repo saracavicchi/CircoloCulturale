@@ -318,13 +318,12 @@ public class SocioService {
     }
 
     @Transactional
-    public void deleteSocioAndUser(Integer socioId) {
-        socioRepository.findById(socioId).ifPresent(socio -> {
-            socio.setDeleted(true); // Imposta il socio come eliminato
-            socio.getUtente().setDeleted(true); // Imposta l'utente corrispondente come eliminato
-            socioRepository.save(socio); // Salva le modifiche nel database per il socio
-            utenteRepository.save(socio.getUtente()); // Salva le modifiche nel database per l'utente
-        });
+    public void deleteSocioAndUser(Integer socioId){
+        Socio deleteSocio = socioRepository.getReferenceById(socioId);
+        deleteSocio.setDeleted(true);
+        deleteSocio.getUtente().setDeleted(true);
+        socioRepository.save(deleteSocio);
+        utenteRepository.save(deleteSocio.getUtente());
     }
     @Transactional
     public void updateSocioPassword(Integer socioId, Optional<String> oldPassword, String newPassword) throws EntityNotFoundException, ValidationException {
@@ -336,6 +335,16 @@ public class SocioService {
         } else {
             throw new ValidationException("Password non valida");
         }
+    }
+
+    @Transactional
+    public List<Socio> findSocioCognomeInitial(Character cognome, boolean deleted) {
+        return socioRepository.findSociByCognomeStartingWithAndDeleted(cognome, deleted);
+    }
+
+    @Transactional
+    public List<Character> getSociInitials() {
+        return socioRepository.findDistinctInitials();
     }
 
     @Transactional

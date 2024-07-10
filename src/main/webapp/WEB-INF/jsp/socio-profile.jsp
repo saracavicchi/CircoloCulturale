@@ -33,12 +33,38 @@
             initializeAddressFields();
             initProfileForm();
             handleEliminaSocioFormSubmission();
+            enableEditCheckbox();
             var urlParams = new URLSearchParams(window.location.search);
             var failed = urlParams.get('failed');
             if (failed === "true") {
                 scrollToErrorMsg();
             }
         });
+
+        function enableEditCheckbox() {
+            var inputs = document.getElementById('profileForm').getElementsByTagName('input');
+            var submitButton = document.getElementById('profileForm').getElementsByTagName('button')[0];
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].setAttribute('disabled', 'true');
+            }
+            submitButton.setAttribute('disabled', 'true');
+
+            var enableEdit = document.getElementById('enableEdit');
+            enableEdit.addEventListener('change', function () {
+                if (enableEdit.checked) {
+                    for (var i = 0; i < inputs.length; i++) {
+                        inputs[i].removeAttribute('disabled');
+                    }
+                    submitButton.removeAttribute('disabled');
+                } else {
+                    for (var i = 0; i < inputs.length; i++) {
+                        inputs[i].setAttribute('disabled', 'true');
+                    }
+                    submitButton.setAttribute('disabled', 'true');
+                }
+            });
+
+        }
 
         function initializeAddressFields() {
             var utente = {
@@ -53,7 +79,7 @@
         }
 
         function handleEliminaSocioFormSubmission() {
-            document.getElementById('modificaCredenziali').addEventListener('submit', confirmDisiscrizione);
+            document.getElementById('deleteForm').addEventListener('submit', confirmDisiscrizione);
         }
 
         function scrollToErrorMsg() {
@@ -296,6 +322,7 @@
         </section>
         <section class="content">
             <img src="${socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
+            <label for="enableEdit">Abilita modifiche</label><input type="checkbox" id="enableEdit" name="enableEdit"/>
             <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
 
@@ -342,22 +369,21 @@
                 <button type="submit">Aggiorna</button>
             </form>
         </section>
-        <hr>
         <section class="content">
             <form name="modificaPassword" action="modificaPassword" method="POST">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
-                <% if (request.getAttribute("socio") != null && ((Socio)request.getAttribute("socio")).getSegretario() == null) { %>
+                <% if (request.getAttribute("socioHeader") != null && ((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
                 <label for="old-password">Vecchia password</label><input type="password" id="old-password" name="old-password" required/> <% } %>
                 <label for="new-password">Nuova password</label><input type="password" id="new-password" name="new-password" required/>
                 <button type="submit">Modifica Password</button>
             </form>
 
             <p>Disiscrizione dal Circolo Culturale</p>
-            <form action="eliminaSocio" method="POST">
-                <input type="hidden" name="socioIdElimina" value="${socio.id}"/>
-                <input type="hidden" name="segretario" value="${segretario}"/>
-                <label for="confirmUnsubscribe">Sei sicuro?</label>
+            <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
+                <input type="hidden" name="socio-id" value="${socio.id}"/>
+                <label for="confirmUnsubscribe">Confermi la disiscrizione?</label>
                 <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
+                <!-- TODO: testo diverso per segretario? -->
                 <button type="submit">Disiscriviti</button>
             </form>
         </section>
