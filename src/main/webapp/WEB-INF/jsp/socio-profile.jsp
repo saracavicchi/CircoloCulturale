@@ -91,7 +91,7 @@
 
         function confirmDisiscrizione(event) {
             var confirmUnsubscribe = document.getElementById('confirmUnsubscribe');
-            if (!confirmUnsubscribe.checked) {
+            if (confirmUnsubscribe != null && !confirmUnsubscribe.checked) {
                 alert('Per favore, conferma se sei sicuro di volerti disiscrivere.');
                 event.preventDefault(); // Prevent form submission
             }
@@ -381,10 +381,15 @@
             <p>Disiscrizione dal Circolo Culturale</p>
             <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
+                <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
                 <label for="confirmUnsubscribe">Confermi la disiscrizione?</label>
                 <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
-                <!-- TODO: testo diverso per segretario? -->
                 <button type="submit">Disiscriviti</button>
+                <% } else { %>
+                <label for="not-deleted">Attivo</label><input type="radio" id="not-deleted" name="delete" value="false" <c:if test="${socio.deleted == false}">checked</c:if>>
+                <label for="deleted">Inattivo</label><input type="radio" id="deleted" name="delete" value="true" <c:if test="${socio.deleted == true}">checked</c:if>>
+                <button type="submit">Conferma</button>
+                <% } %>
             </form>
         </section>
     </main>

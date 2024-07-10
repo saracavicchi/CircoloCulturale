@@ -35,7 +35,7 @@
                     </ul>
                     <input type="hidden" name="initial" value="<%= request.getParameter("initial")%>">
                     <label for="deleted">Mostra soci cancellati</label>
-                    <input type="checkbox" id="deleted" name="deleted">
+                    <input type="checkbox" id="deleted" name="deleted" <%= (request.getParameter("deleted") != null && request.getParameter("deleted").equals("on") ? "checked" : "")%>>
                     <input type="submit" value="Filtra">
                 </form>
             </section>

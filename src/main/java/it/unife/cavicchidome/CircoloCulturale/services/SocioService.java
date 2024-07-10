@@ -318,10 +318,10 @@ public class SocioService {
     }
 
     @Transactional
-    public void deleteSocioAndUser(Integer socioId){
+    public void deleteSocioAndUser(Integer socioId, Optional<Boolean> delete){
         Socio deleteSocio = socioRepository.getReferenceById(socioId);
-        deleteSocio.setDeleted(true);
-        deleteSocio.getUtente().setDeleted(true);
+        deleteSocio.setDeleted(delete.orElse(true));
+        deleteSocio.getUtente().setDeleted(delete.orElse(true));
         socioRepository.save(deleteSocio);
         utenteRepository.save(deleteSocio.getUtente());
     }

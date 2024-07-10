@@ -215,7 +215,8 @@ public class SocioController {
 
     @PostMapping("/elimina") //TODO: GESTIRE TRANSAZIONALITà
     public String eliminaSocio(
-            @CookieValue("socio-id") Optional<Integer> socioId,
+            @RequestParam("socio-id") Optional<Integer> socioId,
+            @RequestParam("delete") Optional<Boolean> delete,
             HttpServletResponse response,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes
@@ -249,7 +250,7 @@ public class SocioController {
             redirectTo = "";
         }
 
-        socioService.deleteSocioAndUser(socio.getId());
+        socioService.deleteSocioAndUser(socio.getId(), delete);
 
         redirectAttributes.addAttribute("deleteSuccess", "true");
         return "redirect:/socio/profile" + redirectTo;
