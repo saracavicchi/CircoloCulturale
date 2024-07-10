@@ -123,10 +123,7 @@ public class AuthController {
             @RequestParam String password,
             @RequestParam String phoneNumber,
             @RequestParam("photo") MultipartFile photo,
-            RedirectAttributes redirectAttributes,
-            HttpServletResponse response,
-            HttpServletRequest request,
-            Model model
+            RedirectAttributes redirectAttributes
     ) {
         try {
             Socio socio = socioService.newSocio(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, email, password, phoneNumber, Optional.empty(), photo);
@@ -137,7 +134,8 @@ public class AuthController {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/signup";
         } catch (EntityAlreadyPresentException entityExc) {
-            redirectAttributes.addAttribute("failed", "true");
+            // TODO: perche` serve?
+            // redirectAttributes.addAttribute("failed", "true");
             redirectAttributes.addAttribute("alreadyPresent", "true");
             return "redirect:/signup";
         }

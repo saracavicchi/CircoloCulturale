@@ -11,20 +11,6 @@
 <head>
     <title>CircoloCulturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
-    <style>
-        .error-message,
-        .specific-error {
-            color: red;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .registered {
-            color: #FF0000;
-            font-size: 20px;
-            text-align: center;
-        }
-    </style>
     <script>
         var errorDisplayed =false;
         window.onload = function() {
@@ -36,24 +22,6 @@
             // Aggiungi un listener per l'evento 'input' a ogni elemento input
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].addEventListener('focus', removeError);
-            }
-
-            var urlParams = new URLSearchParams(window.location.search);
-            var success = urlParams.get('success');
-            var cancelled = urlParams.get('cancelled');
-            var error = urlParams.get('error');
-            if (success) {
-                var successElement = document.createElement('h2');
-                successElement.textContent = "Registrazione avvenuta con successo!";
-                successElement.style.color = 'green';
-                successElement.style.textAlign = 'center';
-                document.getElementsByTagName('h1')[0].appendChild(successElement);
-            } else if (cancelled || error) {
-                var cancelledElement = document.createElement('h2');
-                cancelledElement.textContent = "Pagamento fallito, rivolgersi alla segreteria con l'identificativo Tessera mandato per email";
-                cancelledElement.style.color = 'red';
-                cancelledElement.style.textAlign = 'center';
-                document.getElementsByTagName('h1')[0].appendChild(cancelledElement);
             }
         }
 
@@ -219,7 +187,7 @@
 <body>
 <%@include file="/static/include/top-bar.jsp"%>
 <div id="main-content">
-    <main class="fullsize">
+    <main class="midleft">
         <section class="title">
             <h1>Modulo di registrazione</h1>
         </section>
@@ -235,7 +203,7 @@
             </script>
             <%  }
             } %>
-            <form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
+            <form id="registrationForm" name="registrationForm" method="post" action="nuovoSocio" onsubmit="return submitForm()" enctype="multipart/form-data">
                 <label for="name">Nome:</label>
                 <input type="text" id="name" name="name" maxlength="20" required>
 
@@ -277,10 +245,14 @@
 
                 <input type="file" id="photo" name="photo">
 
+                <label for="price">Prezzo</label>
+                <input type="number" id="price" name="price" value="10">
+
                 <input type="submit" name="confirm" value="Conferma">
             </form>
         </section>
     </main>
+    <%@include file="/static/include/aside.jsp"%>
 </div>
 </body>
 </html>
