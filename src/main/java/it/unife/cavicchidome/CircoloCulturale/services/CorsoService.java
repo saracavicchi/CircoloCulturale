@@ -736,7 +736,7 @@ public class CorsoService {
     }
 
     @Transactional
-    public boolean updateCourseSchedule(Integer idCorso, List<Integer> giorni, List<LocalTime> orarioInizio, List<LocalTime> orarioFine, Integer idSala) {
+    public boolean updateCourseSchedule(Integer idCorso, List<Integer> giorni, List<LocalTime> orarioInizio, List<LocalTime> orarioFine, Integer idSala) throws EntityNotFoundException, IllegalStateException {
         Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
         if (!corsoOpt.isPresent()) {
             return false; // Course not found
@@ -796,6 +796,9 @@ public class CorsoService {
 
 
         if (!corso.getIdSala().equals(idSala)) {
+            if(checkRoomCapacityForCourse(idCorso, idSala) == false){
+                return false;
+            }
             Sala newSala = salaRepository.findById(idSala).orElseThrow(() -> new IllegalStateException("Sala not found"));
             corso.setIdSala(newSala);
 
@@ -952,4 +955,29 @@ public class CorsoService {
         corsoRepository.save(corso);
         return true;
     }
+
+
+    public boolean checkRoomCapacityForCourse(Integer idCorso, Integer idSala) {
+        // Trova il corso tramite l'id fornito
+        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        if (!corsoOpt.isPresent()) {
+            throw new EntityNotFoundException("Corso non trovato con l'ID: " + idCorso);
+        }
+        Corso corso = corsoOpt.get();
+
+        // Trova la sala tramite l'id fornito
+        Optional<Sala> salaOpt = salaRepository.findById(idSala);
+        if (!salaOpt.isPresent()) {
+            throw new EntityNotFoundException("Sala non trovata con l'ID: " + idSala);
+        }
+        Sala sala = salaOpt.get();
+
+        // Calcola il numero totale di soci che frequentano il corso
+        int totalParticipants = corso.getSoci().size();
+
+        // Verifica se la capienza della sala è sufficiente per il numero di partecipanti
+        return totalParticipants <= sala.getCapienza();
+    }
+
+
 }

@@ -304,8 +304,13 @@ public class CorsoController {
             @RequestParam("idSala") Integer idSala,
             RedirectAttributes redirectAttributes
     ) {
-
-        boolean updateSuccess = corsoService.updateCourseSchedule(idCorso, giorni, orariInizio, orariFine, idSala);
+        boolean updateSuccess;
+        try {
+             updateSuccess = corsoService.updateCourseSchedule(idCorso, giorni, orariInizio, orariFine, idSala);
+        }
+        catch(Exception e){
+            updateSuccess = false;
+        }
 
         if (!updateSuccess) {
             redirectAttributes.addAttribute("fail", "true");
