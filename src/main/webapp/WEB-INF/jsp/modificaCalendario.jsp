@@ -16,17 +16,8 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
-
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
-
         });
 
-        function warningDocentiOverlap() {
-            alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
-        }
 
         function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
@@ -195,11 +186,18 @@
 %>
 <form id="modificaCalendarioForm" action="modificaCalendario" method="post">
     <input type="hidden" name="idCorso" value="${corso.id}"/>
-    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
 
     <label>Sala:</label>
     <select name="idSala" required>
+        <c:set var="currentSedeId" value="" />
         <c:forEach items="${sale}" var="sala">
+            <c:choose>
+            <c:when test="${not currentSedeId.equals(sala.idSede.id)}">
+            <optgroup label="Sede Id: ${sala.idSede.id}">
+                <c:set var="currentSedeId" value="${sala.idSede.id}" />
+            </c:when>
+                <c:otherwise></c:otherwise>
+            </c:choose>
             <c:choose>
                 <c:when test="${sala.id.toString() == corso.idSala.id.toString()}">
                     <option value="${sala.id}" selected="selected">${sala.numeroSala}</option>
@@ -208,8 +206,15 @@
                     <option value="${sala.id}">${sala.numeroSala}</option>
                 </c:otherwise>
             </c:choose>
+            <c:if test="${sale.get(sale.size() -1) == sala}">
+                </optgroup>
+            </c:if>
+            <c:if test="${sale.indexOf(sala) == sale.size() - 1}">
+                </optgroup>
+            </c:if>
         </c:forEach>
     </select>
+</select><br>
 
     <c:forEach var="dayIndex" begin="1" end="5">
         <c:set var="giornoIt" value="${dayIndex == 1 ? 'Lunedì' : dayIndex == 2 ? 'Martedì' : dayIndex == 3 ? 'Mercoledì' : dayIndex == 4 ? 'Giovedì' : 'Venerdì'}"/>

@@ -27,10 +27,7 @@
             initForm();
             gestisciStipendiDocenti();
 
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
+
         });
 
         function warningDocentiOverlap() {
@@ -207,7 +204,7 @@
 %>
 <form id="modificaDocentiForm" action="modificaDocenti" method="post">
     <input type="hidden" name="idCorso" value="${corso.id}"/>
-    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
+
     <p>Seleziona i docenti da eliminare<p>
     <c:forEach var="docente" items="${docentiCorso}">
         <div>

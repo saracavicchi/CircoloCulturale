@@ -496,6 +496,7 @@ public class CorsoService {
 
 
     //Per la creazione di un corso
+    //Se c'è sovrapposizione returna falso
     @Transactional
     public boolean checkDocentiScheduleOverlap(
             List<String> docentiCf,
@@ -507,7 +508,7 @@ public class CorsoService {
         for(String cf: docentiCf) {
             Optional<Docente> docente = docenteRepository.findByCf(cf);
             if (!docente.isPresent()) {
-                continue; //TODO: gestire caso in cui docente non esiste: eccezione
+                continue;
             } else {
                 Integer idDocente = docente.get().getId();
                 Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
@@ -529,7 +530,9 @@ public class CorsoService {
                 }
             }
         }
-        return sovrapposizione;
+        if(sovrapposizione)
+            return false;
+        return true;
 
     }
     //Per la modifica del calendario
@@ -570,7 +573,8 @@ public class CorsoService {
             }
 
         }
-        return sovrapposizione;
+        if(sovrapposizione) return false;
+        return true;
 
     }
 

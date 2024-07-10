@@ -33,8 +33,20 @@
                 content.insertBefore(successParagraph, content.querySelector('h1'));
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            addMessages();
+            var docentiOverlap = "${param.docentiOverlap}";
+            if (docentiOverlap == 'true') {
+                warningDocentiOverlap();
+            }
 
-        window.addEventListener('DOMContentLoaded', addMessages);
+        });
+
+        function warningDocentiOverlap() {
+            alert("Attenzione: le informazioni sono state salvate ma sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti.");
+        }
+
+        //window.addEventListener('DOMContentLoaded', addMessages);
 
     </script>
 </head>

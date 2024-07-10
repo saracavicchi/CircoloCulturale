@@ -17,28 +17,20 @@
 
             initCreaCorsoForm();
             updateDocentiSelection();
-            var fail = "${param.fail}";
+            /*var fail = "${param.fail}";
             if (fail == 'true') {
                 scrollToErrorMsg();
-            }
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
-
+            }*/
 
         });
 
-        function warningDocentiOverlap() {
-            alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
-        }
 
-        function scrollToErrorMsg() {
+        /*function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
             if (ErrorMsgElement) {
                 ErrorMsgElement.scrollIntoView({behavior: "smooth"});
             }
-        }
+        }*/
         function initCreaCorsoForm() {
             var creaCorsoForm = document.getElementById('creaCorsoForm');
             if (creaCorsoForm) {
@@ -192,7 +184,7 @@
             }
 
             // Colora il bordo del campo o dei campi che hanno dato errore
-            if(erroredField != "") {
+            if (erroredField != "") {
                 var fields = erroredField.split(', ');
                 for (var i = 0; i < fields.length; i++) {
                     var fieldElement = document.getElementById(fields[i]);
@@ -200,8 +192,18 @@
                         fieldElement.style.border = '1px solid red';
                     }
                 }
+                if (errorMessageElement) {
+                    scrollToErrorMsg();
+                }
+
             }
         }
+            function scrollToErrorMsg() {
+                var ErrorMsgElement = document.getElementById('error-message');
+                if (ErrorMsgElement) {
+                    ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+                }
+            }
 
         function removeError(formName) {
             if(!errorDisplayed){
@@ -328,7 +330,7 @@
     }
 %>
 <form id="creaCorsoForm" action="crea" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
+
     Descrizione: <input type="text" id="descrizione" name="descrizione" required><br>
     Genere: <input type="text" id="genere" name="genere" required><br>
     Livello: <input type="text" id="livello" name="livello" required><br>
@@ -341,8 +343,22 @@
 
 
     Sala: <select name="idSala" required>
+    <c:set var="currentSedeId" value="" />
     <c:forEach items="${sale}" var="sala">
+        <c:choose>
+            <c:when test="${not currentSedeId.equals(sala.idSede.id)}">
+                <optgroup label="Sede Id: ${sala.idSede.id}">
+                <c:set var="currentSedeId" value="${sala.idSede.id}" />
+            </c:when>
+            <c:otherwise></c:otherwise>
+        </c:choose>
         <option value="${sala.id}">${sala.numeroSala}</option>
+        <c:if test="${sale.get(sale.size() -1) == sala}">
+            </optgroup>
+        </c:if>
+        <c:if test="${sale.indexOf(sala) == sale.size() - 1}">
+            </optgroup>
+        </c:if>
     </c:forEach>
     </select><br>
     <label for="photo">Seleziona una foto per il corso:</label>

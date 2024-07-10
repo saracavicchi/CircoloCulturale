@@ -1,8 +1,5 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
-import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
-import it.unife.cavicchidome.CircoloCulturale.models.Corso;
-import it.unife.cavicchidome.CircoloCulturale.models.Docente;
-import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,7 +55,14 @@ public class CorsoController {
         //TODO: Aggiungi controllo per verificare che si tratta di ADMIN
 
         // Ottenere le sale dal servizio e aggiungerle al model
-        model.addAttribute("sale", salaService.findAll());
+        List<Sala> sale = new ArrayList<>(salaService.findAll());
+        Collections.sort(sale, new Comparator<Sala>() {
+            @Override
+            public int compare(Sala s1, Sala s2) {
+                return s1.getIdSede().getId().compareTo(s2.getIdSede().getId());
+            }
+        });
+        model.addAttribute("sale", sale);
 
         // Ottenere i soci dal servizio e aggiungerli al model
         List<Object[]> sociInfo = socioService.findSociNotSegretari();
@@ -83,7 +87,6 @@ public class CorsoController {
                             @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioInizio,
                             @RequestParam("orariFine") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioFine,
                             @RequestParam ("stipendi")List<Integer> stipendi,
-                            @RequestParam("docentiOverlap") String docentiOverlap,
                             Model model,
                             RedirectAttributes redirectAttributes
     ) {
@@ -95,20 +98,18 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/creazione-corso"; // Adjust "errorView" to your actual error view name
         }
-        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
-        if (!checkDocentiSchedule && docentiOverlap.equals("null")) {
-            redirectAttributes.addAttribute("docentiOverlap", "true");
-            return "redirect:/corso/crea";
-        }
-
         // If validation passes, proceed to save course information
         boolean saveSuccess = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
         if (!saveSuccess) {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/creazione-corso";
         }
+        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
+        if (!checkDocentiSchedule) {
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+        }
 
-        return "redirect:/corso/corsi"; //TODO: Adjust "successView" to your actual success view name
+        return "redirect:/corso/info";
     }
 
     @GetMapping("/info")
@@ -197,7 +198,7 @@ public class CorsoController {
         }
         redirectAttributes.addAttribute("successMessage", "Corso aggiornato con successo.");
 
-        return "redirect:/corso/info"; //pagina visualizzazione corsi
+        return "redirect:/corso/info"+idCorso; //pagina visualizzazione corsi
 
     }
 
@@ -238,14 +239,9 @@ public class CorsoController {
             @RequestParam("stipendiAttuali") List<Integer> stipendiAttuali,
             @RequestParam("nuoviDocenti") Optional<List<String>> docentiCf,
             @RequestParam("stipendi") Optional<List<Integer>> stipendi,
-            @RequestParam("docentiOverlap")String docentiOverlap,
             RedirectAttributes redirectAttributes
     ) {
-        if(docentiOverlap.equals("null") && docentiCf.isPresent() && !corsoService.checkDocentiScheduleOverlap(docentiCf.get())){
-            System.out.println(corsoService.checkDocentiScheduleOverlap(docentiCf.get()));
-            redirectAttributes.addAttribute("docentiOverlap", "true");
-            return "redirect:/corso/modificaDocenti?idCorso=" + idCorso;
-        }
+
 
         boolean updateSuccess = corsoService.updateDocenti(idCorso, deletedDocentiId, docentiCf, stipendiAttuali, stipendi);
 
@@ -254,11 +250,14 @@ public class CorsoController {
             return "redirect:/corso/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
 
-
+        if(docentiCf.isPresent() && !corsoService.checkDocentiScheduleOverlap(docentiCf.get())){
+            System.out.println(corsoService.checkDocentiScheduleOverlap(docentiCf.get()));
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+        }
 
 
         redirectAttributes.addAttribute("successMessage", "Docenti aggiornati con successo.");
-        return "redirect:/corso/info";
+        return "redirect:/corso/info?idCorso=" + idCorso;
     }
 
 
@@ -283,8 +282,14 @@ public class CorsoController {
                 .collect(Collectors.toSet());
         model.addAttribute("calendarioCorso", calendariAttivi);
 
-        // Aggiungi al modello le informazioni aggiuntive necessarie per la pagina di modifica, come le sale disponibili
-        model.addAttribute("sale", salaService.findAll());
+        List<Sala> sale = new ArrayList<>(salaService.findAll());
+        Collections.sort(sale, new Comparator<Sala>() {
+            @Override
+            public int compare(Sala s1, Sala s2) {
+                return s1.getIdSede().getId().compareTo(s2.getIdSede().getId());
+            }
+        });
+        model.addAttribute("sale", sale);
 
         // Restituisci il nome della JSP da visualizzare
         return "modificaCalendario"; // Nome della JSP da visualizzare
@@ -297,15 +302,9 @@ public class CorsoController {
             @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orariInizio,
             @RequestParam("orariFine") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orariFine,
             @RequestParam("idSala") Integer idSala,
-            @RequestParam("docentiOverlap") String docentiOverlap,
             RedirectAttributes redirectAttributes
     ) {
-        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(idCorso, giorni, orariInizio, orariFine);
-        System.out.println(checkDocentiSchedule);
-        if (!checkDocentiSchedule && docentiOverlap.equals("null")) {
-            redirectAttributes.addAttribute("docentiOverlap", "true");
-            return "redirect:/corso/modificaCalendario?idCorso=" + idCorso;
-        }
+
         boolean updateSuccess = corsoService.updateCourseSchedule(idCorso, giorni, orariInizio, orariFine, idSala);
 
         if (!updateSuccess) {
@@ -313,10 +312,15 @@ public class CorsoController {
             return "redirect:/corso/modificaCalendario?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
 
+        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(idCorso, giorni, orariInizio, orariFine);
+        //System.out.println(checkDocentiSchedule);
+        if (!checkDocentiSchedule) {
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+        }
 
 
         redirectAttributes.addAttribute("successMessage", "Calendario aggiornato con successo.");
-        return "redirect:/corso/info";
+        return "redirect:/corso/info?idCorso=" + idCorso;
     }
 
     @PostMapping("/elimina")
