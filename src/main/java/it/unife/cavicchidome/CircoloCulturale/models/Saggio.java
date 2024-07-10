@@ -9,7 +9,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "saggio", schema = "public", uniqueConstraints = {
-        @UniqueConstraint(name = "SAGGIO_unique1", columnNames = {"nome"})
+        @UniqueConstraint(name = "SAGGIO_unique1", columnNames = {"nome"}),
+        @UniqueConstraint(name = "SAGGIO_unique2", columnNames = {"data"})
 })
 public class Saggio {
     @Id
@@ -52,7 +53,7 @@ public class Saggio {
             inverseJoinColumns = @JoinColumn(name = "id_corso"))
     private Set<Corso> corsi = new LinkedHashSet<>();
 
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(name = "saggio_partecipa_docente",
             joinColumns = @JoinColumn(name = "id_saggio"),
             inverseJoinColumns = @JoinColumn(name = "id_docente"))
@@ -63,6 +64,8 @@ public class Saggio {
             joinColumns = @JoinColumn(name = "id_saggio"),
             inverseJoinColumns = @JoinColumn(name = "id_socio"))
     private Set<Socio> soci = new LinkedHashSet<>();
+    */
+
 
     public Integer getId() {
         return id;
@@ -159,7 +162,7 @@ public class Saggio {
     public void setCorsi(Set<Corso> corsi) {
         this.corsi = corsi;
     }
-
+/*
     public Set<Docente> getDocenti() {
         return docenti;
     }
@@ -175,5 +178,6 @@ public class Saggio {
     public void setSoci(Set<Socio> soci) {
         this.soci = soci;
     }
+    */
 
 }

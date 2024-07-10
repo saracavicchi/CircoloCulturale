@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
     <title>Creazione Saggio</title>
@@ -15,14 +16,16 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaSaggioForm();
+            var paramValue = '${corsi}';
+            console.log(paramValue);
 
 
         });
         function initCreaSaggioForm() {
-            var creaCorsoForm = document.getElementById('creaSaggioForm');
-            if (creaCorsoForm) {
-                creaCorsoForm.addEventListener('submit', submitForm);
-                var inputs = creaCorsoForm.getElementsByTagName('input');
+            var creaSaggioForm = document.getElementById('creaSaggioForm');
+            if (creaSaggioForm) {
+                creaSaggioForm.addEventListener('submit', submitForm);
+                var inputs = creaSaggioForm.getElementsByTagName('input');
                 addFocusListenersToInputs(inputs, 'creaSaggioForm');
             }
         }
@@ -103,7 +106,7 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h1Element = document.getElementsByTagName('h2')[0];
+                var h2Element = document.getElementsByTagName('h2')[0];
                 displayErrorMessages(h2Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
@@ -188,6 +191,9 @@
             }
         }
     </script>
+    <style>
+
+    </style>
 </head>
 <body>
 <h2>Creazione Saggio</h2>
@@ -198,7 +204,7 @@
 <%
     }
 %>
-<form id="creaSaggioForm" action="creaSaggio" method="post">
+<form id="creaSaggioForm" action="creaSaggio" method="post" enctype="multipart/form-data">
     <label for="nome">Nome:</label>
     <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio">
 
@@ -231,6 +237,13 @@
 
     <label for="houseNumber">Numero Civico:</label>
     <input type="text" id="houseNumber" name="houseNumber" placeholder="Numero civico" required>
+
+    <label for="corsi">Seleziona Corsi:</label>
+    <select id="corsi" name="corsi" multiple>
+        <c:forEach items="${corsi}" var="corso">
+            <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+        </c:forEach>
+    </select>
 
     <input type="file" id="photo" name="photo">
 

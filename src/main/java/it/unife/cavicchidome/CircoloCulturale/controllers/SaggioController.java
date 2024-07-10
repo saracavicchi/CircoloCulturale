@@ -1,12 +1,11 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
-import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
-import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.models.Biglietto;
-import it.unife.cavicchidome.CircoloCulturale.models.Utente;
+import it.unife.cavicchidome.CircoloCulturale.models.*;
+import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
 import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
+import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -28,12 +28,16 @@ public class SaggioController {
     private final SaggioService saggioService;
     private final UtenteService utenteService;
     private final BigliettoService bigliettoService;
+    private final CorsoService corsoService;
+    private final CorsoRepository corsoRepository;
 
-    SaggioController(SaggioService saggioService, SocioService socioService, UtenteService utenteService, BigliettoService bigliettoService) {
+    SaggioController(SaggioService saggioService, SocioService socioService, UtenteService utenteService, BigliettoService bigliettoService, CorsoService corsoService, CorsoRepository corsoRepository) {
         this.saggioService = saggioService;
         this.socioService = socioService;
         this.utenteService = utenteService;
         this.bigliettoService = bigliettoService;
+        this.corsoService = corsoService;
+        this.corsoRepository = corsoRepository;
     }
 
     @GetMapping("/info")
@@ -101,4 +105,13 @@ public class SaggioController {
         }
 
     }
+
+    @GetMapping("/crea")
+    public String viewCreateSaggio(Model model, HttpServletRequest request, HttpServletResponse response) {
+        if(corsoService.aggiungiCorsiBaseRuolo(request, response, model)){
+            return "creazione-saggio";
+        }
+        return "redirect:/saggio/info"; //TODO: aggiungere messaggio di errore
+    }
+
 }

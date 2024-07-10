@@ -235,7 +235,7 @@
             </script>
             <%  }
             } %>
-            <form id="registrationForm" name="registrationForm" method="post" action="signup" onsubmit="return submitForm()" enctype="multipart/form-data">
+            <form id="registrationForm" name="registrationForm" method="post" action="signup"  enctype="multipart/form-data">
                 <label for="name">Nome:</label>
                 <input type="text" id="name" name="name" maxlength="20" required>
 
