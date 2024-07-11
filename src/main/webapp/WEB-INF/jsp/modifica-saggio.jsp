@@ -15,8 +15,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeAddressFields();
             initModificaSaggioForm();
+            handleEliminaSaggioFormSubmission()
 
         });
+        /*
+        //inutile con required nel checkbox
+        function handleEliminaSaggioFormSubmission() {
+
+            document.getElementById('deletionForm').addEventListener('submit', confirmEliminazione);
+        }
+
+        function confirmEliminazione(event) {
+            var confirmUnsubscribe = document.getElementById('confirmDeletion');
+            if (!confirmUnsubscribe.checked) {
+                alert('Per favore, conferma se sei sicuro di voler cancellare il saggio');
+                event.preventDefault(); // Prevent form submission
+            }
+        }
+
+         */
 
         function initModificaSaggioForm() {
             var modificaSaggioForm = document.getElementById('modificaSaggioForm');
@@ -323,6 +340,15 @@
     </select>
     <button type="submit">Modifica Saggio</button>
 </form>
+
+<p>Cancellazione saggio</p>
+<form id="deletionForm" action="/saggio/elimina" method="POST">
+    <input type="hidden" name="saggioId" value="${saggio.id}" />
+    <label for="confirmDeletion">Sei sicuro?</label>
+    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+    <button type="submit">Elimina saggio</button>
+</form>
+
 
 </body>
 </html>

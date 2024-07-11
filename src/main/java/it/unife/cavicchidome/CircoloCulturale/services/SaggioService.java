@@ -238,4 +238,13 @@ public class SaggioService {
         return true;
     }
 
+    @Transactional
+    public void deleteSaggio(Integer saggioId) {
+        Saggio saggio = saggioRepository.findById(saggioId)
+                .orElseThrow(() -> new RuntimeException("Saggio not found for id: " + saggioId));
+        saggio.setDeleted(true); // Imposta il saggio come eliminato
+        saggio.setCorsi(null); // Rimuove i corsi associati al saggio
+        saggioRepository.save(saggio);
+    }
+
 }

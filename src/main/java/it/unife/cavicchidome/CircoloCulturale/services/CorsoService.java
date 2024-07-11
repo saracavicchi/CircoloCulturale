@@ -35,10 +35,10 @@ public class CorsoService {
         List<Corso> corsi;
         if (socio.getDocente() != null) {
             // Il socio è un docente, quindi recupera i corsi insegnati da lui
-            corsi = corsoRepository.findCorsiByDocenteId(socio.getDocente().getId());
+            corsi = corsoRepository.findCorsiByDocenteId(socio.getDocente().getId()); //solo attivi
         } else if (socio.getSegretario() != null) {
             // Il socio è un segretario, quindi recupera tutti i corsi
-            corsi = corsoRepository.findAll();
+            corsi = corsoRepository.findAllIfActiveTrue();
             System.out.println("Segretario");
         } else {
             // Gestire il caso in cui il socio non è né un docente né un segretario

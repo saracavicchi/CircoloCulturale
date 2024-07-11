@@ -197,6 +197,12 @@ public class SaggioController {
         }
     }
 
+    @PostMapping("/elimina")
+    public String eliminaSaggio(@RequestParam("saggioId") Integer saggioId) {
+        saggioService.deleteSaggio(saggioId);
+        return "redirect:/saggio/info";
+    }
+
 
 
 }
