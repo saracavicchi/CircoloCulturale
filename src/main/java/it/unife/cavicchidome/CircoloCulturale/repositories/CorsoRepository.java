@@ -1,6 +1,8 @@
 package it.unife.cavicchidome.CircoloCulturale.repositories;
 
+import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
+import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -13,9 +13,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +43,7 @@ public class PrenotazioneController {
         this.salaRepository = salaRepository;
     }
 
-    @GetMapping("/socio/prenotazioni")
+    @GetMapping("/socio/prenotazione")
     public String viewPrenotazioni(@RequestParam Optional<Integer> prenotazioneId,
                                    Model model,
                                    HttpServletRequest request,
@@ -56,7 +59,7 @@ public class PrenotazioneController {
                 model.addAttribute("prenotazione", prenotazione.get());
                 return "prenotazione-info";
             } else {
-                return "redirect:/socio/prenotazioni";
+                return "redirect:/socio/prenotazione";
             }
         } else {
             List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySocio(socioCookie.get().getId());
@@ -65,8 +68,8 @@ public class PrenotazioneController {
         }
     }
 
-    @GetMapping("/socio/prenotazioni/nuova")
-    public String viewNuovaPrenotazione(@RequestParam(name = "date") Optional<LocalDate> date,
+    @GetMapping("/socio/prenotazione/nuova")
+    public String viewNuovaPrenotazione(@RequestParam(name = "data") Optional<LocalDate> date,
                                         @RequestParam(name = "sala") Optional<Integer> salaId,
                                         Model model,
                                         HttpServletRequest request,
@@ -88,12 +91,56 @@ public class PrenotazioneController {
                 } else {
                     model.addAttribute("prenotabile", true);
                     model.addAttribute("sala", sala);
+                    model.addAttribute("orari", sedeService.findOrarioSede(sala.getIdSede().getId(), Weekday.fromDayNumber(date.get().getDayOfWeek().getValue())));
                     model.addAttribute("date", date.get());
-                    model.addAttribute("corsiPrenotati", calendarioCorsoRepository.findByGiornoSettimana(sala.getId(), Weekday.fromDayNumber(date.get().getDayOfWeek().getValue())));
-                    model.addAttribute("prenotazioniEffettuate", prenotazioneSalaRepository.findBySalaAndData(sala.getId(), date.get()));
+                    model.addAttribute("corsi", calendarioCorsoRepository.findByGiornoSettimana(sala.getId(), Weekday.fromDayNumber(date.get().getDayOfWeek().getValue())));
+                    model.addAttribute("prenotazioni", prenotazioneSalaRepository.findBySalaAndData(sala.getId(), date.get()));
                 }
             }
         }
+        return "nuova-prenotazione";
+    }
+
+    @PostMapping("/socio/prenotazione/nuova")
+    public String nuovaPrenotazione(@RequestParam(name = "descrizione") String description,
+                                    @RequestParam(name = "orarioInizio") LocalTime startTime,
+                                    @RequestParam(name = "orarioFine") LocalTime endTime,
+                                    @RequestParam(name = "data") LocalDate date,
+                                    @RequestParam(name = "sala") Integer salaId,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
+        Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
+        if (socioCookie.isEmpty()) {
+            return "redirect:/";
+        }
+
+        Optional<Sala> sala = salaService.findById(salaId);
+        if (sala.isEmpty() || !sala.get().getActive() || !sala.get().getPrenotabile()) {
+            model.addAttribute("error", "Sala non trovata");
+        } else {
+            Optional<OrarioSede> orario = sedeService.findOrarioSede(sala.get().getIdSede().getId(), Weekday.fromDayNumber(date.getDayOfWeek().getValue()));
+            if (orario.isEmpty() || orario.get().getId().getId() != orarioId) {
+                model.addAttribute("error", "Orario non valido");
+            } else {
+                if (sedeService.sedeAvailableDate(sala.get().getIdSede().getId(), date).isEmpty()) {
+                    model.addAttribute("error", "Sala non disponibile nella data richiesta");
+                } else {
+                    if (prenotazioneSalaService.createPrenotazione(sala.get(), socioCookie.get(), date, orario.get())) {
+                        return "redirect:/socio/prenotazione";
+                    } else {
+                        model.addAttribute("error", "Errore nella creazione della prenotazione");
+                    }
+                }
+            }
+        }
+        model.addAttribute("sedi", salaRepository.findDistinctSedi());
+        model.addAttribute("sala", sala.get());
+        model.addAttribute("orari", sedeService.findOrarioSede(sala.get().getIdSede().getId(), Weekday.fromDayNumber(date.getDayOfWeek().getValue())));
+        model.addAttribute("date", date);
+        model.addAttribute("corsi", calendarioCorsoRepository.findByGiornoSettimana(sala.get().getId(), Weekday.fromDayNumber(date.getDayOfWeek().getValue())));
+        model.addAttribute("prenotazioni", prenotazioneSalaRepository.findBySalaAndData(sala.get().getId(), date));
         return "nuova-prenotazione";
     }
 }

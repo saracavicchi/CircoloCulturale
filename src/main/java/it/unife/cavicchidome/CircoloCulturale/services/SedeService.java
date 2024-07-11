@@ -1,6 +1,8 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.models.OrarioSede;
 import it.unife.cavicchidome.CircoloCulturale.models.Sede;
+import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,11 @@ public class SedeService {
 
     @Transactional
     public Optional<Sede> sedeAvailableDate(Integer idSede, LocalDate date) {
-        return sedeRepository.findAvailableSedeDate(idSede, date);
+        return sedeRepository.findAvailableSedeDate(idSede, date, Weekday.fromDayNumber(date.getDayOfWeek().getValue()));
+    }
+
+    @Transactional
+    public OrarioSede findOrarioSede(Integer idSede, Weekday dow) {
+        return sedeRepository.findOrarioSede(idSede, dow);
     }
 }

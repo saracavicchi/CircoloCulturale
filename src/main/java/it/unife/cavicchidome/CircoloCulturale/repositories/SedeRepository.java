@@ -1,5 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.repositories;
 
+import it.unife.cavicchidome.CircoloCulturale.models.OrarioSede;
 import it.unife.cavicchidome.CircoloCulturale.models.Sede;
 import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,9 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
             "AND (SELECT a.orarioChiusura FROM s.orarioSede a WHERE a.id.giornoSettimana = :dow)")
     Optional<Sede> findAvailableSede(LocalDate date, LocalTime startTime, LocalTime endTime, Weekday dow);*/
 
-    @Query("SELECT s FROM Sede s WHERE s.id = :idSede AND NOT EXISTS (SELECT d FROM s.giornoChiusura d WHERE d = :date)")
-    Optional<Sede> findAvailableSedeDate(Integer idSede, LocalDate date);
+    @Query("SELECT s FROM Sede s WHERE s.id = :idSede AND NOT EXISTS (SELECT d FROM s.giornoChiusura d WHERE d = :date) AND EXISTS (SELECT o FROM s.orarioSede o WHERE o.id.giornoSettimana = :dow)")
+    Optional<Sede> findAvailableSedeDate(Integer idSede, LocalDate date, Weekday dow);
+
+    @Query("SELECT o FROM Sede s JOIN s.orarioSede o WHERE s.id = :idSede AND o.id.giornoSettimana = :dow")
+    OrarioSede findOrarioSede(Integer idSede, Weekday dow);
 }
