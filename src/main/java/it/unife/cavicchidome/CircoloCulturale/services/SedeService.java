@@ -5,6 +5,7 @@ import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,5 +31,10 @@ public class SedeService {
     @Transactional
     public Optional<Sede> findSedeByIdSala(Integer idSala) {
         return sedeRepository.findSedeByIdSala(idSala);
+    }
+
+    @Transactional
+    public Optional<Sede> sedeAvailableDate(Integer idSede, LocalDate date) {
+        return sedeRepository.findAvailableSedeDate(idSede, date);
     }
 }

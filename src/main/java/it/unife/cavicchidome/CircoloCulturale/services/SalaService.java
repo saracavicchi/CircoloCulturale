@@ -15,9 +15,15 @@ public class SalaService {
     public SalaService(SalaRepository salaRepository) {
         this.salaRepository = salaRepository;
     }
+
     @Transactional(readOnly = true)
     public List<Sala> findAll() {
         return salaRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Sala> findAllPrenotabili() {
+        return salaRepository.findAllPrenotabili();
     }
 
     @Transactional(readOnly = true)
