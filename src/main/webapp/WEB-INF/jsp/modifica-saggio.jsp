@@ -270,7 +270,7 @@
     <img src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto saggio" class="profile-pic"/>
 </div>
 <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="idSaggio" value="${saggio.id}"/>
+    <input type="hidden" name="saggioId" value="${saggio.id}"/>
 
     <label for="photo">Seleziona una nuova foto per il saggio:</label>
     <input type="file" id="photo" name="photo">

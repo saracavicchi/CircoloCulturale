@@ -166,4 +166,76 @@ public class SaggioService {
         return true;
     }
 
+    @Transactional
+    public boolean updateSaggio(
+            Integer saggioId,
+            String nome,
+            LocalDate data,
+            int numeroPartecipanti,
+            String descrizione,
+            Optional<LocalTime> orarioInizio,
+            Optional<LocalTime> orarioFine,
+            String stato,
+            String provincia,
+            String citta,
+            String via,
+            String numeroCivico,
+            List<Integer> corsiIds,
+            Optional<MultipartFile> foto
+    ) {
+        Optional<Saggio> saggioOpt = saggioRepository.findById(saggioId);
+        if (!saggioOpt.isPresent()) {
+            return false;
+        }
+        Saggio saggio = saggioOpt.get();
+
+        if (!validaInformazioniSaggio(
+                nome,
+                data,
+                numeroPartecipanti,
+                descrizione,
+                orarioInizio,
+                orarioFine,
+                stato,
+                provincia,
+                citta,
+                via,
+                numeroCivico,
+                corsiIds
+        )) {
+            return false;
+        }
+
+        if (saggioRepository.getSaggioByData(data).isPresent() && !saggioRepository.getSaggioByData(data).get().getId().equals(saggioId)) {
+            throw new RuntimeException("Data già presente");
+        }
+        if (saggioRepository.getSaggioByName(nome).isPresent() && !saggioRepository.getSaggioByName(nome).get().getId().equals(saggioId)) {
+            throw new RuntimeException("Nome già presente");
+        }
+
+        saggio.setNome(nome);
+        saggio.setData(data);
+        saggio.setMaxPartecipanti(numeroPartecipanti);
+        if (!descrizione.isEmpty()) {
+            saggio.setDescrizione(descrizione);
+        }
+        if (orarioInizio.isPresent()) {
+            saggio.setOrarioInizio(orarioInizio.get());
+        }
+        if (orarioFine.isPresent()) {
+            saggio.setOrarioFine(orarioFine.get());
+        }
+
+        saggio.setIndirizzo(stato, provincia, citta, via, numeroCivico);
+
+        Set<Corso> corsi = new HashSet<>();
+        for (Integer corsoId : corsiIds) {
+            Corso corso = corsoRepository.findById(corsoId).orElseThrow(() -> new RuntimeException("Corso not found for id: " + corsoId));
+            corsi.add(corso);
+        }
+        saggio.setCorsi(corsi);
+        saggioRepository.save(saggio);
+        return true;
+    }
+
 }
