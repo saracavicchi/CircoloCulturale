@@ -7,6 +7,7 @@ import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SaggioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalTime;
 import java.time.LocalDate;
@@ -54,7 +55,7 @@ public class SaggioService {
             String nome,
             LocalDate data,
             int numeroPartecipanti,
-            Optional<String> descrizione,
+            String descrizione,
             Optional<LocalTime> orarioInizio,
             Optional<LocalTime> orarioFine,
             String stato,
@@ -72,7 +73,8 @@ public class SaggioService {
             return false;
         }
 
-        if (descrizione.isPresent() && !descrizione.get().matches(descrizionePattern)) {
+        if (!descrizione.isEmpty() && !descrizione.matches(descrizionePattern)) {
+            System.out.println("descrizione: " + descrizione);
             return false;
         }
 
@@ -101,7 +103,7 @@ public class SaggioService {
             String nome,
             LocalDate data,
             int numeroPartecipanti,
-            Optional<String> descrizione,
+            String descrizione,
             Optional<LocalTime> orarioInizio,
             Optional<LocalTime> orarioFine,
             String stato,
@@ -109,7 +111,8 @@ public class SaggioService {
             String citta,
             String via,
             String numeroCivico,
-            List<Integer> corsiIds
+            List<Integer> corsiIds,
+            Optional<MultipartFile> foto
     ) {
 
         if (!validaInformazioniSaggio(
@@ -132,13 +135,16 @@ public class SaggioService {
         if (saggioRepository.getSaggioByData(data).isPresent()) {
             throw new RuntimeException("Data già presente");
         }
+        if (saggioRepository.getSaggioByName(nome).isPresent()) {
+            throw new RuntimeException("Nome già presente");
+        }
 
         Saggio saggio = new Saggio();
         saggio.setNome(nome);
         saggio.setData(data);
         saggio.setMaxPartecipanti(numeroPartecipanti);
-        if(descrizione.isPresent()) {
-            saggio.setDescrizione(descrizione.get());
+        if(!descrizione.isEmpty()) {
+            saggio.setDescrizione(descrizione);
         }
         if(orarioInizio.isPresent()) {
             saggio.setOrarioInizio(orarioInizio.get());

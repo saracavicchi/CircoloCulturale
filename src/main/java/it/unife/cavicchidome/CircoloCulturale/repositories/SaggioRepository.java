@@ -16,4 +16,7 @@ public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
 
     @Query("SELECT s FROM Saggio s WHERE s.data = ?1")
     public Optional<Saggio> getSaggioByData(LocalDate data);
+
+    @Query("SELECT s FROM Saggio s WHERE s.nome = ?1")
+    public Optional<Saggio> getSaggioByName(String nome);
 }

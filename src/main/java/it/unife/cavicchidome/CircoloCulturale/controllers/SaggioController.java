@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Instant;
@@ -120,27 +121,33 @@ public class SaggioController {
                              @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
                              @RequestParam("numeroPartecipanti") int numeroPartecipanti,
                              @RequestParam(value = "descrizione", required = false) String descrizione,
-                             @RequestParam(value = "orarioInizio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime orarioInizio,
-                             @RequestParam(value = "orarioFine", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime orarioFine,
+                             @RequestParam(value = "orarioInizio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Optional<LocalTime> orarioInizio,
+                             @RequestParam(value = "orarioFine", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Optional<LocalTime> orarioFine,
                              @RequestParam("stato") String stato,
                              @RequestParam("provincia") String provincia,
                              @RequestParam("citta") String citta,
                              @RequestParam("via") String via,
                              @RequestParam("numeroCivico") String numeroCivico,
                              @RequestParam("corsi") List<Integer> corsiIds,
+                             @RequestParam(value = "photo", required = false) MultipartFile photo,
                              RedirectAttributes redirectAttributes
     ) {
-        try{
-            if(saggioService.newSaggio(nome, data, numeroPartecipanti, Optional.of(descrizione), Optional.of(orarioInizio), Optional.of(orarioFine), stato, provincia, citta, via, numeroCivico, corsiIds)){
+       // try{
+            if(saggioService.newSaggio(nome, data, numeroPartecipanti,descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, Optional.of(photo))){
                 return "redirect:/saggio/info";
             }
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/saggio/crea";
-        } catch (Exception e) {
+        /*} catch (Exception e) {
+            String message = e.getMessage();
+            System.out.println(message);
             redirectAttributes.addAttribute("fail", "true");
-            redirectAttributes.addAttribute("alreadyPresent", "true");
+            if(message != null && message.equals("Data già presente"))
+                redirectAttributes.addAttribute("dateAlreadyPresent", "true");
+            else if(message != null && message.equals("Nome già presente"))
+                redirectAttributes.addAttribute("nameAlreadyPresent", "true");
             return "redirect:/saggio/crea";
-        }
+        }*/
 
     }
 

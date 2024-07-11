@@ -15,6 +15,7 @@ import java.util.Set;
 public class Saggio {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "nome", nullable = false, length = 30)

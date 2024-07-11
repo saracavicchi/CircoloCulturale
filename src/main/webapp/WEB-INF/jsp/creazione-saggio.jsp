@@ -240,11 +240,17 @@
 </head>
 <body>
 <h2>Creazione Saggio</h2>
-<% String alreadyPresent;
-    if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
-        if (alreadyPresent.equals("true")) {
+<% String dateAlreadyPresent;
+    if ((dateAlreadyPresent = request.getParameter("dateAlreadyPresent")) != null && dateAlreadyPresent.equals("true")) {
 %>
 <p>Errore, esiste già un saggio per la data selezionata</p>
+<%
+    }
+%>
+<% String nameAlreadyPresent;
+    if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
+%>
+<p>Errore, esiste già un saggio con lo stesso nome</p>
 <%
     }
 %>
@@ -256,7 +262,7 @@
     var errorPresentElement = document.getElementById("fail");
     errorPresentElement.scrollIntoView({behavior: "smooth"});
 </script>
-<%  }
+<%
 } %>
 <form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
     <label for="nome">Nome:</label>
