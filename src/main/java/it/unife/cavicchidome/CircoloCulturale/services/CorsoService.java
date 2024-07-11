@@ -338,6 +338,7 @@ public class CorsoService {
         }
         else return true;
     }
+
     /*public boolean checkTimeOverlap(Optional<Corso> corso, List<Integer> giorni, List<LocalTime> orarioInizio, List<LocalTime> orarioFine) {
         //Controllo sovrapposizione oraria di corsi che si tengono nella stessa sala
         boolean sovrapposizione = false;

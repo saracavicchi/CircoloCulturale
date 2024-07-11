@@ -143,11 +143,12 @@ public class CorsoController {
         return "corsi";
     }
 
-    @PostMapping("/iscrizione")
+    @PostMapping("/iscrizione") //TODO: Controllare che numero iscritti non superi la capienza della sala
     public String enrollCorso (@RequestParam(name = "socio-id") Integer socioId,
                                @RequestParam(name = "corso-id") Integer corsoId,
-                               Model model,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               Model model
+                               ) {
 
         try {
             corsoService.enroll(socioId, corsoId);
