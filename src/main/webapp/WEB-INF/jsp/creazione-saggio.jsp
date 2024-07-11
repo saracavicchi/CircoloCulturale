@@ -48,8 +48,14 @@
             var descrizione = document.getElementById('descrizione').value;
             var orarioInizio = document.getElementById('orarioInizio').value;
             var orarioFine = document.getElementById('orarioFine').value;
+            var stato = document.getElementById('stato').value;
+            var provincia = document.getElementById('provincia').value;
+            var citta = document.getElementById('citta').value;
+            var via = document.getElementById('via').value;
+            var numeroCivico = document.getElementById('numeroCivico').value;
 
             var charSpaceDashRegex = /^[A-Za-z\s\-]+$/;
+            var charDescrizioneRegex = /^[A-Za-z\s\-()]+$/;
 
             if (!nome.match(charSpaceDashRegex) || !nome || nome.length > 30 || nome == "") {
                 errorMsg = "Nome deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
@@ -71,7 +77,7 @@
             }
 
             // Optional fields validation
-            if (descrizione && !descrizione.match(charSpaceDashRegex)) {
+            if (descrizione && !descrizione.match(charDescrizioneRegex)) {
                 erroredField = "descrizione";
                 errorMsg += "Descrizione deve contenere solo lettere, spazi o trattini";
                 return false;
@@ -89,9 +95,46 @@
                 errorMsg = "Orario inizio deve essere prima dell'orario fine.\n";
             }
             // Controlla se la somma dei caratteri di stato, provincia, città, via e numero civico non supera gli 80 caratteri
-            if ((country.length + province.length + city.length + street.length + houseNumber.length) > 80 || !country || !province || !city || !street || !houseNumber) {
+            if ((stato.length + provincia.length + citta.length + via.length + numeroCivico.length) > 80 || !stato || !provincia || !citta || !via || !numeroCivico) {
                 errorMsg = "La somma dei caratteri di stato, provincia, città, via e numero civico non deve superare gli 80 caratteri.";
-                erroredField = "country, province, city, street, houseNumber";
+                erroredField = "stato, provincia, citta, via, numeroCivico";
+                return false;
+            }
+
+            if (!stato.match(charSpaceDashRegex) || !stato || stato == "" ) {
+                errorMsg = "Lo stato deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                erroredField = "stato";
+                return false;
+            }
+
+            if (!provincia.match(charSpaceDashRegex) || !provincia || provincia == "" ) {
+                errorMsg = "La provincia deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                erroredField = "provincia";
+                return false;
+            }
+
+            if (!citta.match(charSpaceDashRegex) || !citta || citta == "" ) {
+                errorMsg = "La città deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                erroredField = "citta";
+                return false;
+            }
+
+            if (!via.match(charSpaceDashRegex) || !via || via == "" ) {
+                errorMsg = "La via deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                erroredField = "via";
+                return false;
+            }
+            if(!validateCourseSelection())
+                return false;
+
+            return true;
+        }
+
+        function validateCourseSelection() {
+            var selectCorsi = document.getElementsByName('corsi')[0];
+
+            if (selectCorsi.selectedOptions.length === 0) {
+                errorMsg="Selezionare almeno un corso";
                 return false;
             }
             return true;
@@ -197,16 +240,28 @@
 </head>
 <body>
 <h2>Creazione Saggio</h2>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+<% String alreadyPresent;
+    if ((alreadyPresent = request.getParameter("alreadyPresent")) != null) {
+        if (alreadyPresent.equals("true")) {
 %>
-<p>Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+<p>Errore, esiste già un saggio per la data selezionata</p>
 <%
     }
 %>
-<form id="creaSaggioForm" action="creaSaggio" method="post" enctype="multipart/form-data">
+<% String fail;
+    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+%>
+<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+<script>
+    var errorPresentElement = document.getElementById("fail");
+    errorPresentElement.scrollIntoView({behavior: "smooth"});
+</script>
+<%  }
+} %>
+<form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
     <label for="nome">Nome:</label>
-    <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio">
+    <!-- <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio"> -->
+    <input type="text" id="nome" name="nome" required maxlength="30" placeholder="Nome del saggio">
 
     <label for="data">Data:</label>
     <input type="date" id="data" name="data" required>
@@ -223,20 +278,20 @@
     <label for="orarioFine">Orario fine:</label>
     <input type="time" id="orarioFine" name="orarioFine" placeholder="Orario di fine (facoltativo)">
 
-    <label for="country">Stato:</label>
-    <input type="text" id="country" name="country" placeholder="Stato" required>
+    <label for="stato">Stato:</label>
+    <input type="text" id="stato" name="stato" placeholder="Stato" required>
 
-    <label for="province">Provincia:</label>
-    <input type="text" id="province" name="province" placeholder="Provincia" required>
+    <label for="provincia">Provincia:</label>
+    <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
 
-    <label for="city">Città:</label>
-    <input type="text" id="city" name="city" placeholder="Città" required>
+    <label for="citta">Città:</label>
+    <input type="text" id="citta" name="citta" placeholder="Città" required>
 
-    <label for="street">Via:</label>
-    <input type="text" id="street" name="street" placeholder="Via" required>
+    <label for="via">Via:</label>
+    <input type="text" id="via" name="via" placeholder="Via" required>
 
-    <label for="houseNumber">Numero Civico:</label>
-    <input type="text" id="houseNumber" name="houseNumber" placeholder="Numero civico" required>
+    <label for="numeroCivico">Numero Civico:</label>
+    <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
 
     <label for="corsi">Seleziona Corsi:</label>
     <select id="corsi" name="corsi" multiple>

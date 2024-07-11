@@ -162,6 +162,10 @@ public class Saggio {
     public void setCorsi(Set<Corso> corsi) {
         this.corsi = corsi;
     }
+
+    public void setIndirizzo(String stato, String provincia, String citta, String via, String numeroCivico) {
+        this.indirizzo = String.join(", ", stato, provincia, citta, via, numeroCivico);
+    }
 /*
     public Set<Docente> getDocenti() {
         return docenti;

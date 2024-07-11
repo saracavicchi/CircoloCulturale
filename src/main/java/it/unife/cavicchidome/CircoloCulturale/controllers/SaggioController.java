@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,5 +114,36 @@ public class SaggioController {
         }
         return "redirect:/saggio/info"; //TODO: aggiungere messaggio di errore
     }
+
+    @PostMapping("/crea")
+    public String creaSaggio(@RequestParam("nome") String nome,
+                             @RequestParam("data") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+                             @RequestParam("numeroPartecipanti") int numeroPartecipanti,
+                             @RequestParam(value = "descrizione", required = false) String descrizione,
+                             @RequestParam(value = "orarioInizio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime orarioInizio,
+                             @RequestParam(value = "orarioFine", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime orarioFine,
+                             @RequestParam("stato") String stato,
+                             @RequestParam("provincia") String provincia,
+                             @RequestParam("citta") String citta,
+                             @RequestParam("via") String via,
+                             @RequestParam("numeroCivico") String numeroCivico,
+                             @RequestParam("corsi") List<Integer> corsiIds,
+                             RedirectAttributes redirectAttributes
+    ) {
+        try{
+            if(saggioService.newSaggio(nome, data, numeroPartecipanti, Optional.of(descrizione), Optional.of(orarioInizio), Optional.of(orarioFine), stato, provincia, citta, via, numeroCivico, corsiIds)){
+                return "redirect:/saggio/info";
+            }
+            redirectAttributes.addAttribute("fail", "true");
+            return "redirect:/saggio/crea";
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("fail", "true");
+            redirectAttributes.addAttribute("alreadyPresent", "true");
+            return "redirect:/saggio/crea";
+        }
+
+    }
+
+
 
 }
