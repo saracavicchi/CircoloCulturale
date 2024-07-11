@@ -132,13 +132,13 @@ public class SaggioController {
                              @RequestParam(value = "photo", required = false) MultipartFile photo,
                              RedirectAttributes redirectAttributes
     ) {
-       // try{
+       try{
             if(saggioService.newSaggio(nome, data, numeroPartecipanti,descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, Optional.of(photo))){
                 return "redirect:/saggio/info";
             }
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/saggio/crea";
-        /*} catch (Exception e) {
+        } catch (Exception e) {
             String message = e.getMessage();
             System.out.println(message);
             redirectAttributes.addAttribute("fail", "true");
@@ -147,8 +147,19 @@ public class SaggioController {
             else if(message != null && message.equals("Nome già presente"))
                 redirectAttributes.addAttribute("nameAlreadyPresent", "true");
             return "redirect:/saggio/crea";
-        }*/
+        }
 
+    }
+
+    @GetMapping("/modifica")
+    public String viewModificaSaggio(@RequestParam("saggioId") Integer saggioId, Model model, HttpServletRequest request, HttpServletResponse response) {
+        Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
+        if (saggio.isPresent() && corsoService.aggiungiCorsiBaseRuolo(request, response, model)) {
+            model.addAttribute("saggio", saggio.get());
+            return "modifica-saggio";
+        }
+
+        return "redirect:/saggio/info";
     }
 
 

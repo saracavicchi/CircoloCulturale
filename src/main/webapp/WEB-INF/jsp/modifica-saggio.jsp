@@ -1,28 +1,29 @@
 <%--
   Created by IntelliJ IDEA.
   User: sarac
-  Date: 09/07/2024
-  Time: 22:22
+  Date: 11/07/2024
+  Time: 18:28
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Creazione Saggio</title>
+    <title>Modifica Corso</title>
     <script>
         var errorDisplayed = false;
-
         document.addEventListener('DOMContentLoaded', function() {
-            initCreaSaggioForm();
+            initializeAddressFields();
+            initModificaSaggioForm();
+
         });
 
-        function initCreaSaggioForm() {
-            var creaSaggioForm = document.getElementById('creaSaggioForm');
-            if (creaSaggioForm) {
-                creaSaggioForm.addEventListener('submit', submitForm);
-                var inputs = creaSaggioForm.getElementsByTagName('input');
-                addFocusListenersToInputs(inputs, 'creaSaggioForm');
+        function initModificaSaggioForm() {
+            var modificaSaggioForm = document.getElementById('modificaSaggioForm');
+            if (modificaSaggioForm) {
+                modificaSaggioForm.addEventListener('submit', submitForm);
+                var inputs = modificaSaggioForm.getElementsByTagName('input');
+                addFocusListenersToInputs(inputs, 'modificaSaggioForm');
             }
         }
         function addFocusListenersToInputs(inputs, formName) {
@@ -155,9 +156,10 @@
                 displayErrorMessages(h2Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
-                document.getElementById('creaSaggioForm').submit();
+                document.getElementById('modificaSaggioForm').submit();
             }
         }
+
         function displayErrorMessages(Element) {
 
             errorDisplayed = true;
@@ -235,56 +237,61 @@
                 inputs[i].style.border = '';
             }
         }
-    </script>
-    <style>
 
-    </style>
+        function divideIndirizzo(saggio) {
+            const parti = saggio.indirizzo.split(', ');
+            const risultato = {
+                state: parti[0],
+                province: parti[1],
+                city: parti[2],
+                street: parti[3],
+                houseNumber: parti[4]
+            };
+            console.log(risultato)
+            return risultato;
+        }
+
+        function initializeAddressFields() {
+            var saggio = {
+                indirizzo: "${saggio.indirizzo}"
+            };
+            var risultato = divideIndirizzo(saggio);
+            document.getElementById('stato').value = risultato.state;
+            document.getElementById('provincia').value = risultato.province;
+            document.getElementById('citta').value = risultato.city;
+            document.getElementById('via').value = risultato.street;
+            document.getElementById('numeroCivico').value = risultato.houseNumber;
+        }
+    </script>
 </head>
 <body>
-<h2>Creazione Saggio</h2>
-<% String dateAlreadyPresent;
-    if ((dateAlreadyPresent = request.getParameter("dateAlreadyPresent")) != null && dateAlreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già un saggio per la data selezionata</p>
-<%
-    }
-%>
-<% String nameAlreadyPresent;
-    if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già un saggio con lo stesso nome</p>
-<%
-    }
-%>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
-<script>
-    var errorPresentElement = document.getElementById("fail");
-    errorPresentElement.scrollIntoView({behavior: "smooth"});
-</script>
-<%
-} %>
-<form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
+<h2>Modifica le informazioni del saggio "${saggio.nome}"</h2>
+<div>
+    <img src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto saggio" class="profile-pic"/>
+</div>
+<form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="idSaggio" value="${saggio.id}"/>
+
+    <label for="photo">Seleziona una nuova foto per il saggio:</label>
+    <input type="file" id="photo" name="photo">
+
     <label for="nome">Nome:</label>
-    <!-- <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio"> -->
-    <input type="text" id="nome" name="nome" required maxlength="30" placeholder="Nome del saggio">
-
-    <label for="data">Data:</label>
-    <input type="date" id="data" name="data" required>
-
-    <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
-    <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" placeholder="Numero massimo partecipanti">
+    <input type="text" id="nome" name="nome" required maxlength="30" value="${saggio.nome}">
 
     <label for="descrizione">Descrizione:</label>
-    <textarea id="descrizione" name="descrizione" placeholder="Descrizione del saggio (facoltativo)"></textarea>
+    <input type="text" id="descrizione" name="descrizione" value="${not empty saggio.descrizione ? saggio.descrizione : ''}" placeholder="Inserire descrizione"/>
+
+    <label for="data">Data:</label>
+    <input type="date" id="data" name="data" required value="${saggio.data}">
+
+    <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
+    <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" value="${saggio.maxPartecipanti}">
 
     <label for="orarioInizio">Orario inizio:</label>
-    <input type="time" id="orarioInizio" name="orarioInizio" >
+    <input type="time" id="orarioInizio" name="orarioInizio" value="${not empty saggio.orarioInizio ? saggio.orarioInizio : ''}" placeholder="HH:MM">
 
     <label for="orarioFine">Orario fine:</label>
-    <input type="time" id="orarioFine" name="orarioFine" >
+    <input type="time" id="orarioFine" name="orarioFine" value="${not empty saggio.orarioFine ? saggio.orarioFine : ''}" placeholder="HH:MM">
 
     <label for="stato">Stato:</label>
     <input type="text" id="stato" name="stato" placeholder="Stato" required>
@@ -304,13 +311,18 @@
     <label for="corsi">Seleziona Corsi:</label>
     <select id="corsi" name="corsi" multiple>
         <c:forEach items="${corsi}" var="corso">
-            <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+            <c:choose>
+                <c:when test="${saggio.corsi.contains(corso)}">
+                    <option value="${corso.id}" selected>${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                </c:when>
+                <c:otherwise>
+                    <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                </c:otherwise>
+            </c:choose>
         </c:forEach>
     </select>
-
-    <input type="file" id="photo" name="photo">
-
-    <button type="submit">Crea Saggio</button>
+    <button type="submit">Modifica Saggio</button>
 </form>
+
 </body>
 </html>
