@@ -23,7 +23,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     Optional<Corso> findByCategoriaAndGenereAndLivello(@Param("categoria") String categoria, @Param("genere") String genere, @Param("livello") String livello);
 
     @Query("SELECT c FROM Corso c WHERE c.id = :idCorso AND c.active = true")
-    Optional<Corso> findById(@Param("idCorso") Integer idCorso);
+    Optional<Corso> findByIdActive(Integer idCorso);
 
     @Query("SELECT c FROM Corso c WHERE c.id = :idCorso")
     Optional<Corso> findByIdAll(Integer idCorso);
