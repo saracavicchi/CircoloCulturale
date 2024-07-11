@@ -5,6 +5,7 @@ import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SaggioRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -245,6 +246,16 @@ public class SaggioService {
         saggio.setDeleted(true); // Imposta il saggio come eliminato
         saggio.setCorsi(null); // Rimuove i corsi associati al saggio
         saggioRepository.save(saggio);
+    }
+
+    @Transactional
+    public Optional<Saggio> getSaggioByData(LocalDate data){
+        return saggioRepository.getSaggioByData(data);
+    }
+
+    @Transactional
+    public Optional<Saggio> getSaggioByName(String nome){
+        return saggioRepository.getSaggioByName(nome);
     }
 
 }

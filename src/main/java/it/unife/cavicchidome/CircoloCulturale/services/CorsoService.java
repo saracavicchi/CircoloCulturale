@@ -51,5 +51,15 @@ public class CorsoService {
         return true;
     }
 
+    @Transactional
+    List<Corso> findAllIfActiveTrue(){
+        return corsoRepository.findAllIfActiveTrue();
+    }
+
+    @Transactional
+    List<Corso> findCorsiByDocenteId(Integer docenteId){
+        return corsoRepository.findCorsiByDocenteId(docenteId);
+    }
+
 
 }
