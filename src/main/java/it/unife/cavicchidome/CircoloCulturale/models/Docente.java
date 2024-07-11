@@ -33,11 +33,11 @@ public class Docente {
             inverseJoinColumns = @JoinColumn(name = "id_corso"))
     private Set<Corso> corsi = new LinkedHashSet<>();
 
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(name = "saggio_partecipa_docente",
             joinColumns = @JoinColumn(name = "id_docente"),
             inverseJoinColumns = @JoinColumn(name = "id_saggio"))
-    private Set<Saggio> saggi = new LinkedHashSet<>();
+    private Set<Saggio> saggi = new LinkedHashSet<>();*/
 
     public Integer getId() {
         return id;
@@ -79,12 +79,12 @@ public class Docente {
         this.corsi = corsi;
     }
 
-    public Set<Saggio> getSaggi() {
+    /*public Set<Saggio> getSaggi() {
         return saggi;
     }
 
     public void setSaggi(Set<Saggio> saggi) {
         this.saggi = saggi;
-    }
+    }*/
 
 }
