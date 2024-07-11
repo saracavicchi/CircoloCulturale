@@ -55,7 +55,7 @@ public class CorsoController {
         //TODO: Aggiungi controllo per verificare che si tratta di ADMIN
 
         // Ottenere le sale dal servizio e aggiungerle al model
-        List<Sala> sale = new ArrayList<>(salaService.findAll());
+        List<Sala> sale = new ArrayList<>(salaService.findAllIfActive());
         Collections.sort(sale, new Comparator<Sala>() {
             @Override
             public int compare(Sala s1, Sala s2) {
@@ -283,7 +283,7 @@ public class CorsoController {
                 .collect(Collectors.toSet());
         model.addAttribute("calendarioCorso", calendariAttivi);
 
-        List<Sala> sale = new ArrayList<>(salaService.findAll());
+        List<Sala> sale = new ArrayList<>(salaService.findAllIfActive());
         Collections.sort(sale, new Comparator<Sala>() {
             @Override
             public int compare(Sala s1, Sala s2) {

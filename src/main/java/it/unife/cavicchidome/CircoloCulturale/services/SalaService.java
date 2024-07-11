@@ -21,6 +21,11 @@ public class SalaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Sala> findAllIfActive() {
+        return salaRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Sala> findById(Integer idSala) {
         return salaRepository.findById(idSala);
     }
