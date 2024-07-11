@@ -32,6 +32,15 @@
         <main class="clearfix midleft">
             <section class="title">
                 <h1>Prenotazioni</h1>
+                <p><a href="/socio/prenotazioni/nuova">Nuova prenotazione</a></p>
+            </section>
+            <section class="filter">
+                <form action="/socio/prenotazioni" method="get">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" name="data" value="<%= (request.getParameter("data") != null ? request.getParameter("data") : java.time.LocalDate.now())%>" required>
+                    <input type="submit" value="Filtra">
+                </form>
+
             </section>
             <section class="content clearfix">
                 <c:forEach items="${prenotazioni}" var="prenotazione">

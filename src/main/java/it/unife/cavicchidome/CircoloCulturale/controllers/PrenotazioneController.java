@@ -44,10 +44,11 @@ public class PrenotazioneController {
     }
 
     @GetMapping("/socio/prenotazioni")
-    public String viewPrenotazioni(@RequestParam Optional<Integer> prenotazioneId,
-                                   Model model,
-                                   HttpServletRequest request,
-                                   HttpServletResponse response) {
+    public String viewPrenotazioniSocio(@RequestParam(name = "id") Optional<Integer> prenotazioneId,
+                                        @RequestParam(name = "data") Optional<LocalDate> showAfter,
+                                        Model model,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response) {
         Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
         if (socioCookie.isEmpty()) {
             return "redirect:/";
@@ -62,7 +63,7 @@ public class PrenotazioneController {
                 return "redirect:/socio/prenotazioni";
             }
         } else {
-            List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySocio(socioCookie.get().getId());
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySocio(socioCookie.get().getId(), showAfter);
             model.addAttribute("prenotazioni", prenotazioni);
             return "prenotazioni";
         }
@@ -123,6 +124,34 @@ public class PrenotazioneController {
         } catch (Exception e) {
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/socio/prenotazioni/nuova?data=" + date + "&sala=" + salaId;
+        }
+    }
+
+    @GetMapping("/segretario/prenotazioni")
+    public String viewPrenotazioniSegretario(@RequestParam(name = "id") Optional<Integer> prenotazioneId,
+                                            @RequestParam(name = "data") Optional<LocalDate> showAfter,
+                                            @RequestParam(name = "salaId") Optional<Integer> salaId,
+                                            @RequestParam(name = "deleted") Optional<Boolean> deleted,
+                                            Model model,
+                                            HttpServletRequest request,
+                                            HttpServletResponse response) {
+        Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
+        if (socioCookie.isEmpty() || socioCookie.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
+        if (prenotazioneId.isPresent()) {
+            Optional<PrenotazioneSala> prenotazione = prenotazioneSalaService.getPrenotazioneById(socioCookie.get().getId(), prenotazioneId.get());
+            if (prenotazione.isPresent()) {
+                model.addAttribute("prenotazione", prenotazione.get());
+                return "prenotazione-info";
+            } else {
+                return "redirect:/socio/prenotazioni";
+            }
+        } else {
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySalaAfterDataDeleted(salaId.orElse(null), showAfter.orElse(LocalDate.now()), deleted.orElse(false);
+            model.addAttribute("prenotazioni", prenotazioni);
+            return "prenotazioni";
         }
     }
 }

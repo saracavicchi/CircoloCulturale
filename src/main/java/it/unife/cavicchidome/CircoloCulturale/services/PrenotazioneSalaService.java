@@ -42,8 +42,13 @@ public class PrenotazioneSalaService {
     }
 
     @Transactional
-    public List<PrenotazioneSala> getPrenotazioneBySocio(Integer idSocio) {
-        return prenotazioneSalaRepository.findBySocio(idSocio);
+    public List<PrenotazioneSala> getPrenotazioneBySocio(Integer idSocio, Optional<LocalDate> date) {
+        return prenotazioneSalaRepository.findBySocio(idSocio, date.orElse(LocalDate.now()));
+    }
+
+    @Transactional
+    public List<PrenotazioneSala> getPrenotazioneBySalaAfterDataDeleted(Integer idSala, Optional<LocalDate> data, Optional<Boolean> deleted) {
+        return prenotazioneSalaRepository.findBySalaAndAfterDataDeleted(idSala, data.orElse(LocalDate.now()), deleted.orElse(false));
     }
 
     @Transactional

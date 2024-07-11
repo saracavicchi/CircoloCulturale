@@ -22,7 +22,7 @@
         <main class="clearfix midleft">
             <section class="title">
                 <h1>Soci del circolo</h1>
-                <p style="float: right"><a href="/segretario/nuovoSocio">Nuovo socio</a></p>
+                <p><a href="/segretario/nuovoSocio">Nuovo socio</a></p>
             </section>
             <section class="filter">
                 <form id="filterForm" name="filterForm" action="/segretario/soci" method="get">
