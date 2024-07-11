@@ -4,6 +4,7 @@ import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,7 +67,7 @@ public class CorsoService {
         return true;
     }
 
-    private boolean validateStipendi(List<Integer> stipendi){
+    private boolean validateStipendi(List<Integer> stipendi) {
         if (stipendi == null || stipendi.isEmpty()) return false;
         for (Integer stipendio : stipendi) {
             if (stipendio == null || stipendio < 10000 || stipendio > 100000) return false;
@@ -75,7 +76,8 @@ public class CorsoService {
     }
 
     public boolean validateCalendarioAndSala(List<Integer> giorni, List<LocalTime> orarioInizio, List<LocalTime> orarioFine, Integer idSala) {
-        if (idSala == null || giorni == null || giorni.isEmpty() || orarioInizio == null || orarioInizio.isEmpty() || orarioFine == null || orarioFine.isEmpty()) return false;
+        if (idSala == null || giorni == null || giorni.isEmpty() || orarioInizio == null || orarioInizio.isEmpty() || orarioFine == null || orarioFine.isEmpty())
+            return false;
         if (orarioInizio.size() != orarioFine.size()) return false;
         Optional<Sala> salaOpt = salaRepository.findById(idSala);
         if (!salaOpt.isPresent()) {
@@ -86,8 +88,8 @@ public class CorsoService {
             List<LocalTime> orariAperturaChiusura = orarioSedeService.findOrarioAperturaChiusuraByIdSedeAndGiornoSettimana(sedeService.findSedeByIdSala(idSala).get().getId(), Weekday.values()[giorno]);
             LocalTime orarioApertura = orariAperturaChiusura.get(0);
             LocalTime orarioChiusura = orariAperturaChiusura.get(1);
-            LocalTime inizio = orarioInizio.get(giorno-1);
-            LocalTime fine = orarioFine.get(giorno-1);
+            LocalTime inizio = orarioInizio.get(giorno - 1);
+            LocalTime fine = orarioFine.get(giorno - 1);
             if (inizio == null || fine == null || !inizio.isBefore(fine) || inizio.isBefore(orarioApertura) || fine.isAfter(orarioChiusura)) {
                 return false;
             }
@@ -135,8 +137,8 @@ public class CorsoService {
         boolean reactivated = false;
 
         Optional<Corso> corsoIdentical = corsoRepository.findByCategoriaAndGenereAndLivello(categoria, genere, livello);
-        if(corsoIdentical.isPresent() ) {
-            if(corsoIdentical.get().getActive() == true)
+        if (corsoIdentical.isPresent()) {
+            if (corsoIdentical.get().getActive() == true)
                 return false; //Corso Attivo già esistente
             else {
                 corsoIdentical.get().setActive(true);
@@ -175,9 +177,8 @@ public class CorsoService {
                 docente.setStipendio(BigDecimal.valueOf(stipendi.get(i)));
                 docenteRepository.save(docente);
                 docenti.add(docente);
-            }
-            else{
-                if (BigDecimal.valueOf(stipendi.get(i)).compareTo(socio.getDocente().getStipendio()) > 0){
+            } else {
+                if (BigDecimal.valueOf(stipendi.get(i)).compareTo(socio.getDocente().getStipendio()) > 0) {
                     socio.getDocente().setStipendio(BigDecimal.valueOf(stipendi.get(i)));
                     docenteRepository.save(socio.getDocente());
                 }
@@ -186,21 +187,20 @@ public class CorsoService {
 
         }
 
-        if(checkScheduleOverlap(null, giorni, orarioInizio, orarioFine, idSala) == false){
+        if (checkScheduleOverlap(null, giorni, orarioInizio, orarioFine, idSala) == false) {
             return false;
         }
 
 
         Corso corso;
         // Step 6: Save Course Information
-        if(!reactivated){
+        if (!reactivated) {
             corso = new Corso();
             corso.setGenere(genere);
             corso.setLivello(livello);
             corso.setCategoria(categoria);
-        }
-        else{
-            corso=corsoIdentical.get();
+        } else {
+            corso = corsoIdentical.get();
         }
 
         corso.setDescrizione(descrizione);
@@ -208,7 +208,7 @@ public class CorsoService {
         corso.setDocenti(docenti);
         corso.setActive(true);
 
-        if(photo != null){
+        if (photo != null) {
             String filename = saveCorsoPicture(photo, categoria, corso.getId());
             corso.setUrlFoto(filename);
         }
@@ -235,16 +235,16 @@ public class CorsoService {
         }*/
 
         Set<CalendarioCorso> nuovoCalendarioCorso = new HashSet<>();
-        for (Integer giorno: giorni) {
+        for (Integer giorno : giorni) {
             Weekday weekday;
-            try{
+            try {
                 weekday = Weekday.fromDayNumber(giorno);
                 System.out.println(weekday);
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 return false;
             }
 
-            if(reactivated) {
+            if (reactivated) {
                 Optional<CalendarioCorso> existingEntryOpt = calendarioCorsoRepository.findByCorsoAndGiornoSettimanaId(corso.getId(), weekday);
 
                 if (existingEntryOpt.isPresent()) {
@@ -271,7 +271,7 @@ public class CorsoService {
                     calendarioCorsoRepository.save(newCalendario);
                     nuovoCalendarioCorso.add(newCalendario);
                 }
-            }else{
+            } else {
                 CalendarioCorso newCalendario = new CalendarioCorso();
                 CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
                 ;
@@ -313,16 +313,16 @@ public class CorsoService {
         boolean sovrapposizione = false;
         for (int i = 0; i < giorni.size(); i++) {
             Integer giorno = giorni.get(i);
-            LocalTime inizio = orarioInizio.get(giorno-1);
-            LocalTime fine = orarioFine.get(giorno-1);
+            LocalTime inizio = orarioInizio.get(giorno - 1);
+            LocalTime fine = orarioFine.get(giorno - 1);
 
             // Trova corsi nel CalendarioCorso che si sovrappongono per orario
-            List<CalendarioCorso> corsiSovrapposti = calendarioCorsoRepository.findCorsiSovrapposti(Weekday.fromDayNumber(giorno) , inizio, fine, idSala );
+            List<CalendarioCorso> corsiSovrapposti = calendarioCorsoRepository.findCorsiSovrapposti(Weekday.fromDayNumber(giorno), inizio, fine, idSala);
             for (CalendarioCorso calendarioCorso : corsiSovrapposti) {
                 System.out.println(calendarioCorso.getIdCorso().getDescrizione());
                 Corso corsoSovrapposto = calendarioCorso.getIdCorso();
-                if (calendarioCorso.getIdCorso().getActive()==true && corsoSovrapposto.getActive()==true) {
-                    if(corso.isPresent() && corso.get().getId().equals(corsoSovrapposto.getId())){
+                if (calendarioCorso.getIdCorso().getActive() == true && corsoSovrapposto.getActive() == true) {
+                    if (corso.isPresent() && corso.get().getId().equals(corsoSovrapposto.getId())) {
                         continue; //si esclude corso stesso dal controllo di sovrapposizione
                     }
                     sovrapposizione = true;
@@ -335,8 +335,7 @@ public class CorsoService {
         if (sovrapposizione) {
             // Gestisci la sovrapposizione (es. restituendo false o lanciando un'eccezione)
             return false;
-        }
-        else return true;
+        } else return true;
     }
 
     /*public boolean checkTimeOverlap(Optional<Corso> corso, List<Integer> giorni, List<LocalTime> orarioInizio, List<LocalTime> orarioFine) {
@@ -389,12 +388,12 @@ public class CorsoService {
             LocalTime fine = calendarioCorso.get(i).getOrarioFine();
 
             // Trova corsi nel CalendarioCorso che si sovrappongono per orario
-            List<CalendarioCorso> corsiSovrapposti = calendarioCorsoRepository.findCorsiSovrapposti(Weekday.fromDayNumber(giorno) , inizio, fine, idSala );
+            List<CalendarioCorso> corsiSovrapposti = calendarioCorsoRepository.findCorsiSovrapposti(Weekday.fromDayNumber(giorno), inizio, fine, idSala);
             for (CalendarioCorso calendario : corsiSovrapposti) {
                 System.out.println(calendario.getIdCorso().getDescrizione());
                 Corso corsoSovrapposto = calendario.getIdCorso();
-                if (calendario.getIdCorso().getActive()==true && corsoSovrapposto.getActive()==true) {
-                    if(corso.isPresent() && corso.get().getId().equals(corsoSovrapposto.getId())){
+                if (calendario.getIdCorso().getActive() == true && corsoSovrapposto.getActive() == true) {
+                    if (corso.isPresent() && corso.get().getId().equals(corsoSovrapposto.getId())) {
                         continue; //si esclude corso stesso dal controllo di sovrapposizione
                     }
                     sovrapposizione = true;
@@ -407,8 +406,7 @@ public class CorsoService {
         if (sovrapposizione) {
             // Gestisci la sovrapposizione (es. restituendo false o lanciando un'eccezione)
             return false;
-        }
-        else return true;
+        } else return true;
     }
 
     //Controlla sovrapposizione oraria corsi senza controllare la sala
@@ -424,10 +422,9 @@ public class CorsoService {
             LocalTime fine = calendarioCorso.get(i).getOrarioFine();
 
             // Trova corsi nel CalendarioCorso che si sovrappongono per orario
-            Optional<List<CalendarioCorso>> calendariSovrappostiOpt = calendarioCorsoRepository.findCorsiContemporanei(Weekday.fromDayNumber(giorno) , inizio, fine);
-            if(calendariSovrappostiOpt.isPresent()) {
-                List<CalendarioCorso> corsiSovrapposti = calendariSovrappostiOpt.get();
-                for (CalendarioCorso calendario : corsiSovrapposti) {
+            List<CalendarioCorso> calendariSovrapposti = calendarioCorsoRepository.findCorsiContemporanei(Weekday.fromDayNumber(giorno), inizio, fine);
+            if (!calendariSovrapposti.isEmpty()) {
+                for (CalendarioCorso calendario : calendariSovrapposti) {
                     //System.out.println(calendario.getIdCorso().getDescrizione());
                     Corso corsoSovrapposto = calendario.getIdCorso();
                     if (calendario.getIdCorso().getActive() == true && corsoSovrapposto.getActive() == true) {
@@ -445,26 +442,25 @@ public class CorsoService {
         if (sovrapposizione) {
             // Gestisci la sovrapposizione (es. restituendo false o lanciando un'eccezione)
             return false;
-        }
-        else return true;
+        } else return true;
     }
 
     //per la modifica dei docenti
     @Transactional
-    public boolean checkDocentiScheduleOverlap(List<String> docentiCf){
-        for(String cf: docentiCf){
+    public boolean checkDocentiScheduleOverlap(List<String> docentiCf) {
+        for (String cf : docentiCf) {
             Optional<Docente> docente = docenteRepository.findByCf(cf);
-            if(!docente.isPresent()) {
+            if (!docente.isPresent()) {
                 return false; //TODO: gestire caso in cui docente non esiste: eccezione
             }
             Integer idDocente = docente.get().getId();
-            Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
-            if(corsiInsegnati.isPresent()){
-                for(Corso corso: corsiInsegnati.get()){
-                    if(corso.getActive()){
+            List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
+            if (!corsiInsegnati.isEmpty()) {
+                for (Corso corso : corsiInsegnati) {
+                    if (corso.getActive()) {
                         Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
                         List<CalendarioCorso> calendarioCorso = new ArrayList<>(calendarioCorsoSet);
-                        if(!checkTimeOverlap(Optional.of(corso), calendarioCorso)){
+                        if (!checkTimeOverlap(Optional.of(corso), calendarioCorso)) {
                             return false;
                         }
 
@@ -476,18 +472,18 @@ public class CorsoService {
 
         return true;
     }
+
     //Verifica sovrapposizione oraria di un corso (dato dall'id) con la tupla giorno, orarioInizio, orarioFine di un altro
-    public boolean checkScheduleConflict(Integer idCorso, Integer giorno, LocalTime inizio, LocalTime fine){
+    public boolean checkScheduleConflict(Integer idCorso, Integer giorno, LocalTime inizio, LocalTime fine) {
         Optional<Corso> corso = corsoRepository.findById(idCorso);
-        if(!corso.isPresent()){
+        if (!corso.isPresent()) {
             return false; //TODO: gestire caso in cui corso non esiste: eccezione
-        }
-        else{
+        } else {
             Set<CalendarioCorso> calendarioCorsoSet = corso.get().getCalendarioCorso();
             List<CalendarioCorso> calendarioCorso = new ArrayList<>(calendarioCorsoSet);
-            for(CalendarioCorso calendario : calendarioCorso){
+            for (CalendarioCorso calendario : calendarioCorso) {
                 Optional<CalendarioCorso> calendarioContemporaneo = calendarioCorsoRepository.findSeCorsoContemporaneo(Weekday.fromDayNumber(giorno), idCorso, inizio, fine); //solo calendari e corsi active
-                if(calendarioContemporaneo.isPresent() && calendarioContemporaneo.get().getIdCorso().getId() != idCorso){
+                if (calendarioContemporaneo.isPresent() && calendarioContemporaneo.get().getIdCorso().getId() != idCorso) {
                     return false;
                 }
             }
@@ -504,38 +500,39 @@ public class CorsoService {
             List<Integer> giorni,
             List<LocalTime> orariInizio,
             List<LocalTime> orariFine
-    ){
+    ) {
         boolean sovrapposizione = false;
-        for(String cf: docentiCf) {
+        for (String cf : docentiCf) {
             Optional<Docente> docente = docenteRepository.findByCf(cf);
             if (!docente.isPresent()) {
                 continue;
             } else {
                 Integer idDocente = docente.get().getId();
-                Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
-                if (corsiInsegnati.isPresent()) {
-                    for (Corso corso : corsiInsegnati.get()) {
-                        if (corso.getActive() ) {
-                             for (int i = 0; i < giorni.size(); i++) {
-                                 Integer giorno = giorni.get(i);
-                                 LocalTime inizio = orariInizio.get(giorno-1);
-                                 LocalTime fine = orariFine.get(giorno-1);
-                                 if (checkScheduleConflict(corso.getId(), giorno, inizio, fine) == false) {
-                                     sovrapposizione = true;
-                                     break;
-                                 }
-                             }
+                List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
+                if (!corsiInsegnati.isEmpty()) {
+                    for (Corso corso : corsiInsegnati) {
+                        if (corso.getActive()) {
+                            for (int i = 0; i < giorni.size(); i++) {
+                                Integer giorno = giorni.get(i);
+                                LocalTime inizio = orariInizio.get(giorno - 1);
+                                LocalTime fine = orariFine.get(giorno - 1);
+                                if (checkScheduleConflict(corso.getId(), giorno, inizio, fine) == false) {
+                                    sovrapposizione = true;
+                                    break;
+                                }
+                            }
 
                         }
                     }
                 }
             }
         }
-        if(sovrapposizione)
+        if (sovrapposizione)
             return false;
         return true;
 
     }
+
     //Per la modifica del calendario
     @Transactional
     public boolean checkDocentiScheduleOverlap(
@@ -543,26 +540,26 @@ public class CorsoService {
             List<Integer> giorni,
             List<LocalTime> orariInizio,
             List<LocalTime> orariFine
-    ){
+    ) {
         boolean sovrapposizione = false;
-        Optional<Corso> corsoOpt =corsoRepository.findById(idCorso);
-        if(!corsoOpt.isPresent()){
+        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        if (!corsoOpt.isPresent()) {
             return false; //TODO: gestire caso in cui corso non esiste: eccezione
         }
-        Set<Docente> docenti =corsoOpt.get().getDocenti(); //gia solo corsi attivi
+        Set<Docente> docenti = corsoOpt.get().getDocenti(); //gia solo corsi attivi
         List<Docente> docentiList = new ArrayList<>(docenti);
-        for(Docente docente: docentiList) {
+        for (Docente docente : docentiList) {
             Integer idDocente = docente.getId();
-            Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
+            List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
 
-            if (corsiInsegnati.isPresent()) {
-                for (Corso corso : corsiInsegnati.get()) {
+            if (!corsiInsegnati.isEmpty()) {
+                for (Corso corso : corsiInsegnati) {
                     System.out.println(corso.getDescrizione());
-                    if (corso.getActive() && corso.getId()!= idCorso) { //non stesso corso
+                    if (corso.getActive() && corso.getId() != idCorso) { //non stesso corso
                         for (int i = 0; i < giorni.size(); i++) {
                             Integer giorno = giorni.get(i);
-                            LocalTime inizio = orariInizio.get(giorno-1);
-                            LocalTime fine = orariFine.get(giorno-1);
+                            LocalTime inizio = orariInizio.get(giorno - 1);
+                            LocalTime fine = orariFine.get(giorno - 1);
                             if (checkScheduleConflict(corso.getId(), giorno, inizio, fine) == false) {
                                 sovrapposizione = true;
                                 break;
@@ -574,12 +571,12 @@ public class CorsoService {
             }
 
         }
-        if(sovrapposizione) return false;
+        if (sovrapposizione) return false;
         return true;
 
     }
 
-    public String saveCorsoPicture (MultipartFile picture, String categoria, Integer idCorso) {
+    public String saveCorsoPicture(MultipartFile picture, String categoria, Integer idCorso) {
 
         if (picture == null || picture.isEmpty()) {
             return null;
@@ -745,7 +742,7 @@ public class CorsoService {
         Corso corso = corsoOpt.get();
 
 
-        if(checkScheduleOverlap(corsoOpt, giorni, orarioInizio, orarioFine, idSala) == false){
+        if (checkScheduleOverlap(corsoOpt, giorni, orarioInizio, orarioFine, idSala) == false) {
             return false;
         }
 
@@ -756,39 +753,39 @@ public class CorsoService {
         // Update existing entries or create new ones and collect IDs of days to keep
 
         Set<CalendarioCorso> nuovoCalendarioCorso = new HashSet<>();
-        for (Integer giorno: giorni) {
+        for (Integer giorno : giorni) {
             Weekday weekday;
-            try{
+            try {
                 weekday = Weekday.fromDayNumber(giorno);
                 System.out.println(weekday);
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 return false;
             }
 
             Optional<CalendarioCorso> existingEntryOpt = calendarioCorsoRepository.findByCorsoAndGiornoSettimanaId(idCorso, weekday);
 
 
-
             if (existingEntryOpt.isPresent()) {
                 System.out.println(existingEntryOpt.get().getGiornoSettimana());
                 CalendarioCorso existingEntry = existingEntryOpt.get();
-                System.out.println(orarioInizio.get(giorno-1));
-                existingEntry.setOrarioInizio(orarioInizio.get(giorno-1));
-                existingEntry.setOrarioFine(orarioFine.get(giorno-1));
+                System.out.println(orarioInizio.get(giorno - 1));
+                existingEntry.setOrarioInizio(orarioInizio.get(giorno - 1));
+                existingEntry.setOrarioFine(orarioFine.get(giorno - 1));
                 existingEntry.setActive(true);
                 calendarioCorsoRepository.save(existingEntry);
                 nuovoCalendarioCorso.add(existingEntry);
             } else {
                 // Create new entry
                 CalendarioCorso newCalendario = new CalendarioCorso();
-                CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();;
+                CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
+                ;
                 calendarioCorsoId.setGiornoSettimana(weekday);
                 calendarioCorsoId.setIdCorso(idCorso);
                 newCalendario.setId(calendarioCorsoId);
                 newCalendario.setIdCorso(corso);
                 newCalendario.setActive(true);
-                newCalendario.setOrarioInizio(orarioInizio.get(giorno-1));
-                newCalendario.setOrarioFine(orarioFine.get(giorno-1));
+                newCalendario.setOrarioInizio(orarioInizio.get(giorno - 1));
+                newCalendario.setOrarioFine(orarioFine.get(giorno - 1));
                 calendarioCorsoRepository.save(newCalendario);
                 nuovoCalendarioCorso.add(newCalendario);
 
@@ -797,7 +794,7 @@ public class CorsoService {
 
 
         if (!corso.getIdSala().equals(idSala)) {
-            if(checkRoomCapacityForCourse(idCorso, idSala) == false){
+            if (checkRoomCapacityForCourse(idCorso, idSala) == false) {
                 return false;
             }
             Sala newSala = salaRepository.findById(idSala).orElseThrow(() -> new IllegalStateException("Sala not found"));
@@ -812,13 +809,6 @@ public class CorsoService {
         return true; // Successfully updated the course schedule/
     }
 
-
-
-
-    @Transactional
-    public Optional<Corso> findById(Integer idCorso) {
-        return corsoRepository.findById(idCorso);
-    }
 
     @Transactional
     public Optional<List<Docente>> findDocentiByCorsoId(Integer corsoId) {
@@ -861,16 +851,16 @@ public class CorsoService {
             Integer stipendio = stipendiAttuali.get(i);
             Docente docente = docentiList.get(i);
             boolean eliminato = false;
-            if(deletedDocentiId.isPresent()){
-                for(Integer id : deletedDocentiId.get()){
-                    if(docente.getId() == id){
-                        eliminato=true;
+            if (deletedDocentiId.isPresent()) {
+                for (Integer id : deletedDocentiId.get()) {
+                    if (docente.getId() == id) {
+                        eliminato = true;
                         break;
                     }
                 }
             }
             if (!eliminato) {
-                if (BigDecimal.valueOf(stipendio).compareTo(docente.getStipendio()) > 0){
+                if (BigDecimal.valueOf(stipendio).compareTo(docente.getStipendio()) > 0) {
                     docente.setStipendio(BigDecimal.valueOf(stipendio));
                     docenteRepository.save(docente);
                 }
@@ -880,7 +870,7 @@ public class CorsoService {
         }
 
         if (docentiCf.isPresent() && stipendi.isPresent()) {
-            if(!validateDocentiAndStipendi(docentiCf.get(), stipendi.get())){
+            if (!validateDocentiAndStipendi(docentiCf.get(), stipendi.get())) {
                 return false;
             }
             List<String> cfList = docentiCf.get();
@@ -910,9 +900,8 @@ public class CorsoService {
                     docente.setStipendio(BigDecimal.valueOf(stipendiList.get(i)));
                     docenteRepository.save(docente);
                     docenti.add(docente);
-                }
-                else{
-                    if (BigDecimal.valueOf(stipendiList.get(i)).compareTo(socio.getDocente().getStipendio()) > 0){
+                } else {
+                    if (BigDecimal.valueOf(stipendiList.get(i)).compareTo(socio.getDocente().getStipendio()) > 0) {
                         Docente docente = socio.getDocente();
                         docente.setStipendio(BigDecimal.valueOf(stipendiList.get(i)));
                         docenteRepository.save(docente);
@@ -926,10 +915,10 @@ public class CorsoService {
         // Salvataggio delle modifiche al corso
         corsoRepository.save(corso);
         corso.setDocenti(docenti);
-        if(deletedDocentiId.isPresent()){
-            for(Integer docenteId : deletedDocentiId.get()){
-                Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(corso.getId());
-                if(corsiInsegnati.isPresent()) {
+        if (deletedDocentiId.isPresent()) {
+            for (Integer docenteId : deletedDocentiId.get()) {
+                List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(corso.getId());
+                if (!corsiInsegnati.isEmpty()) {
                     Docente docente = docenteRepository.findById(docenteId).orElseThrow(() -> new IllegalStateException("Docente not found"));
                     docente.setActive(false);
                     docenteRepository.save(docente);
@@ -980,5 +969,23 @@ public class CorsoService {
         return totalParticipants <= sala.getCapienza();
     }
 
+    @Transactional
+        //solo corsi attivi
+    Optional<Corso> findById(Integer idCorso) {
+        return corsoRepository.findById(idCorso);
+    }
 
+    @Transactional
+        //anche corsi non attivi
+    Optional<Corso> findByIdAll(Integer idCorso) {
+        return corsoRepository.findByIdAll(idCorso);
+    }
+
+    @Transactional
+        //solo corsi attivi
+    List<Corso> findCorsiByDocenteId(Integer docenteId) {
+        return corsoRepository.findCorsiByDocenteId(docenteId);
+    }
 }
+
+
