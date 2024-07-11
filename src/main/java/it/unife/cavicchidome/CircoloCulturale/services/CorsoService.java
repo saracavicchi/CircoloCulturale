@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -746,6 +747,10 @@ public class CorsoService {
         }
 
         return true; // Operazione completata con successo
+    }
+
+    public boolean corsoOverlap(Integer salaId, LocalDate date, LocalTime start, LocalTime end) {
+        return corsoRepository.findOverlapCorso(salaId, Weekday.fromDayNumber(date.getDayOfWeek().getValue()), start, end).isPresent();
     }
 
     @Transactional

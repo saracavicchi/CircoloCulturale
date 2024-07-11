@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +30,13 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
 
     @Query("SELECT c FROM Corso c WHERE c.id = :idCorso")
     Optional<Corso> findByIdAll(Integer idCorso);
+
+    @Query("SELECT c FROM Corso c JOIN c.calendarioCorso cc WHERE cc.id.giornoSettimana = :dow AND " +
+            "c.idSala.id = :salaId AND " +
+            "((:orarioInizio BETWEEN cc.orarioInizio AND cc.orarioFine) OR " +
+            "(:orarioFine BETWEEN cc.orarioInizio AND cc.orarioFine) OR " +
+            "(:orarioInizio <= cc.orarioInizio AND :orarioFine >= cc.orarioFine))")
+    Optional<Corso> findOverlapCorso(Integer salaId, Weekday dow, LocalTime orarioInizio, LocalTime orarioFine);
 
     @Query("SELECT c FROM Corso c JOIN c.docenti d WHERE d.id = :docenteId")
     Optional<List<Corso>> findCorsiByDocenteId( Integer docenteId);

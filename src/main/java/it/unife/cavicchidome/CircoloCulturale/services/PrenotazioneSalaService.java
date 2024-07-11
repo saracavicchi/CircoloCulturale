@@ -2,8 +2,12 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.PrenotazioneSala;
+import it.unife.cavicchidome.CircoloCulturale.models.Sala;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
 import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.SalaRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +25,20 @@ public class PrenotazioneSalaService {
 
     private final PrenotazioneSalaRepository prenotazioneSalaRepository;
     private final SocioService socioService;
+    private final CorsoService corsoService;
+    private final SedeService sedeService;
+    private final SalaRepository salaRepository;
+    private final SocioRepository socioRepository;
+    private final SalaService salaService;
 
-    public PrenotazioneSalaService(PrenotazioneSalaRepository prenotazioneSalaRepository, SocioService socioService) {
+    public PrenotazioneSalaService(PrenotazioneSalaRepository prenotazioneSalaRepository, SocioService socioService, CorsoService corsoService, SedeService sedeService, SalaRepository salaRepository, SocioRepository socioRepository, SalaService salaService) {
         this.prenotazioneSalaRepository = prenotazioneSalaRepository;
         this.socioService = socioService;
+        this.corsoService = corsoService;
+        this.sedeService = sedeService;
+        this.salaRepository = salaRepository;
+        this.socioRepository = socioRepository;
+        this.salaService = salaService;
     }
 
     @Transactional
@@ -42,6 +56,10 @@ public class PrenotazioneSalaService {
             }
         }
         return Optional.empty();
+    }
+
+    public boolean prenotazioneOverlap(Integer salaId, LocalDate date, LocalTime start, LocalTime end) {
+        return prenotazioneSalaRepository.findOverlapPrenotazione(salaId, date, start, end).isPresent();
     }
 
     @Transactional
@@ -98,14 +116,26 @@ public class PrenotazioneSalaService {
             throw new EntityNotFoundException("Il socio non esiste");
         }
 
+        Optional<Sala> sala = salaService.findById(salaId);
+        if (sala.isEmpty()) {
+            throw new EntityNotFoundException("La sala non esiste");
+        }
+
+        if (prenotazioneOverlap(salaId, date, startTime, endTime) ||
+                corsoService.corsoOverlap(salaId, date, startTime, endTime) ||
+                sedeService.outsideOpeningHours(salaId, Weekday.fromDayNumber(date.getDayOfWeek().getValue()), startTime, endTime)) {
+            throw new ValidationException("La sala è già prenotata in quell'orario");
+        }
+
         PrenotazioneSala prenotazione = new PrenotazioneSala();
         prenotazione.setDescrizione(description);
-        prenotazione.setOraInizio(startTime);
-        prenotazione.setOraFine(endTime);
+        prenotazione.setOrarioInizio(startTime);
+        prenotazione.setOrarioFine(endTime);
         prenotazione.setData(date);
-        prenotazione.setIdSala(salaId);
+        prenotazione.setIdSala(sala.get());
         prenotazione.setIdSocio(socio.get());
+        prenotazione.setDeleted(false);
 
-        return prenotazione;
+        return prenotazioneSalaRepository.save(prenotazione);
     }
 }

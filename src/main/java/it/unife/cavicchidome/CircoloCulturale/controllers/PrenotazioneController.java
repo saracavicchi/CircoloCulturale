@@ -43,7 +43,7 @@ public class PrenotazioneController {
         this.salaRepository = salaRepository;
     }
 
-    @GetMapping("/socio/prenotazione")
+    @GetMapping("/socio/prenotazioni")
     public String viewPrenotazioni(@RequestParam Optional<Integer> prenotazioneId,
                                    Model model,
                                    HttpServletRequest request,
@@ -59,7 +59,7 @@ public class PrenotazioneController {
                 model.addAttribute("prenotazione", prenotazione.get());
                 return "prenotazione-info";
             } else {
-                return "redirect:/socio/prenotazione";
+                return "redirect:/socio/prenotazioni";
             }
         } else {
             List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySocio(socioCookie.get().getId());
@@ -68,7 +68,7 @@ public class PrenotazioneController {
         }
     }
 
-    @GetMapping("/socio/prenotazione/nuova")
+    @GetMapping("/socio/prenotazioni/nuova")
     public String viewNuovaPrenotazione(@RequestParam(name = "data") Optional<LocalDate> date,
                                         @RequestParam(name = "sala") Optional<Integer> salaId,
                                         Model model,
@@ -101,7 +101,7 @@ public class PrenotazioneController {
         return "nuova-prenotazione";
     }
 
-    @PostMapping("/socio/prenotazione/nuova")
+    @PostMapping("/socio/prenotazioni/nuova")
     public String nuovaPrenotazione(@RequestParam(name = "descrizione") String description,
                                     @RequestParam(name = "orarioInizio") LocalTime startTime,
                                     @RequestParam(name = "orarioFine") LocalTime endTime,
@@ -116,31 +116,13 @@ public class PrenotazioneController {
             return "redirect:/";
         }
 
-        Optional<Sala> sala = salaService.findById(salaId);
-        if (sala.isEmpty() || !sala.get().getActive() || !sala.get().getPrenotabile()) {
-            model.addAttribute("error", "Sala non trovata");
-        } else {
-            Optional<OrarioSede> orario = sedeService.findOrarioSede(sala.get().getIdSede().getId(), Weekday.fromDayNumber(date.getDayOfWeek().getValue()));
-            if (orario.isEmpty() || orario.get().getId().getId() != orarioId) {
-                model.addAttribute("error", "Orario non valido");
-            } else {
-                if (sedeService.sedeAvailableDate(sala.get().getIdSede().getId(), date).isEmpty()) {
-                    model.addAttribute("error", "Sala non disponibile nella data richiesta");
-                } else {
-                    if (prenotazioneSalaService.createPrenotazione(sala.get(), socioCookie.get(), date, orario.get())) {
-                        return "redirect:/socio/prenotazione";
-                    } else {
-                        model.addAttribute("error", "Errore nella creazione della prenotazione");
-                    }
-                }
-            }
+        try {
+            PrenotazioneSala prenotazione = prenotazioneSalaService.newPrenotazione(description, startTime, endTime, date, salaId, socioCookie.get().getId());
+            redirectAttributes.addAttribute("success", "true");
+            return "redirect:/socio/prenotazioni?id=" + prenotazione.getId();
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("failed", "true");
+            return "redirect:/socio/prenotazioni/nuova?data=" + date + "&sala=" + salaId;
         }
-        model.addAttribute("sedi", salaRepository.findDistinctSedi());
-        model.addAttribute("sala", sala.get());
-        model.addAttribute("orari", sedeService.findOrarioSede(sala.get().getIdSede().getId(), Weekday.fromDayNumber(date.getDayOfWeek().getValue())));
-        model.addAttribute("date", date);
-        model.addAttribute("corsi", calendarioCorsoRepository.findByGiornoSettimana(sala.get().getId(), Weekday.fromDayNumber(date.getDayOfWeek().getValue())));
-        model.addAttribute("prenotazioni", prenotazioneSalaRepository.findBySalaAndData(sala.get().getId(), date));
-        return "nuova-prenotazione";
     }
 }

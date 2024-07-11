@@ -83,7 +83,7 @@
             <h1>Nuova prenotazione sala</h1>
         </section>
         <section class="content">
-            <form action="/socio/prenotazione/nuova" method="get">
+            <form action="/socio/prenotazioni/nuova" method="get">
                 <label for="sala">Selezionare una sala:</label>
                 <select name="sala" id="sala" required>
                     <c:forEach items="${sedi}" var="sede">
@@ -164,7 +164,7 @@
                     </tr>
                 </tbody>
             </table>
-            <form id="prenotazioneForm" name="prenotazioneForm" action="/socio/prenotazione/nuova" method="post">
+            <form id="prenotazioneForm" name="prenotazioneForm" action="/socio/prenotazioni/nuova" method="post">
                 <label for="descrizione">Descrizione</label>
                 <input id="descrizione" name="descrizione" type="text">
                 <label for="orarioInizio">Orario di inizio</label>
