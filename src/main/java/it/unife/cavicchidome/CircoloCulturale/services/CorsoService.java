@@ -971,19 +971,19 @@ public class CorsoService {
 
     @Transactional
         //solo corsi attivi
-    Optional<Corso> findById(Integer idCorso) {
+    public Optional<Corso> findById(Integer idCorso) {
         return corsoRepository.findById(idCorso);
     }
 
     @Transactional
         //anche corsi non attivi
-    Optional<Corso> findByIdAll(Integer idCorso) {
+    public Optional<Corso> findByIdAll(Integer idCorso) {
         return corsoRepository.findByIdAll(idCorso);
     }
 
     @Transactional
         //solo corsi attivi
-    List<Corso> findCorsiByDocenteId(Integer docenteId) {
+    public List<Corso> findCorsiByDocenteId(Integer docenteId) {
         return corsoRepository.findCorsiByDocenteId(docenteId);
     }
 }
