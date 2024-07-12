@@ -130,7 +130,7 @@ public class PrenotazioneController {
     @GetMapping("/segretario/prenotazioni")
     public String viewPrenotazioniSegretario(@RequestParam(name = "id") Optional<Integer> prenotazioneId,
                                             @RequestParam(name = "data") Optional<LocalDate> showAfter,
-                                            @RequestParam(name = "salaId") Optional<Integer> salaId,
+                                            @RequestParam(name = "sala") Optional<Integer> salaId,
                                             @RequestParam(name = "deleted") Optional<Boolean> deleted,
                                             Model model,
                                             HttpServletRequest request,
@@ -146,10 +146,12 @@ public class PrenotazioneController {
                 model.addAttribute("prenotazione", prenotazione.get());
                 return "prenotazione-info";
             } else {
-                return "redirect:/socio/prenotazioni";
+                return "redirect:/segretario/prenotazioni";
             }
         } else {
-            List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySalaAfterDataDeleted(salaId.orElse(null), showAfter.orElse(LocalDate.now()), deleted.orElse(false);
+            model.addAttribute("segretario", true);
+            model.addAttribute("sedi", salaRepository.findDistinctSedi());
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySalaAfterDataDeleted(salaId, showAfter, deleted);
             model.addAttribute("prenotazioni", prenotazioni);
             return "prenotazioni";
         }

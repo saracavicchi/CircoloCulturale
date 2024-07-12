@@ -17,6 +17,9 @@ public interface PrenotazioneSalaRepository extends JpaRepository<PrenotazioneSa
     @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSala.id = :idSala AND (ps.deleted = :deleted OR ps.deleted = false) AND ps.data > :data")
     List<PrenotazioneSala> findBySalaAndAfterDataDeleted(Integer idSala, LocalDate data, Boolean deleted);
 
+    @Query("SELECT ps FROM PrenotazioneSala ps WHERE (ps.deleted = :deleted OR ps.deleted = false) AND ps.data > :data")
+    List<PrenotazioneSala> findAfterDataDeleted(LocalDate data, Boolean deleted);
+
     @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSocio.id = :idSocio AND ps.deleted = false AND ps.data > :date ORDER BY ps.data ASC")
     List<PrenotazioneSala> findBySocio(Integer idSocio, LocalDate date);
 

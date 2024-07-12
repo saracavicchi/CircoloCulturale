@@ -35,9 +35,26 @@
                 <p><a href="/socio/prenotazioni/nuova">Nuova prenotazione</a></p>
             </section>
             <section class="filter">
-                <form action="/socio/prenotazioni" method="get">
+                <form action="/segretario/prenotazioni" method="get">
                     <label for="data">Data:</label>
                     <input type="date" id="data" name="data" value="<%= (request.getParameter("data") != null ? request.getParameter("data") : java.time.LocalDate.now())%>" required>
+                    <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() != null && request.getAttribute("segretario") != null) { %>
+                    <label for="sala">Sala:</label>
+                    <select name="sala" id="sala">
+                    <option value="">Tutte</option>
+                    <c:forEach items="${sedi}" var="sede">
+                        <optgroup label="${sede.nome}">
+                            <c:forEach items="${sede.sale}" var="sala">
+                            <c:if test="${sala.prenotabile == true && sala.active == true}">
+                                    <option value="${sala.id}" <%%>>${sala.numeroSala}</option>
+                            </c:if>
+                            </c:forEach>
+                        </optgroup>
+                    </c:forEach>
+                    </select>
+                    <label for="deleted">Mostra prenotazioni cancellate:</label>
+                    <input type="checkbox" id="deleted" name="deleted">
+                    <%}%>
                     <input type="submit" value="Filtra">
                 </form>
 

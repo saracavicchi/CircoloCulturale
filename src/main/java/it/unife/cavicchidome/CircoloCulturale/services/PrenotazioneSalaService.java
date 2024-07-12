@@ -47,8 +47,12 @@ public class PrenotazioneSalaService {
     }
 
     @Transactional
-    public List<PrenotazioneSala> getPrenotazioneBySalaAfterDataDeleted(Integer idSala, Optional<LocalDate> data, Optional<Boolean> deleted) {
-        return prenotazioneSalaRepository.findBySalaAndAfterDataDeleted(idSala, data.orElse(LocalDate.now()), deleted.orElse(false));
+    public List<PrenotazioneSala> getPrenotazioneBySalaAfterDataDeleted(Optional<Integer> idSala, Optional<LocalDate> data, Optional<Boolean> deleted) {
+        if (idSala.isPresent()) {
+            return prenotazioneSalaRepository.findBySalaAndAfterDataDeleted(idSala.get(), data.orElse(LocalDate.now()), deleted.orElse(false));
+        } else {
+            return prenotazioneSalaRepository.findAfterDataDeleted(data.orElse(LocalDate.now()), deleted.orElse(false));
+        }
     }
 
     @Transactional
