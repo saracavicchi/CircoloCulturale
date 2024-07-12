@@ -198,8 +198,14 @@ public class SaggioController {
     }
 
     @PostMapping("/elimina")
-    public String eliminaSaggio(@RequestParam("saggioId") Integer saggioId) {
-        saggioService.deleteSaggio(saggioId);
+    public String eliminaSaggio(@RequestParam("saggioId") Integer saggioId, RedirectAttributes redirectAttributes) {
+        try{
+            saggioService.deleteSaggio(saggioId);
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("fail", "true"); //TODO: aggiungere messaggio di errore
+            return "redirect:/saggio/info";
+        }
+
         return "redirect:/saggio/info";
     }
 
