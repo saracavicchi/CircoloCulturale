@@ -12,6 +12,21 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <script>
+        function confirmDisiscrizione(event) {
+            var confirmUnsubscribe = document.getElementById('confirmUnsubscribe');
+            if (confirmUnsubscribe != null && !confirmUnsubscribe.checked) {
+                alert('Per favore, conferma se sei sicuro di voler cancellare la prenotazione.');
+                event.preventDefault(); // Prevent form submission
+            }
+        }
+
+        function handleEliminaPrenotazione() {
+            document.getElementById('deleteForm').addEventListener('submit', confirmDisiscrizione);
+        }
+
+        window.addEventListener('load', handleEliminaPrenotazione)
+    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
@@ -21,6 +36,7 @@
                 <h1>Informazioni sulla prenotazione</h1>
             </section>
             <section class="content">
+                <c:if test="${prenotazione.deleted == true}"><p style="color: red">Prenotazione cancellata</p></c:if>
                 <h1>Prenotazione #${prenotazione.id}</h1>
                 <h2>${prenotazione.descrizione}</h2>
                 <p>Data: ${prenotazione.data}</p>
@@ -28,13 +44,15 @@
                 <p>Sala ${prenotazione.idSala.numeroSala} - ${prenotazione.idSala.idSede.nome}</p>
                 <% if (((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socioHeader")).getSegretario() != null) {%>
                 <p>Prenotato da: ${prenotazione.idSocio.utente.nome} ${prenotazione.idSocio.utente.cognome}</p>
-                <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
+                <% } %>
+                <c:if test="${prenotazione.deleted ne true}">
+                <form name="deleteForm" id="deleteForm" action="/socio/prenotazioni/elimina" method="POST">
                     <input type="hidden" name="prenotazione-id" value="${prenotazione.id}"/>
-                    <label for="not-deleted">Attiva</label><input type="radio" id="not-deleted" name="delete" value="false" <c:if test="${prenotazione.deleted == false}">checked</c:if>>
-                    <label for="deleted">Inattiva</label><input type="radio" id="deleted" name="delete" value="true" <c:if test="${prenotazione.deleted == true}">checked</c:if>>
+                    <label for="confirmUnsubscribe">Confermi la cancellazione?</label>
+                    <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
                     <button type="submit">Conferma</button>
                 </form>
-                <% } %>
+                </c:if>
             </section>
         </main>
         <%@include file="/static/include/aside.jsp"%>

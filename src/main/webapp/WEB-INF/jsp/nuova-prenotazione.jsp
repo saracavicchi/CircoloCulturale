@@ -88,16 +88,16 @@
                 <select name="sala" id="sala" required>
                     <c:forEach items="${sedi}" var="sede">
                         <optgroup label="${sede.nome}">
-                            <c:forEach items="${sede.sale}" var="sala">
-                            <c:if test="${sala.prenotabile == true && sala.active == true}">
-                                    <option value="${sala.id}">${sala.numeroSala}</option>
+                            <c:forEach items="${sale}" var="sala">
+                            <c:if test="${sala.idSede.id == sede.id}">
+                                    <option value="${sala.id}" <c:if test="${param.sala eq sala.id}">selected</c:if>>${sala.numeroSala}</option>
                             </c:if>
                             </c:forEach>
                         </optgroup>
                     </c:forEach>
                 </select>
                 <label for="data">Selezionare una data:</label>
-                <input type="date" name="data" id="data" value="<%= java.time.LocalDate.now()%>" required>
+                <input type="date" name="data" id="data" value="<%= (request.getParameter("data") != null) ? request.getParameter("data") : java.time.LocalDate.now()%>" required>
                 <input type="submit" value="Invio">
             </form>
             <% if (request.getAttribute("prenotabile") != null && request.getAttribute("prenotabile").equals(true)) {%>

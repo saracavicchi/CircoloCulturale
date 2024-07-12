@@ -11,13 +11,13 @@ import java.util.Optional;
 
 public interface PrenotazioneSalaRepository extends JpaRepository<PrenotazioneSala, Integer> {
 
-    @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSala.id = :idSala AND ps.deleted = false AND ps.data = :data")
+    @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSala.id = :idSala AND ps.deleted = false AND ps.data = :data ORDER BY ps.data ASC")
     List<PrenotazioneSala> findBySalaAndData(Integer idSala, LocalDate data);
 
-    @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSala.id = :idSala AND (ps.deleted = :deleted OR ps.deleted = false) AND ps.data > :data")
+    @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSala.id = :idSala AND (ps.deleted = :deleted OR ps.deleted = false) AND ps.data > :data ORDER BY ps.data ASC")
     List<PrenotazioneSala> findBySalaAndAfterDataDeleted(Integer idSala, LocalDate data, Boolean deleted);
 
-    @Query("SELECT ps FROM PrenotazioneSala ps WHERE (ps.deleted = :deleted OR ps.deleted = false) AND ps.data > :data")
+    @Query("SELECT ps FROM PrenotazioneSala ps WHERE (ps.deleted = :deleted OR ps.deleted = false) AND ps.data > :data ORDER BY ps.data ASC")
     List<PrenotazioneSala> findAfterDataDeleted(LocalDate data, Boolean deleted);
 
     @Query("SELECT ps FROM PrenotazioneSala ps WHERE ps.idSocio.id = :idSocio AND ps.deleted = false AND ps.data > :date ORDER BY ps.data ASC")

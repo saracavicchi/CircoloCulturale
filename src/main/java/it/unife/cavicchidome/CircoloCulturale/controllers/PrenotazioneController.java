@@ -1,5 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.CalendarioCorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
@@ -8,6 +9,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.PrenotazioneSalaService;
 import it.unife.cavicchidome.CircoloCulturale.services.SalaService;
 import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
@@ -82,6 +84,7 @@ public class PrenotazioneController {
 
         // TODO: renderli transazionali
         model.addAttribute("sedi", salaRepository.findDistinctSedi());
+        model.addAttribute("sale", salaRepository.findAllPrenotabili());
         Sala sala;
         if (date.isPresent() && salaId.isPresent()) {
             if ((sala = salaService.findById(salaId.get()).orElse(null)) == null || !sala.getActive() || !sala.getPrenotabile()) {
@@ -122,6 +125,7 @@ public class PrenotazioneController {
             redirectAttributes.addAttribute("success", "true");
             return "redirect:/socio/prenotazioni?id=" + prenotazione.getId();
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/socio/prenotazioni/nuova?data=" + date + "&sala=" + salaId;
         }
@@ -151,9 +155,32 @@ public class PrenotazioneController {
         } else {
             model.addAttribute("segretario", true);
             model.addAttribute("sedi", salaRepository.findDistinctSedi());
+            model.addAttribute("sale", salaRepository.findAllPrenotabili());
             List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySalaAfterDataDeleted(salaId, showAfter, deleted);
             model.addAttribute("prenotazioni", prenotazioni);
             return "prenotazioni";
+        }
+    }
+
+    @PostMapping("/socio/prenotazioni/elimina")
+    public String eliminaPrenotazione(@RequestParam(name = "prenotazione-id") Integer prenotazioneId,
+                                      Model model,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response);
+        if (socioCookie.isEmpty()) {
+            return "redirect:/";
+        }
+
+        try {
+            prenotazioneSalaService.deletePrenotazione(socioCookie.get().getId(), prenotazioneId);
+            model.addAttribute("deleteSuccess", "true");
+            return "redirect:/socio/prenotazioni?id=" + prenotazioneId;
+        } catch (ValidationException e) {
+            model.addAttribute("failed", "true");
+            return "redirect:/socio/prenotazioni?id=" + prenotazioneId;
+        } catch (EntityNotFoundException e) {
+            return "redirect:/socio/prenotazioni";
         }
     }
 }

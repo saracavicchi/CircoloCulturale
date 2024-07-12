@@ -80,8 +80,6 @@ public class PrenotazioneSalaService {
                                             Integer socioId) throws ValidationException, EntityNotFoundException {
 
         PrenotazioneSala prenotazione = validateAndParsePrenotazione(description, startTime, endTime, date, salaId, socioId);
-        prenotazione.setDataOraPrenotazione(Instant.now());
-        prenotazione.setDeleted(false);
 
         return prenotazioneSalaRepository.save(prenotazione);
     }
@@ -144,7 +142,20 @@ public class PrenotazioneSalaService {
         prenotazione.setIdSala(sala.get());
         prenotazione.setIdSocio(socio.get());
         prenotazione.setDeleted(false);
+        prenotazione.setDataOraPrenotazione(Instant.now());
 
-        return prenotazioneSalaRepository.save(prenotazione);
+        return prenotazione;
+    }
+
+    @Transactional
+    public void deletePrenotazione(Integer idSocio, Integer idPrenotazione) throws ValidationException, EntityNotFoundException {
+        PrenotazioneSala prenotazione = prenotazioneSalaRepository.getReferenceById(idPrenotazione);
+        Socio socio = socioRepository.getReferenceById(idSocio);
+        if (socio.getSegretario() == null && !prenotazione.getIdSocio().getId().equals(socio.getId())) {
+            throw new ValidationException("Non hai i permessi per cancellare questa prenotazione");
+        } else {
+            prenotazione.setDeleted(true);
+            prenotazioneSalaRepository.save(prenotazione);
+        }
     }
 }
