@@ -42,12 +42,14 @@ public class Socio {
 
     @OneToMany(mappedBy = "idSocio")
     private Set<PrenotazioneSala> prenotazioniSale = new LinkedHashSet<>();
-
+    /*
     @ManyToMany
     @JoinTable(name = "saggio_partecipa_socio",
             joinColumns = @JoinColumn(name = "id_socio"),
             inverseJoinColumns = @JoinColumn(name = "id_saggio"))
     private Set<Saggio> saggi = new LinkedHashSet<>();
+
+     */
 
     @OneToOne(mappedBy = "socio")
     private Segretario segretario;
@@ -132,7 +134,7 @@ public class Socio {
     public void setPrenotazioniSale(Set<PrenotazioneSala> prenotazioniSale) {
         this.prenotazioniSale = prenotazioniSale;
     }
-
+/*
     public Set<Saggio> getSaggi() {
         return saggi;
     }
@@ -140,6 +142,8 @@ public class Socio {
     public void setSaggi(Set<Saggio> saggi) {
         this.saggi = saggi;
     }
+
+ */
 
     public Segretario getSegretario() {
         return segretario;
@@ -176,6 +180,6 @@ public class Socio {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUtente(), getEmail(), getPassword(), getTelefono(), getUrlFoto(), getDeleted(), getDocente(), getPrenotazioniSale(), getSaggi(), getSegretario(), getCorsi(), getTessera());
+        return Objects.hash(getId(), getUtente(), getEmail(), getPassword(), getTelefono(), getUrlFoto(), getDeleted(), getDocente(), getPrenotazioniSale(),  getSegretario(), getCorsi(), getTessera());
     }
 }

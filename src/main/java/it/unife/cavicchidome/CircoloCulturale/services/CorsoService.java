@@ -3,9 +3,12 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -26,6 +29,7 @@ public class CorsoService {
     private DocenteRepository docenteRepository;
     private CalendarioCorsoRepository calendarioCorsoRepository;
     private SedeService sedeService;
+    private final SocioService socioService;
 
     @Value("${file.corso.upload-dir}")
     String uploadCorsoDir;
@@ -40,7 +44,8 @@ public class CorsoService {
             CalendarioCorsoRepository calendarioCorsoRepository,
             OrarioSedeService orarioSedeService,
             SalaService salaService,
-            SedeService sedeService
+            SedeService sedeService,
+            SocioService socioService
     ) {
         this.corsoRepository = corsoRepository;
         this.salaRepository = salaRepository;
@@ -51,6 +56,7 @@ public class CorsoService {
         this.orarioSedeService = orarioSedeService;
         this.salaService = salaService;
         this.sedeService = sedeService;
+        this.socioService = socioService;
     }
 
     public boolean validateBasicInfo(String descrizione, String genere, String livello, String categoria) {
@@ -371,9 +377,9 @@ public class CorsoService {
                 return false; //TODO: gestire caso in cui docente non esiste: eccezione
             }
             Integer idDocente = docente.get().getId();
-            Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
-            if(corsiInsegnati.isPresent()){
-                for(Corso corso: corsiInsegnati.get()){
+            List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
+            if(!corsiInsegnati.isEmpty()){
+                for(Corso corso: corsiInsegnati){
                     if(corso.getActive()){
                         Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
                         List<CalendarioCorso> calendarioCorso = new ArrayList<>(calendarioCorsoSet);
@@ -736,8 +742,8 @@ public class CorsoService {
         corso.setDocenti(docenti);
         if(deletedDocentiId.isPresent()){
             for(Integer docenteId : deletedDocentiId.get()){
-                Optional<List<Corso>> corsiInsegnati = corsoRepository.findCorsiByDocenteId(corso.getId());
-                if(corsiInsegnati.isPresent()) {
+                List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(corso.getId());
+                if(!corsiInsegnati.isEmpty()) {
                     Docente docente = docenteRepository.findById(docenteId).orElseThrow(() -> new IllegalStateException("Docente not found"));
                     docente.setActive(false);
                     docenteRepository.save(docente);
@@ -764,4 +770,42 @@ public class CorsoService {
         corsoRepository.save(corso);
         return true;
     }
+
+    @Transactional
+    public boolean aggiungiCorsiBaseRuolo(HttpServletRequest request, HttpServletResponse response, Model model) {
+        Optional<Socio> socioOpt = socioService.setSocioFromCookie(request, response, model);
+        if (!socioOpt.isPresent()) {
+            // Gestire il caso in cui il socio non è trovato
+            return false;
+        }
+        Socio socio = socioOpt.get();
+        List<Corso> corsi;
+        if (socio.getDocente() != null) {
+            // Il socio è un docente, quindi recupera i corsi insegnati da lui
+            corsi = corsoRepository.findCorsiByDocenteId(socio.getDocente().getId()); //solo attivi
+        } else if (socio.getSegretario() != null) {
+            // Il socio è un segretario, quindi recupera tutti i corsi
+            corsi = corsoRepository.findAllIfActiveTrue();
+            System.out.println("Segretario");
+        } else {
+            // Gestire il caso in cui il socio non è né un docente né un segretario
+            System.out.println("Errore identificativo socio");
+            return false;
+        }
+
+        model.addAttribute("corsi", corsi);
+
+        return true;
+    }
+
+    @Transactional
+    List<Corso> findAllIfActiveTrue(){
+        return corsoRepository.findAllIfActiveTrue();
+    }
+
+    @Transactional
+    List<Corso> findCorsiByDocenteId(Integer docenteId){
+        return corsoRepository.findCorsiByDocenteId(docenteId);
+    }
+
 }

@@ -110,6 +110,7 @@ public class SocioService {
         return Optional.empty();
     }
 
+
     @Transactional
     public Optional<Socio> findSocioById(int id) {
         return socioRepository.findById(id);
@@ -365,6 +366,8 @@ public class SocioService {
         }
         return socioRepository.findById(utente.get().getId()).isPresent();
     }
+
+
 
 
 }
