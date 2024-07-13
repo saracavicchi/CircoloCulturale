@@ -9,6 +9,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +33,9 @@ public class SaggioController {
     private final BigliettoService bigliettoService;
     private final CorsoService corsoService;
     private final CorsoRepository corsoRepository;
+
+    @Value("${file.saggio.upload-dir}")
+    String uploadDir;
 
     SaggioController(SaggioService saggioService, SocioService socioService, UtenteService utenteService, BigliettoService bigliettoService, CorsoService corsoService, CorsoRepository corsoRepository) {
         this.saggioService = saggioService;
@@ -133,7 +137,7 @@ public class SaggioController {
                              RedirectAttributes redirectAttributes
     ) {
        try{
-            if(saggioService.newSaggio(nome, data, numeroPartecipanti,descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, Optional.of(photo))){
+            if(saggioService.newSaggio(nome, data, numeroPartecipanti,descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, photo)){
                 return "redirect:/saggio/info";
             }
             redirectAttributes.addAttribute("fail", "true");
@@ -156,6 +160,8 @@ public class SaggioController {
         Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
         if (saggio.isPresent() && corsoService.aggiungiCorsiBaseRuolo(request, response, model)) {
             model.addAttribute("saggio", saggio.get());
+            model.addAttribute("uploadDir", uploadDir);
+            model.addAttribute("placeholderImage", "profilo.jpg");
             return "modifica-saggio";
         }
 
@@ -180,7 +186,7 @@ public class SaggioController {
                                  RedirectAttributes redirectAttributes
     ) {
         try {
-            if(saggioService.updateSaggio(saggioId, nome, data, numeroPartecipanti, descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, Optional.of(photo))){
+            if(saggioService.updateSaggio(saggioId, nome, data, numeroPartecipanti, descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, photo)){
                 return "redirect:/saggio/info";
             }
             redirectAttributes.addAttribute("fail", "true");

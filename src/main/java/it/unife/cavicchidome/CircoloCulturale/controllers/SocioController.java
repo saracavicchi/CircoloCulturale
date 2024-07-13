@@ -75,7 +75,8 @@ public class SocioController {
         if (socioCookie.isEmpty()) {
             return "redirect:/";
         }
-        model.addAttribute("saggi", socioCookie.get().getSaggi());
+        //TODO: Eliminare riferimenti tra saggi e soci
+        //model.addAttribute("saggi", socioCookie.get().getSaggi());
         return "socio-saggi";
     }
 
