@@ -18,4 +18,7 @@ public interface SalaRepository extends JpaRepository<Sala, Integer> {
 
     @Query("SELECT DISTINCT s.idSede FROM Sala s WHERE s.prenotabile = true AND s.active = true")
     List<Sede> findDistinctSedi();
+
+    @Query("SELECT s FROM Sala s WHERE s.numeroSala = :numeroSala AND s.idSede = :idSede")
+    Optional<Sala> findByNumeroSalaAndIdSede(Integer numeroSala, Sede idSede);
 }

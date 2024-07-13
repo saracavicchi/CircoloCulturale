@@ -59,4 +59,59 @@ public class SedeService {
             return false;
         }
     }
+
+    public boolean validateSedeInfo(String nome, String stato, String provincia, String citta, String via, String numeroCivico) {
+        // Regex per validare che il testo contenga solo caratteri, spazi o trattini
+        String regex = "^[A-Za-z\\s\\-]+$";
+        int maxLengthNome = 30;
+        int maxLengthTotal = 80;
+
+        // Controllo presenza e formato di nome, stato, provincia, citta, via
+        if (nome == null || stato == null || provincia == null || citta == null || via == null || numeroCivico == null) {
+            return false;
+        }
+        if (!nome.matches(regex) || !stato.matches(regex) || !provincia.matches(regex) || !citta.matches(regex) || !via.matches(regex)) {
+            return false;
+        }
+
+        // Controllo lunghezza massima di nome
+        if (nome.length() > maxLengthNome) {
+            return false;
+        }
+
+        // Controllo lunghezza totale di stato, provincia, citta, via, numero civico
+        int totalLength = stato.length() + provincia.length() + citta.length() + via.length() + numeroCivico.length();
+        if (totalLength > maxLengthTotal) {
+            return false;
+        }
+
+        return true;
+    }
+    @Transactional
+    public boolean newSede(String nome, String stato, String provincia, String citta, String via, String numeroCivico, boolean areaRistoro) {
+        // Valida parametri
+        if (!validateSedeInfo(nome, stato, provincia, citta, via, numeroCivico)) {
+            return false;
+        }
+        String indirizzo = stato + ", " + provincia + ", " + citta + ", " + via + ", " + numeroCivico;
+        if (sedeRepository.findSedeByIndirizzo(indirizzo).isPresent()) {
+            throw new RuntimeException("Indirizzo già presente");
+        }
+        if (sedeRepository.findSedeByNome(nome).isPresent()) {
+            throw new RuntimeException("Nome già presente");
+        }
+
+
+        // Crea nuova sede
+        Sede newSede = new Sede();
+        newSede.setNome(nome);
+        newSede.setIndirizzo(indirizzo);
+        newSede.setRistoro(areaRistoro);
+        newSede.setActive(true);
+
+
+        // Salva nuova sede nel database
+        sedeRepository.save(newSede);
+        return true;
+    }
 }

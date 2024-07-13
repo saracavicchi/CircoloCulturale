@@ -27,4 +27,10 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
 
     @Query("SELECT o FROM Sede s JOIN s.orarioSede o WHERE s.id = :idSede AND o.id.giornoSettimana = :dow")
     OrarioSede findOrarioSede(Integer idSede, Weekday dow);
+
+    @Query("SELECT s FROM Sede s WHERE s.nome = :nome")
+    Optional<Sede> findSedeByNome(String nome);
+
+    @Query("SELECT s FROM Sede s WHERE s.indirizzo = :indirizzo")
+    Optional<Sede> findSedeByIndirizzo(String indirizzo);
 }

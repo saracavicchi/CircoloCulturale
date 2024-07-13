@@ -14,6 +14,7 @@ import java.util.Set;
 public class Sede {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "nome", nullable = false, length = 30)
@@ -113,5 +114,7 @@ public class Sede {
     public void setSegretario(Segretario segretario) {
         this.segretario = segretario;
     }
+
+
 
 }

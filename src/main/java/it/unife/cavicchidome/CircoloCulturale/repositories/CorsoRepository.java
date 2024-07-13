@@ -43,8 +43,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
             "(:orarioInizio <= cc.orarioInizio AND :orarioFine >= cc.orarioFine))")
     Optional<Corso> findOverlapCorso(Integer salaId, Weekday dow, LocalTime orarioInizio, LocalTime orarioFine);
 
-    @Query("SELECT c FROM Corso c JOIN c.docenti d WHERE d.id = :docenteId")
-    Optional<List<Corso>> findCorsiByDocenteId( Integer docenteId);
+
 }
 
 

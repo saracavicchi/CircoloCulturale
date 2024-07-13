@@ -37,9 +37,10 @@ public class Docente {
     @JoinTable(name = "saggio_partecipa_docente",
             joinColumns = @JoinColumn(name = "id_docente"),
             inverseJoinColumns = @JoinColumn(name = "id_saggio"))
-    private Set<Saggio> saggi = new LinkedHashSet<>();*/
+    private Set<Saggio> saggi = new LinkedHashSet<>();
+    */
 
-     */
+
 
     public Integer getId() {
         return id;
