@@ -67,7 +67,8 @@ public class SocioController {
         return "socio-profile";
     }
 
-    @GetMapping("/saggi")
+    // TODO: rimpiazzare saggi con biglietti
+    /*@GetMapping("/saggi")
     public String getSocioSaggi(Model model,
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
@@ -77,7 +78,7 @@ public class SocioController {
         }
         model.addAttribute("saggi", socioCookie.get().getSaggi());
         return "socio-saggi";
-    }
+    }*/
 
     @GetMapping("/corsi")
     public String getSocioCorsi(Model model,

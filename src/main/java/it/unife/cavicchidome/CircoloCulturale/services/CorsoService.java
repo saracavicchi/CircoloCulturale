@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -510,7 +511,7 @@ public class CorsoService {
 
     @Transactional
     public Optional<Corso> findCorsoById(Integer idCorso) {
-        return corsoRepository.findById(idCorso);
+        return corsoRepository.findByIdActive(idCorso);
     }
 
     @Transactional
@@ -535,7 +536,7 @@ public class CorsoService {
             return false;
         }
 
-        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoRepository.findByIdActive(idCorso);
         Optional<Corso> corsoIdenticalOpt = corsoRepository.findByCategoriaAndGenereAndLivello(descrizione, genere, livello);
 
         if (!corsoOpt.isPresent() || corsoIdenticalOpt.isPresent()) { //Se id non esiste o corso con stesse caratteristiche esiste già
@@ -555,7 +556,7 @@ public class CorsoService {
 
     @Transactional
     public boolean updateCourseSchedule(Integer idCorso, List<Integer> giorni, List<LocalTime> orarioInizio, List<LocalTime> orarioFine, Integer idSala) {
-        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoRepository.findByIdActive(idCorso);
         if (!corsoOpt.isPresent()) {
             return false; // Course not found
         }
@@ -631,7 +632,7 @@ public class CorsoService {
 
     @Transactional
     public Optional<Corso> findById(Integer idCorso) {
-        return corsoRepository.findById(idCorso);
+        return corsoRepository.findByIdActive(idCorso);
     }
 
     @Transactional
@@ -657,7 +658,7 @@ public class CorsoService {
             List<Integer> stipendiAttuali,
             Optional<List<Integer>> stipendi
     ) {
-        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoRepository.findByIdActive(idCorso);
         if (!corsoOpt.isPresent()) {
             return false; // Corso non trovato
         }
@@ -754,9 +755,13 @@ public class CorsoService {
         return true; // Operazione completata con successo
     }
 
+    public boolean corsoOverlap(Integer salaId, LocalDate date, LocalTime start, LocalTime end) {
+        return corsoRepository.findOverlapCorso(salaId, Weekday.fromDayNumber(date.getDayOfWeek().getValue()), start, end).isPresent();
+    }
+
     @Transactional
     public boolean deleteCourse(Integer idCorso) {
-        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoRepository.findByIdActive(idCorso);
         if (!corsoOpt.isPresent()) {
             return false; // Corso non trovato
         }

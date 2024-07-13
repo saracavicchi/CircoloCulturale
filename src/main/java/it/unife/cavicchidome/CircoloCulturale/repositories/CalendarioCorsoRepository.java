@@ -20,9 +20,12 @@ public interface CalendarioCorsoRepository extends JpaRepository<CalendarioCorso
     List<CalendarioCorso> findCorsiSovrapposti(Weekday giorno, LocalTime inizio, LocalTime fine, Integer idSala);
 
     @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.active = true")
-    List<CalendarioCorso> findByCorsoId( Integer corsoId);
+    List<CalendarioCorso> findByCorsoId(Integer corsoId);
 
     @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.id.giornoSettimana = :giorno AND cc.active = true")
     Optional<CalendarioCorso> findByCorsoAndGiornoSettimanaId(Integer corsoId, Weekday giorno);
+
+    @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.id.giornoSettimana = :giorno AND cc.active = true AND cc.idCorso.idSala.id = :idSala AND cc.idCorso.active = true")
+    List<CalendarioCorso> findByGiornoSettimana(Integer idSala, Weekday giorno);
 
 }

@@ -180,6 +180,6 @@ public class Socio {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUtente(), getEmail(), getPassword(), getTelefono(), getUrlFoto(), getDeleted(), getDocente(), getPrenotazioniSale(),  getSegretario(), getCorsi(), getTessera());
+        return Objects.hash(getId(), getUtente(), getEmail(), getPassword(), getTelefono(), getUrlFoto(), getDeleted(), getDocente(), getPrenotazioniSale(), getSegretario(), getCorsi(), getTessera());
     }
 }

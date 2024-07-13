@@ -13,6 +13,7 @@ import java.time.LocalTime;
 public class PrenotazioneSala {
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "descrizione", length = Integer.MAX_VALUE)
