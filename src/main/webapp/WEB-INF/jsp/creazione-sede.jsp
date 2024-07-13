@@ -194,7 +194,7 @@
 <% String fail;
     if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
 %>
-<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+<p id="fail">Errore durante la creazione della sede, verificare le informazioni e riprovare</p>
 <script>
     var errorPresentElement = document.getElementById("fail");
     errorPresentElement.scrollIntoView({behavior: "smooth"});

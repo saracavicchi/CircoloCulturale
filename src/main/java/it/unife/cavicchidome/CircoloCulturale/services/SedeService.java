@@ -61,25 +61,42 @@ public class SedeService {
     }
 
     public boolean validateSedeInfo(String nome, String stato, String provincia, String citta, String via, String numeroCivico) {
-        // Regex per validare che il testo contenga solo caratteri, spazi o trattini
+
+        if(!validateNome(nome) || !validateIndirizzo(stato, provincia, citta, via, numeroCivico)){
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean validateNome(String nome) {
         String regex = "^[A-Za-z\\s\\-]+$";
         int maxLengthNome = 30;
-        int maxLengthTotal = 80;
 
-        // Controllo presenza e formato di nome, stato, provincia, citta, via
-        if (nome == null || stato == null || provincia == null || citta == null || via == null || numeroCivico == null) {
+        if (nome == null) {
             return false;
         }
-        if (!nome.matches(regex) || !stato.matches(regex) || !provincia.matches(regex) || !citta.matches(regex) || !via.matches(regex)) {
+        if (!nome.matches(regex)) {
             return false;
         }
-
-        // Controllo lunghezza massima di nome
         if (nome.length() > maxLengthNome) {
             return false;
         }
 
-        // Controllo lunghezza totale di stato, provincia, citta, via, numero civico
+        return true;
+    }
+
+    public boolean validateIndirizzo(String stato, String provincia, String citta, String via, String numeroCivico) {
+        String regex = "^[A-Za-z\\s\\-]+$";
+        int maxLengthTotal = 80;
+
+        if (stato == null || provincia == null || citta == null || via == null || numeroCivico == null) {
+            return false;
+        }
+        if (!stato.matches(regex) || !provincia.matches(regex) || !citta.matches(regex) || !via.matches(regex)) {
+            return false;
+        }
+
         int totalLength = stato.length() + provincia.length() + citta.length() + via.length() + numeroCivico.length();
         if (totalLength > maxLengthTotal) {
             return false;
@@ -113,5 +130,31 @@ public class SedeService {
         // Salva nuova sede nel database
         sedeRepository.save(newSede);
         return true;
+    }
+
+    @Transactional
+    public boolean updateSede(Integer idSede, String nome, boolean areaRistoro) {
+        if(!validateNome(nome)){
+            return false;
+        }
+        try {
+            Optional<Sede> sedeOpt = sedeRepository.findById(idSede);
+            if (!sedeOpt.isPresent()) {
+                return false;
+            }
+            Optional<Sede> sedeOptNome = sedeRepository.findSedeByNome(nome);
+            if (sedeOptNome.isPresent() && !sedeOptNome.get().getId().equals(idSede)) {
+                throw new RuntimeException("Nome già presente");
+            }
+            Sede sede = sedeOpt.get();
+            sede.setNome(nome);
+            sede.setRistoro(areaRistoro);
+            sedeRepository.save(sede);
+            return true;
+        } catch (Exception e) {
+            // Log the exception
+            System.out.println("Error updating Sede: " + e.getMessage());
+            return false;
+        }
     }
 }

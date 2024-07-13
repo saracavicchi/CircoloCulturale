@@ -81,5 +81,37 @@ public class SedeController {
         }
     }
 
+    @GetMapping("/modifica")
+    public String modificaSede(@RequestParam(name = "idSede") Integer idSede, Model model) {
+        Optional<Sede> sedeOpt = sedeService.findSedeById(idSede);
+        if(sedeOpt.isEmpty() || !sedeOpt.isPresent()){
+            return "redirect:/sede/sedi";
+        }
+        model.addAttribute("sede", sedeOpt.get());
+        return "modifica-sede";
+    }
+
+    @PostMapping("/modifica")
+    public String modificaSede(@RequestParam(name = "idSede") Integer idSede,
+                               @RequestParam(name = "nome") String nome,
+                               @RequestParam(name = "areaRistoro", required = false, defaultValue = "false") boolean areaRistoro,
+                               RedirectAttributes redirectAttributes
+                              ) {
+        try{
+            if(!sedeService.updateSede(idSede, nome, areaRistoro)){
+                redirectAttributes.addAttribute("fail", "true");
+                return "redirect:/sede/modifica?idSede=" + idSede;
+            }
+            return "redirect:/sede/info?id=" + idSede;
+        } catch (Exception e) {
+            String message = e.getMessage();
+            System.out.println(message);
+            redirectAttributes.addAttribute("fail", "true");
+            if(message != null && message.equals("Nome già presente"))
+                redirectAttributes.addAttribute("nameAlreadyPresent", "true");
+            return "redirect:/sede/modifica?idSede=" + idSede;
+        }
+    }
+
 
 }

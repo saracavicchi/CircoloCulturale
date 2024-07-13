@@ -86,6 +86,37 @@ public class SalaService {
 
         return true;
     }
+    @Transactional(readOnly = true)
+    public Optional<Sala> findByNumeroSalaAndIdSede(Integer numeroSala, Sede idSede){
+        return salaRepository.findByNumeroSalaAndIdSede(numeroSala, idSede);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Sala> findAllBySedeId(Integer idSede) { return salaRepository.findAllBySedeId(idSede); }
+
+    public boolean updateSala(Integer idSala, String numeroSala, String descrizione, Boolean prenotabile) {
+        try {
+            Optional<Sala> salaOpt = salaRepository.findById(idSala);
+            if (!salaOpt.isPresent()) {
+                return false;
+            }
+            Optional<Sala> salaOptNumero = salaRepository.findByNumeroSalaAndIdSede(Integer.parseInt(numeroSala), salaOpt.get().getIdSede());
+            if (salaOptNumero.isPresent() && !salaOptNumero.get().getId().equals(idSala)) {
+                throw new RuntimeException("Sala già presente");
+            }
+            Sala sala = salaOpt.get();
+            sala.setNumeroSala(Integer.parseInt(numeroSala));
+            if(descrizione != null && !descrizione.isEmpty())
+                sala.setDescrizione(descrizione);
+            sala.setPrenotabile(prenotabile); //TODO: accettare prenotabile = false solo se non ci sono corsi/prenotazioni
+            salaRepository.save(sala);
+            return true;
+        } catch (Exception e) {
+            // Log the exception
+            System.out.println("Error updating Sala: " + e.getMessage());
+            return false;
+        }
+    }
 
 
 }

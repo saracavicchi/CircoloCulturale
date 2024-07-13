@@ -2,26 +2,27 @@
   Created by IntelliJ IDEA.
   User: sarac
   Date: 13/07/2024
-  Time: 11:13
+  Time: 12:26
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Creazione Sala</title>
+    <title>Modifica Sale</title>
     <script>
         var errorDisplayed = false;
 
         document.addEventListener('DOMContentLoaded', function() {
-            initCreaSalaForm();
+            initModificaSalaForm();
         });
 
-        function initCreaSalaForm() {
-            var creaSalaForm = document.getElementById('creaSalaForm');
-            if (creaSalaForm) {
-                creaSalaForm.addEventListener('submit', submitForm);
-                var inputs = creaSalaForm.getElementsByTagName('input');
-                addFocusListenersToInputs(inputs, 'creaSalaForm');
+        function initModificaSalaForm() {
+            var modificaSalaForm = document.getElementById('modificaSalaForm');
+            if (modificaSalaForm) {
+                modificaSalaForm.addEventListener('submit', submitForm);
+                var inputs = modificaSalaForm.getElementsByTagName('input');
+                addFocusListenersToInputs(inputs, 'modificaSalaForm');
             }
         }
         function addFocusListenersToInputs(inputs, formName) {
@@ -68,7 +69,7 @@
                 displayErrorMessages(h2Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
-                document.getElementById('creaSalaForm').submit();
+                document.getElementById('modificaSalaForm').submit();
             }
         }
 
@@ -152,7 +153,7 @@
     </script>
 </head>
 <body>
-<h2>Crea una nuova Sala</h2>
+<h2>Modifica Sale</h2>
 <% String alreadyPresent;
     if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
 %>
@@ -169,22 +170,28 @@
     errorPresentElement.scrollIntoView({behavior: "smooth"});
 </script>
 <%} %>
-<form id="creaSalaForm" action="/sede/sala/crea" method="post">
-    <input type="hidden" name="idSede" value="<%= request.getParameter("idSede") %>">
+<c:forEach items="${sale}" var="sala">
+    <form id="modificaSaleForm" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
+        <input type="hidden" name="idSala" value="${sala.id}" />
+        <input type="hidden" name="idSede" value="${sala.idSede.id}" />
 
-    <label for="numero">Numero Sala:</label>
-    <input type="text" id="numero" name="numero" required pattern="\d+" title="Solo numeri sono permessi."><br>
+        <label for="numeroSala_${sala.id}">Numero Sala:</label>
+        <input type="text" id="numeroSala_${sala.id}" name="numero" value="${sala.numeroSala}" required />
 
-    <label for="capienza">Capienza:</label>
-    <input type="number" id="capienza" name="capienza" required><br>
+        <label for="descrizione_${sala.id}">Descrizione:</label>
+        <textarea id="descrizione_${sala.id}" name="descrizione">${sala.descrizione}</textarea>
 
-    <label for="descrizione">Descrizione (Opzionale):</label>
-    <textarea id="descrizione" name="descrizione"></textarea><br>
+        <label for="prenotabile_${sala.id}">Prenotabile:</label>
+        <select id="prenotabile_${sala.id}" name="prenotabile">
+            <option value="true" ${sala.prenotabile ? 'selected' : ''}>Sì</option>
+            <option value="false" ${!sala.prenotabile ? 'selected' : ''}>No</option>
+        </select>
 
-    <label for="prenotabile">Prenotabile:</label>
-    <input type="checkbox" id="prenotabile" name="prenotabile">
+        <label>Capienza: ${sala.capienza}</label>
 
-    <button type="submit">Crea Sala</button>
-</form>
+        <button type="submit">Salva Modifiche per la sala "${sala.numeroSala}</button>
+    </form>
+    <hr/>
+</c:forEach>
 </body>
 </html>
