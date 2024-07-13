@@ -5,11 +5,17 @@ import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
 import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SaggioRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.*;
@@ -19,10 +25,14 @@ public class SaggioService {
 
     private final SaggioRepository saggioRepository;
     private final CorsoRepository corsoRepository;
+    private final Environment environment;
+    @Value("${file.saggio.upload-dir}")
+    String uploadSaggioDir;
 
-    SaggioService(SaggioRepository saggioRepository, CorsoRepository corsoRepository) {
+    SaggioService(SaggioRepository saggioRepository, CorsoRepository corsoRepository, Environment environment) {
         this.corsoRepository = corsoRepository;
         this.saggioRepository = saggioRepository;
+        this.environment = environment;
     }
     
     @Transactional
@@ -113,7 +123,7 @@ public class SaggioService {
             String via,
             String numeroCivico,
             List<Integer> corsiIds,
-            Optional<MultipartFile> foto
+            MultipartFile foto
     ) {
 
         if (!validaInformazioniSaggio(
@@ -155,6 +165,12 @@ public class SaggioService {
         }
 
         saggio.setIndirizzo(stato, provincia, citta, via, numeroCivico);
+        saggioRepository.save(saggio); //per avere disponibile id per foto
+
+        if(foto != null){
+            String filename = saveSaggioPicture(foto, nome, saggio.getId());
+            saggio.setUrlFoto(filename);
+        }
 
         Set<Corso> corsi = new HashSet<>();
         for (Integer corsoId : corsiIds) {
@@ -182,7 +198,7 @@ public class SaggioService {
             String via,
             String numeroCivico,
             List<Integer> corsiIds,
-            Optional<MultipartFile> foto
+            MultipartFile foto
     ) {
         Optional<Saggio> saggioOpt = saggioRepository.findById(saggioId);
         if (!saggioOpt.isPresent()) {
@@ -227,6 +243,12 @@ public class SaggioService {
             saggio.setOrarioFine(orarioFine.get());
         }
 
+        if(foto != null){
+            String filename = saveSaggioPicture(foto, nome, saggio.getId());
+            System.out.println(filename);
+            saggio.setUrlFoto(filename);
+        }
+
         saggio.setIndirizzo(stato, provincia, citta, via, numeroCivico);
 
         Set<Corso> corsi = new HashSet<>();
@@ -257,5 +279,53 @@ public class SaggioService {
     public Optional<Saggio> getSaggioByName(String nome){
         return saggioRepository.getSaggioByName(nome);
     }
+
+    String saveSaggioPicture(MultipartFile picture, String nome, Integer idSaggio) {
+        if (picture == null || picture.isEmpty()) {
+            return null;
+        }
+
+        String originalFilename = picture.getOriginalFilename();
+        if (originalFilename == null) {
+            return null;
+        }
+
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String filenameConSpazi = nome + idSaggio + extension;
+        String filename = filenameConSpazi.replace(" ", "");
+
+        try {
+            // Percorso relativo alla directory resources/static del progetto
+            String relativePath = "static/images/saggioPhotos";
+            // Costruisce il percorso completo utilizzando il percorso del progetto
+            Path uploadPath = Paths.get(System.getProperty("user.dir"), "src/main/resources", relativePath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path picturePath = uploadPath.resolve(filename);
+            System.out.println("Tentativo di salvataggio in: " + picturePath.toAbsolutePath());
+
+            picture.transferTo(picturePath);
+
+            if (Files.exists(picturePath)) {
+                System.out.println("File salvato correttamente in" + picturePath.toAbsolutePath());
+            } else {
+                System.out.println("Il file non è stato salvato.");
+                return null;
+            }
+
+            // Restituisce il percorso relativo per l'accesso via URL
+            //return Paths.get(relativePath, filename).toString().replace("\\", "/");
+            return filename;
+        } catch (Exception exc) {
+            System.out.println(exc.getMessage());
+            exc.printStackTrace();
+            return null;
+        }
+    }
+
+
+
 
 }

@@ -10,12 +10,19 @@
 <html>
 <head>
     <title>Modifica Corso</title>
+    <style>
+        .img-responsive {
+            width: 150px; /* Riduce la larghezza massima */
+            height: auto; /* Mantiene le proporzioni */
+            max-height: 300px; /* Riduce l'altezza massima per un riquadro più piccolo */
+        }
+    </style>
     <script>
         var errorDisplayed = false;
         document.addEventListener('DOMContentLoaded', function() {
             initializeAddressFields();
             initModificaSaggioForm();
-            handleEliminaSaggioFormSubmission()
+            //handleEliminaSaggioFormSubmission()
 
         });
         /*
@@ -284,13 +291,13 @@
 <body>
 <h2>Modifica le informazioni del saggio "${saggio.nome}"</h2>
 <div>
-    <img src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto saggio" class="profile-pic"/>
+    <img class="img-responsive" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
 </div>
 <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
     <input type="hidden" name="saggioId" value="${saggio.id}"/>
 
     <label for="photo">Seleziona una nuova foto per il saggio:</label>
-    <input type="file" id="photo" name="photo">
+    <input type="file" id="photo"  name="photo">
 
     <label for="nome">Nome:</label>
     <input type="text" id="nome" name="nome" required maxlength="30" value="${saggio.nome}">

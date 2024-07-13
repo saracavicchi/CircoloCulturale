@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -42,7 +43,7 @@ public class SocioService {
     private final SocioRepository socioRepository;
     private final UtenteRepository utenteRepository;
 
-    @Value("${file.corso.upload-dir}")
+    @Value("${file.socio.upload-dir}")
     String uploadDir;
 
     SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
@@ -255,8 +256,7 @@ public class SocioService {
         return validateAndParseSocio(socio.getEmail(), socio.getPassword(), socio.getTelefono());
     }
 
-    String saveSocioProfilePicture (MultipartFile picture, String cf) {
-
+    String saveSocioProfilePicture(MultipartFile picture, String cf) {
         if (picture == null || picture.isEmpty()) {
             return null;
         }
@@ -267,15 +267,36 @@ public class SocioService {
         }
 
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
         String filename = cf + extension;
+        //String filename = filenameConSpazi.replace(" ", "");
 
         try {
-            Path picturePath = Paths.get(uploadDir, filename);
+            // Percorso relativo alla directory resources/static del progetto
+            String relativePath = "static/images/socioProfilePhotos";
+            // Costruisce il percorso completo utilizzando il percorso del progetto
+            Path uploadPath = Paths.get(System.getProperty("user.dir"), "src/main/resources", relativePath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path picturePath = uploadPath.resolve(filename);
+            System.out.println("Tentativo di salvataggio in: " + picturePath.toAbsolutePath());
+
             picture.transferTo(picturePath);
+
+            if (Files.exists(picturePath)) {
+                System.out.println("File salvato correttamente in" + picturePath.toAbsolutePath());
+            } else {
+                System.out.println("Il file non è stato salvato.");
+                return null;
+            }
+
+            // Restituisce il percorso relativo per l'accesso via URL
+            //return Paths.get(relativePath, filename).toString().replace("\\", "/");
             return filename;
         } catch (Exception exc) {
-            System.err.println(exc.getMessage());
+            System.out.println(exc.getMessage());
+            exc.printStackTrace();
             return null;
         }
     }

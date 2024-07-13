@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -214,12 +215,13 @@ public class CorsoService {
         corso.setIdSala(sala);
         corso.setDocenti(docenti);
         corso.setActive(true);
+        corsoRepository.save(corso);
 
         if(photo != null){
-            String filename = saveCorsoPicture(photo, categoria, corso.getId());
+            String filename = saveCorsoPicture(photo, categoria, corso.getId()); //TODO: controllare che funzioni alla creazione di un corso
             corso.setUrlFoto(filename);
         }
-        corsoRepository.save(corso);
+        //corsoRepository.save(corso);
 
         /*for (Integer giorno: giorni) {
             CalendarioCorso calendarioCorso = new CalendarioCorso();
@@ -397,8 +399,7 @@ public class CorsoService {
         return true;
     }
 
-    public String saveCorsoPicture (MultipartFile picture, String categoria, Integer idCorso) {
-
+    String saveCorsoPicture(MultipartFile picture, String categoria, Integer idCorso) {
         if (picture == null || picture.isEmpty()) {
             return null;
         }
@@ -409,15 +410,36 @@ public class CorsoService {
         }
 
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-
         String filename = categoria + idCorso + extension;
+        //String filename = filenameConSpazi.replace(" ", "");
 
         try {
-            Path picturePath = Paths.get(uploadCorsoDir, filename);
+            // Percorso relativo alla directory resources/static del progetto
+            String relativePath = "static/images/corsoPhotos";
+            // Costruisce il percorso completo utilizzando il percorso del progetto
+            Path uploadPath = Paths.get(System.getProperty("user.dir"), "src/main/resources", relativePath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path picturePath = uploadPath.resolve(filename);
+            System.out.println("Tentativo di salvataggio in: " + picturePath.toAbsolutePath());
+
             picture.transferTo(picturePath);
+
+            if (Files.exists(picturePath)) {
+                System.out.println("File salvato correttamente in" + picturePath.toAbsolutePath());
+            } else {
+                System.out.println("Il file non è stato salvato.");
+                return null;
+            }
+
+            // Restituisce il percorso relativo per l'accesso via URL
+            //return Paths.get(relativePath, filename).toString().replace("\\", "/");
             return filename;
         } catch (Exception exc) {
-            System.err.println(exc.getMessage());
+            System.out.println(exc.getMessage());
+            exc.printStackTrace();
             return null;
         }
     }
