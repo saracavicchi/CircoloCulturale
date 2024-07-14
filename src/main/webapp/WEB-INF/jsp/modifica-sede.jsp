@@ -25,6 +25,7 @@
             initializeAddressFields();
             initModificaSedeForm();
             addGiorniChiusura();
+            gestisciStipendioSegretario();
 
         });
 
@@ -258,6 +259,29 @@
             }
         }
 
+        function gestisciStipendioSegretario() {
+            var selectSegretari = document.getElementsByName('segretari')[0];
+            var stipendiContainer = document.getElementById('AdminContainer');
+            stipendiContainer.innerHTML = ''; // Clears the current list
+
+            var selectedSegretario = selectSegretari.value;
+            if (selectedSegretario) { // Check if a secretary is selected
+                // Create a div for the admin checkbox
+                var adminDiv = document.createElement('div');
+                var adminLabel = document.createElement('label');
+                adminLabel.textContent = 'Admin?';
+
+                var adminCheckbox = document.createElement('input');
+                adminCheckbox.setAttribute('type', 'checkbox');
+                adminCheckbox.setAttribute('name', 'adminSegretario');
+                adminCheckbox.setAttribute('id', 'adminSegretario');
+
+                adminDiv.appendChild(adminLabel);
+                adminDiv.appendChild(adminCheckbox);
+                stipendiContainer.appendChild(adminDiv);
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -307,6 +331,22 @@
             <input type="checkbox" id="chiusura${status.index}" name="deletedChiusura" value="${giorno}">
         </c:forEach>
     </div>
+
+    <c:if test="${not empty sede.segretario}">
+        <p>Segretario: <c:out value="${sede.segretario.socio.utente.nome}"/> <c:out value="${sede.segretario.socio.utente.cognome}"/></p>
+        <p>Admin:
+            <input type="checkbox" name="isAdmin" ${sede.segretario.admin ? 'checked' : ''} />
+        </p>
+    </c:if>
+
+    Seleziona nuovo segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
+    <option value=0>Nessun segretario selezionato</option>
+    <c:forEach items="${sociInfo}" var="socioS">
+        <option value="${socioS[3]}">${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
+    </c:forEach>
+</select>
+    <div id ="AdminContainer"></div>
+
 
 
     <div id="chiusureContainer">

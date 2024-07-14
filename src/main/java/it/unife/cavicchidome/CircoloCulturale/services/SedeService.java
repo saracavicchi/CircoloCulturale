@@ -71,9 +71,9 @@ public class SedeService {
         }
     }
 
-    private boolean validateSedeInfo(String nome, String stato, String provincia, String citta, String via, String numeroCivico, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes, Integer stipendioSegretario) {
+    private boolean validateSedeInfo(String nome, String stato, String provincia, String citta, String via, String numeroCivico, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes) {
 
-        if(!validateNome(nome) || !validateIndirizzo(stato, provincia, citta, via, numeroCivico) || !validateOpeningClosingTimes(openingTimes, closingTimes) || !validateStipendio(stipendioSegretario)){
+        if(!validateNome(nome) || !validateIndirizzo(stato, provincia, citta, via, numeroCivico) || !validateOpeningClosingTimes(openingTimes, closingTimes) ){
             return false;
         }
         if(chiusura != null && !validateChiusura(chiusura)){
@@ -158,9 +158,9 @@ public class SedeService {
     }
 
     @Transactional
-    public boolean newSede(String nome, String stato, String provincia, String citta, String via, String numeroCivico, boolean areaRistoro, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes, Integer stipendioSegretario, Integer idSegretario) {
+    public boolean newSede(String nome, String stato, String provincia, String citta, String via, String numeroCivico, boolean areaRistoro, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes, Integer idSegretario, boolean admin) {
         // Valida parametri
-        if (!validateSedeInfo(nome, stato, provincia, citta, via, numeroCivico, chiusura, openingTimes, closingTimes, stipendioSegretario)) {
+        if (!validateSedeInfo(nome, stato, provincia, citta, via, numeroCivico, chiusura, openingTimes, closingTimes)) {
             return false;
         }
         String indirizzo = stato + ", " + provincia + ", " + citta + ", " + via + ", " + numeroCivico;
@@ -205,8 +205,13 @@ public class SedeService {
 
         }
         segretario.setSocio(socioOpt.get());
-        segretario.setStipendio(BigDecimal.valueOf(stipendioSegretario));
-        segretario.setAdmin(false);
+        segretario.setAdmin(admin);
+        if(admin){
+            segretario.setStipendio(new BigDecimal(70000*1.1)); //TODO: ingegnerizzare meglio
+        }
+        else{
+            segretario.setStipendio(new BigDecimal(70000));
+        }
         segretario.setSedeAmministrata(newSede);
         segretarioRepository.save(segretario);
 
@@ -238,7 +243,10 @@ public class SedeService {
     }
 
     @Transactional
-    public boolean updateSede(Integer idSede, String nome, boolean areaRistoro, List<LocalDate> chiusura, List<LocalDate> deletedChiusura) {
+    public boolean updateSede(Integer idSede, String nome, boolean areaRistoro, List<LocalDate> chiusura, List<LocalDate> deletedChiusura, boolean admin, Integer idSegretario, boolean adminNuovo) {
+        BigDecimal baseStipendio = new BigDecimal(70000);
+        BigDecimal adminBonus = new BigDecimal(1.1);
+
         if(!validateNome(nome)){
             return false;
         }
@@ -280,6 +288,50 @@ public class SedeService {
 
 
             }
+            Segretario segretario;
+            if(idSegretario != 0) {//significa che è stato selezionato un nuovo segretario
+                Optional<Socio> socioOpt = socioRepository.findById(idSegretario);
+                if (!socioOpt.isPresent()) {
+                    return false;
+                }
+
+                Optional<Segretario> segretarioOpt = segretarioRepository.findByIdEvenIfNotActive(idSegretario);
+                if (segretarioOpt.isPresent()) {
+                    if (segretarioOpt.get().getActive() == true) {
+                        throw new RuntimeException("Segretario già presente");
+                    } else {
+                        segretario = segretarioOpt.get();
+                    }
+                } else {
+                    segretario = new Segretario();
+                    segretario.setSocio(socioOpt.get());
+
+                }
+                segretario.setSocio(socioOpt.get());
+                segretario.setActive(true);
+                Segretario oldSegretario = sede.getSegretario();
+                oldSegretario.setActive(false);
+                segretario.setAdmin(adminNuovo);
+                BigDecimal stipendio = adminNuovo ? baseStipendio.multiply(adminBonus) : baseStipendio;
+                segretario.setStipendio(stipendio);
+                segretarioRepository.save(segretario);
+                segretarioRepository.save(oldSegretario);
+                sede.setSegretario(segretario);
+                sedeRepository.save(sede);
+
+            }
+            else{
+                segretario = sede.getSegretario();
+                segretario.setAdmin(admin);
+                BigDecimal stipendio = admin ? baseStipendio.multiply(adminBonus) : baseStipendio;
+                segretario.setStipendio(stipendio);
+                sede.setSegretario(segretario);
+                sedeRepository.save(sede);
+
+            }
+
+            segretario.setSedeAmministrata(sede);
+            segretarioRepository.save(segretario);
 
 
             sede.setNome(nome);

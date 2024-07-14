@@ -15,5 +15,8 @@ public interface DocenteRepository extends JpaRepository<Docente, Integer> {
     @Query("SELECT d FROM Docente d JOIN d.socio s JOIN s.utente u WHERE u.cf = :cf")
     Optional<Docente> findByCf(String cf);
 
+    @Query("SELECT d FROM Docente d WHERE d.active = true AND d.socio.deleted = false AND d.socio.utente.deleted = false")
+    List<Docente> findAll();
+
 
 }

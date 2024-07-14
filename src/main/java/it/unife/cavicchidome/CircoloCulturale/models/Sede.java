@@ -40,7 +40,7 @@ public class Sede {
     @OneToMany(mappedBy = "idSede")
     private Set<Sala> sale = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "sedeAmministrata")
+    @OneToOne(mappedBy = "sedeAmministrata", cascade = CascadeType.ALL, orphanRemoval = true)
     private Segretario segretario;
 
     public Integer getId() {

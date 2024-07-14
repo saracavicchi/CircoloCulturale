@@ -66,8 +66,8 @@ public class SedeController {
                           @RequestParam(name = "provincia") String provincia,
                           @RequestParam(name = "via") String via,
                           @RequestParam(name = "numeroCivico") String numeroCivico,
-                            @RequestParam(name = "segretari") Integer idSegretario,
-                          @RequestParam(name = "stipendioSegretario") Integer stipendioSegretario,
+                          @RequestParam(name = "segretari") Integer idSegretario,
+                          @RequestParam(name = "adminSegretario", required = false, defaultValue = "false") boolean admin,
                           @RequestParam(name = "areaRistoro", required = false, defaultValue = "false") boolean areaRistoro,
                           @RequestParam(name = "orarioApertura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariApertura,
                           @RequestParam(name = "orarioChiusura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariChiusura,
@@ -75,7 +75,7 @@ public class SedeController {
                           RedirectAttributes redirectAttributes
                           ) {
         try{
-            if(!sedeService.newSede(nome, stato, citta, provincia, via, numeroCivico, areaRistoro, chiusura, orariApertura, orariChiusura, stipendioSegretario, idSegretario)){
+            if(!sedeService.newSede(nome, stato, citta, provincia, via, numeroCivico, areaRistoro, chiusura, orariApertura, orariChiusura, idSegretario, admin)){
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/crea";
             }
@@ -98,6 +98,7 @@ public class SedeController {
         if(sedeOpt.isEmpty() || !sedeOpt.isPresent()){
             return "redirect:/sede/info";
         }
+        model.addAttribute("sociInfo", socioService.findSociPossibiliSegretari());
         model.addAttribute("sede", sedeOpt.get());
         return "modifica-sede";
     }
@@ -106,12 +107,15 @@ public class SedeController {
     public String modificaSede(@RequestParam(name = "idSede") Integer idSede,
                                @RequestParam(name = "nome") String nome,
                                @RequestParam(name = "areaRistoro", required = false, defaultValue = "false") boolean areaRistoro,
-                                 @RequestParam(name = "chiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> chiusura,
-                                    @RequestParam(name = "deletedChiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> deletedChiusura,
+                               @RequestParam(name = "chiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> chiusura,
+                               @RequestParam(name = "deletedChiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> deletedChiusura,
+                               @RequestParam(name = "isAdmin", required = false, defaultValue = "false") boolean isAdmin,
+                               @RequestParam(name = "segretari") Integer idSegretario,
+                               @RequestParam(name = "adminSegretario", required = false, defaultValue = "false") boolean adminNuovo,
                                RedirectAttributes redirectAttributes
                               ) {
         try{
-            if(!sedeService.updateSede(idSede, nome, areaRistoro, chiusura, deletedChiusura)){
+            if(!sedeService.updateSede(idSede, nome, areaRistoro, chiusura, deletedChiusura, isAdmin, idSegretario, adminNuovo)){
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/modifica?idSede=" + idSede;
             }

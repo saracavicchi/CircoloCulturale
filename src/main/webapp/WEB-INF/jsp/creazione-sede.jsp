@@ -262,7 +262,7 @@
             }
         }
 
-        function gestisciStipendioSegretario() {
+        /*function gestisciStipendioSegretario() {
             var selectSegretari = document.getElementsByName('segretari')[0];
             var stipendiContainer = document.getElementById('StipendiContainer');
             stipendiContainer.innerHTML = ''; // Clears the current list
@@ -293,6 +293,29 @@
                 stipendioDiv.appendChild(stipendioLabel);
                 stipendioDiv.appendChild(stipendioInput);
                 stipendiContainer.appendChild(stipendioDiv);
+            }
+        }*/
+
+        function gestisciStipendioSegretario() {
+            var selectSegretari = document.getElementsByName('segretari')[0];
+            var stipendiContainer = document.getElementById('AdminContainer');
+            stipendiContainer.innerHTML = ''; // Clears the current list
+
+            var selectedSegretario = selectSegretari.value;
+            if (selectedSegretario) { // Check if a secretary is selected
+                // Create a div for the admin checkbox
+                var adminDiv = document.createElement('div');
+                var adminLabel = document.createElement('label');
+                adminLabel.textContent = 'Admin?';
+
+                var adminCheckbox = document.createElement('input');
+                adminCheckbox.setAttribute('type', 'checkbox');
+                adminCheckbox.setAttribute('name', 'adminSegretario');
+                adminCheckbox.setAttribute('id', 'adminSegretario');
+
+                adminDiv.appendChild(adminLabel);
+                adminDiv.appendChild(adminCheckbox);
+                stipendiContainer.appendChild(adminDiv);
             }
         }
 
@@ -369,13 +392,14 @@
     </div>
     <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
 
-    Segretario: <select name="segretari" onchange="updateDocentiSelection()">
-    <c:forEach items="${sociInfo}" var="socioS">
-        <option value="${socioS[3]}">${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
+    Segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
+    <c:forEach items="${sociInfo}" var="socioS" varStatus="status">
+        <option value="${socioS[3]}" ${status.index == 0 ? 'selected' : ''}>${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
     </c:forEach>
-</select>
-    <!-- <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p> -->
-    <div id="StipendiContainer"></div>
+    </select>
+    <div id="AdminContainer"></div>
+    <!-- <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
+    <div id="StipendiContainer"></div>-->
 
 
     <button type="submit">Crea Sede</button>
