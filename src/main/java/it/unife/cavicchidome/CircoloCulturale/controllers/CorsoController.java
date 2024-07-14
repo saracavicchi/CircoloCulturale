@@ -159,8 +159,14 @@ public class CorsoController {
     @GetMapping("/modificaBase")
     public String viewEdit(
             @RequestParam("idCorso") Integer idCorso,
-            Model model
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
         // Recupera le informazioni del corso tramite il suo ID
         Optional<Corso> corso = corsoService.findById(idCorso);
         if (!corso.isPresent()) {
@@ -202,8 +208,15 @@ public class CorsoController {
     @GetMapping("/modificaDocenti")
     public String modificaDocenti(
             @RequestParam("idCorso") Integer idCorso,
-            Model model
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
         Optional<Corso> corsoOpt = corsoService.findById(idCorso);
         if (!corsoOpt.isPresent()) {
             // Gestisci il caso in cui il corso non viene trovato
@@ -256,7 +269,7 @@ public class CorsoController {
 
 
         redirectAttributes.addAttribute("successMessage", "Docenti aggiornati con successo.");
-        return "redirect:/corso/info";
+        return "redirect:/segretario/corsi";
     }
 
 
@@ -264,8 +277,15 @@ public class CorsoController {
     @GetMapping("/modificaCalendario")
     public String viewModificaCalendario(
             @RequestParam("idCorso") Integer idCorso,
-            Model model
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
         Optional<Corso> corsoOpt = corsoService.findById(idCorso);
         if (!corsoOpt.isPresent()) {
             // Gestisci il caso in cui il corso non viene trovato
@@ -307,7 +327,7 @@ public class CorsoController {
 
 
         redirectAttributes.addAttribute("successMessage", "Calendario aggiornato con successo.");
-        return "redirect:/corso/info";
+        return "redirect:/segretario/corsi";
     }
 
     @PostMapping("/elimina")
@@ -318,10 +338,10 @@ public class CorsoController {
 
         if (!deleteSuccess) {
             redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/corso/info?id=" + idCorso;
+            return "redirect:/corso/modificaBase?idCorso=" + idCorso;
         }
 
         redirectAttributes.addAttribute("successMessage", "Corso eliminato con successo.");
-        return "redirect:/"; //TODO: vedere come gestire meglio
+        return "redirect:/corso/modificaBase?idCorso=" + idCorso; //TODO: vedere come gestire meglio
     }
 }

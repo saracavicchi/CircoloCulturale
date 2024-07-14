@@ -16,7 +16,7 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content">
-        <main class="full">
+        <main class="midleft">
             <section class="title">
                 <h1>Corsi del circolo</h1>
             </section>
@@ -57,6 +57,7 @@
                 </c:forEach>
             </section>
         </main>
+        <%@include file="/static/include/aside.jsp"%>
     </div>
 </body>
 </html>

@@ -42,6 +42,11 @@ public class SaggioService {
     }
 
     @Transactional
+    public List<Saggio> getSaggioAfterDateDeleted(Optional<LocalDate> date, Optional<Boolean> deleted) {
+        return saggioRepository.getSaggioAfterDateDeleted(date.orElse(LocalDate.now()), deleted.orElse(false));
+    }
+
+    @Transactional
     public Optional<Saggio> findSaggioById(Integer saggioId) {
         return saggioRepository.findById(saggioId);
     }

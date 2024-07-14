@@ -9,7 +9,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Modifica Corso</title>
+    <title>CircoloCulturale</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
         .img-responsive {
             width: 150px; /* Riduce la larghezza massima */
@@ -289,73 +290,81 @@
     </script>
 </head>
 <body>
-<h2>Modifica le informazioni del saggio "${saggio.nome}"</h2>
-<div>
-    <img class="img-responsive" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
+<%@include file="/static/include/header.jsp"%>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Modifica saggio "${saggio.nome}"</h1>
+        </section>
+        <section class="content">
+            <div>
+                <img class="img-responsive" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
+            </div>
+            <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="saggioId" value="${saggio.id}"/>
+
+                <label for="photo">Seleziona una nuova foto per il saggio:</label>
+                <input type="file" id="photo"  name="photo">
+
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required maxlength="30" value="${saggio.nome}">
+
+                <label for="descrizione">Descrizione:</label>
+                <input type="text" id="descrizione" name="descrizione" value="${not empty saggio.descrizione ? saggio.descrizione : ''}" placeholder="Inserire descrizione"/>
+
+                <label for="data">Data:</label>
+                <input type="date" id="data" name="data" required value="${saggio.data}">
+
+                <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
+                <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" value="${saggio.maxPartecipanti}">
+
+                <label for="orarioInizio">Orario inizio:</label>
+                <input type="time" id="orarioInizio" name="orarioInizio" value="${not empty saggio.orarioInizio ? saggio.orarioInizio : ''}" placeholder="HH:MM">
+
+                <label for="orarioFine">Orario fine:</label>
+                <input type="time" id="orarioFine" name="orarioFine" value="${not empty saggio.orarioFine ? saggio.orarioFine : ''}" placeholder="HH:MM">
+
+                <label for="stato">Stato:</label>
+                <input type="text" id="stato" name="stato" placeholder="Stato" required>
+
+                <label for="provincia">Provincia:</label>
+                <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
+
+                <label for="citta">Città:</label>
+                <input type="text" id="citta" name="citta" placeholder="Città" required>
+
+                <label for="via">Via:</label>
+                <input type="text" id="via" name="via" placeholder="Via" required>
+
+                <label for="numeroCivico">Numero Civico:</label>
+                <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
+
+                <label for="corsi">Seleziona Corsi:</label>
+                <select id="corsi" name="corsi" multiple>
+                    <c:forEach items="${corsi}" var="corso">
+                        <c:choose>
+                            <c:when test="${saggio.corsi.contains(corso)}">
+                                <option value="${corso.id}" selected>${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </select>
+                <button type="submit">Modifica Saggio</button>
+            </form>
+
+            <p>Cancellazione saggio</p>
+            <form id="deletionForm" action="/saggio/elimina" method="POST">
+                <input type="hidden" name="saggioId" value="${saggio.id}" />
+                <label for="confirmDeletion">Sei sicuro?</label>
+                <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                <button type="submit">Elimina saggio</button>
+            </form>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
 </div>
-<form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="saggioId" value="${saggio.id}"/>
-
-    <label for="photo">Seleziona una nuova foto per il saggio:</label>
-    <input type="file" id="photo"  name="photo">
-
-    <label for="nome">Nome:</label>
-    <input type="text" id="nome" name="nome" required maxlength="30" value="${saggio.nome}">
-
-    <label for="descrizione">Descrizione:</label>
-    <input type="text" id="descrizione" name="descrizione" value="${not empty saggio.descrizione ? saggio.descrizione : ''}" placeholder="Inserire descrizione"/>
-
-    <label for="data">Data:</label>
-    <input type="date" id="data" name="data" required value="${saggio.data}">
-
-    <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
-    <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" value="${saggio.maxPartecipanti}">
-
-    <label for="orarioInizio">Orario inizio:</label>
-    <input type="time" id="orarioInizio" name="orarioInizio" value="${not empty saggio.orarioInizio ? saggio.orarioInizio : ''}" placeholder="HH:MM">
-
-    <label for="orarioFine">Orario fine:</label>
-    <input type="time" id="orarioFine" name="orarioFine" value="${not empty saggio.orarioFine ? saggio.orarioFine : ''}" placeholder="HH:MM">
-
-    <label for="stato">Stato:</label>
-    <input type="text" id="stato" name="stato" placeholder="Stato" required>
-
-    <label for="provincia">Provincia:</label>
-    <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
-
-    <label for="citta">Città:</label>
-    <input type="text" id="citta" name="citta" placeholder="Città" required>
-
-    <label for="via">Via:</label>
-    <input type="text" id="via" name="via" placeholder="Via" required>
-
-    <label for="numeroCivico">Numero Civico:</label>
-    <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
-
-    <label for="corsi">Seleziona Corsi:</label>
-    <select id="corsi" name="corsi" multiple>
-        <c:forEach items="${corsi}" var="corso">
-            <c:choose>
-                <c:when test="${saggio.corsi.contains(corso)}">
-                    <option value="${corso.id}" selected>${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
-                </c:when>
-                <c:otherwise>
-                    <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
-    </select>
-    <button type="submit">Modifica Saggio</button>
-</form>
-
-<p>Cancellazione saggio</p>
-<form id="deletionForm" action="/saggio/elimina" method="POST">
-    <input type="hidden" name="saggioId" value="${saggio.id}" />
-    <label for="confirmDeletion">Sei sicuro?</label>
-    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-    <button type="submit">Elimina saggio</button>
-</form>
-
-
 </body>
 </html>

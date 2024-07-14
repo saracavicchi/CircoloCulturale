@@ -107,12 +107,34 @@ public class BigliettoService {
         return BigDecimal.valueOf(Biglietto.COSTO_DEFAULT * (biglietto.getSconto() ? Biglietto.SCONTO : 1));
     }
 
+    @Transactional
+    public void deleteBiglietto (Integer bigliettoId, boolean deleted) throws EntityNotFoundException {
+        Biglietto biglietto = bigliettoRepository.getReferenceById(bigliettoId);
+        biglietto.setDeleted(deleted);
+        bigliettoRepository.save(biglietto);
+    }
+
+    @Transactional
+    public void confirmBiglietto (Integer bigliettoId, boolean pending) throws EntityNotFoundException {
+        Biglietto biglietto = bigliettoRepository.getReferenceById(bigliettoId);
+        biglietto.setStatoPagamento(pending ? 'p' : 'c');
+        bigliettoRepository.save(biglietto);
+    }
+
     public List<Biglietto> findAllBiglietti() {
         return bigliettoRepository.findAll();
     }
 
     public Optional<Biglietto> findBigliettoById(Integer id) {
         return bigliettoRepository.findById(id);
+    }
+
+    public List<Biglietto> findBigliettoNameSurnameSaggioDeleted(Optional<String> nome, Optional<String> cognome, Optional<Integer> idSaggio, Optional<Boolean> deleted) {
+        if (idSaggio.isPresent()) {
+            return bigliettoRepository.findBigliettoNameSurnameSaggioDeleted(nome.orElse(""), cognome.orElse(""), idSaggio.get(), deleted.orElse(false));
+        } else {
+            return bigliettoRepository.findBigliettoNameSurnameDeleted(nome.orElse(""), cognome.orElse(""), deleted.orElse(false));
+        }
     }
 
 }

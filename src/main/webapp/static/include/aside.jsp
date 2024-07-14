@@ -33,6 +33,7 @@
             <li><a href="/segretario/saggi">Saggi</a></li>
             <li><a href="/segretario/corsi">Corsi</a></li>
             <li><a href="/segretario/prenotazioni">Prenotazioni</a></li>
+            <li><a href="/segretario/biglietti">Biglietti</a></li>
         </ul>
     </section>
 <% } %>
