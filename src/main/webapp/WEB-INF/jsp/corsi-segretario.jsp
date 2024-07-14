@@ -18,10 +18,10 @@
     <div id="main-content">
         <main class="full">
             <section class="title">
-                <h1>I nostri corsi</h1>
+                <h1>Corsi del circolo</h1>
             </section>
             <section class="filter">
-                <form action="/corso/info" method="get">
+                <form action="/segretario/corsi" method="get">
                     <label for="categoria">Categoria</label>
                     <select name="categoria" id="categoria">
                         <option label="---"></option>
@@ -33,23 +33,25 @@
                     <select name="genere" id="genere">
                         <option label="---"></option>
                         <c:forEach items="${generi}" var="genere">
-                            <option value="${genere}" <c:if test="${param.genere == genere}">selected</c:if>>${genere}</option>
+                            <option value="${genere}" <c:if test="${param.genere == genere}">selected</c:if> >${genere}</option>
                         </c:forEach>
                     </select>
                     <label for="livello">Livello</label>
                     <select name="livello" id="livello">
                         <option label="---"></option>
                         <c:forEach items="${livelli}" var="livello">
-                            <option value="${livello}" <c:if test="${param.livello == livello}">selected</c:if> >${livello}</option>
+                            <option value="${livello}" <c:if test="${param.livello == livello}">selected</c:if>>${livello}</option>
                         </c:forEach>
                     </select>
+                    <label for="active">Mostra corsi cancellati</label>
+                    <input type="checkbox" name="active" id="active" value="true" <c:if test="${param.active == true}">checked</c:if>>
                     <input type="submit" value="Filtra">
                 </form>
             </section>
             <section class="content clearfix">
                 <c:forEach items="${corsi}" var="corso">
                     <article>
-                        <h1><a href="/corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
+                        <h1><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
                         <h2>${corso.descrizione}</h2>
                     </article>
                 </c:forEach>

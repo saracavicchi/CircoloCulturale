@@ -22,6 +22,9 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     @Query("SELECT DISTINCT c.livello FROM Corso c")
     List<String> findDistinctLivello();
 
+    @Query("SELECT c FROM Corso c WHERE (c.active = :active OR c.active = false)")
+    List<Corso> findAllActive(Boolean active);
+
     @Query("SELECT c FROM Corso c WHERE c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello")
     Optional<Corso> findByCategoriaAndGenereAndLivello(@Param("categoria") String categoria, @Param("genere") String genere, @Param("livello") String livello);
 
@@ -43,8 +46,6 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
             "(:orarioInizio <= cc.orarioInizio AND :orarioFine >= cc.orarioFine))")
     Optional<Corso> findOverlapCorso(Integer salaId, Weekday dow, LocalTime orarioInizio, LocalTime orarioFine);
 
-    @Query("SELECT c FROM Corso c JOIN c.docenti d WHERE d.id = :docenteId")
-    Optional<List<Corso>> findCorsiByDocenteId( Integer docenteId);
 }
 
 

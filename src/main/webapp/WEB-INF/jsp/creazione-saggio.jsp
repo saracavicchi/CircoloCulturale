@@ -9,7 +9,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Creazione Saggio</title>
+    <title>CircoloCulturale</title>
+    <link type="text/css" rel="stylesheet" href="/static/css/style.css">
     <script>
         var errorDisplayed = false;
 
@@ -236,81 +237,89 @@
             }
         }
     </script>
-    <style>
-
-    </style>
 </head>
 <body>
-<h2>Creazione Saggio</h2>
-<% String dateAlreadyPresent;
-    if ((dateAlreadyPresent = request.getParameter("dateAlreadyPresent")) != null && dateAlreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già un saggio per la data selezionata</p>
-<%
-    }
-%>
-<% String nameAlreadyPresent;
-    if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già un saggio con lo stesso nome</p>
-<%
-    }
-%>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
-<script>
-    var errorPresentElement = document.getElementById("fail");
-    errorPresentElement.scrollIntoView({behavior: "smooth"});
-</script>
-<%
-} %>
-<form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
-    <label for="nome">Nome:</label>
-    <!-- <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio"> -->
-    <input type="text" id="nome" name="nome" required maxlength="30" placeholder="Nome del saggio">
+<%@include file="/static/include/header.jsp"%>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Creazione Saggio</h1>
+        </section>
+        <section class="content">
+            <% String dateAlreadyPresent;
+                if ((dateAlreadyPresent = request.getParameter("dateAlreadyPresent")) != null && dateAlreadyPresent.equals("true")) {
+            %>
+            <p>Errore, esiste già un saggio per la data selezionata</p>
+            <%
+                }
+            %>
+            <% String nameAlreadyPresent;
+                if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
+            %>
+            <p>Errore, esiste già un saggio con lo stesso nome</p>
+            <%
+                }
+            %>
+            <% String fail;
+                if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+            %>
+            <p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+            <script>
+                var errorPresentElement = document.getElementById("fail");
+                errorPresentElement.scrollIntoView({behavior: "smooth"});
+            </script>
+            <%
+                } %>
+            <form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
+                <label for="nome">Nome:</label>
+                <!-- <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio"> -->
+                <input type="text" id="nome" name="nome" required maxlength="30" placeholder="Nome del saggio">
 
-    <label for="data">Data:</label>
-    <input type="date" id="data" name="data" required>
+                <label for="data">Data:</label>
+                <input type="date" id="data" name="data" required>
 
-    <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
-    <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" placeholder="Numero massimo partecipanti">
+                <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
+                <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" placeholder="Numero massimo partecipanti">
 
-    <label for="descrizione">Descrizione:</label>
-    <textarea id="descrizione" name="descrizione" placeholder="Descrizione del saggio (facoltativo)"></textarea>
+                <label for="descrizione">Descrizione:</label>
+                <textarea id="descrizione" name="descrizione" placeholder="Descrizione del saggio (facoltativo)"></textarea>
 
-    <label for="orarioInizio">Orario inizio:</label>
-    <input type="time" id="orarioInizio" name="orarioInizio" >
+                <label for="orarioInizio">Orario inizio:</label>
+                <input type="time" id="orarioInizio" name="orarioInizio" >
 
-    <label for="orarioFine">Orario fine:</label>
-    <input type="time" id="orarioFine" name="orarioFine" >
+                <label for="orarioFine">Orario fine:</label>
+                <input type="time" id="orarioFine" name="orarioFine" >
 
-    <label for="stato">Stato:</label>
-    <input type="text" id="stato" name="stato" placeholder="Stato" required>
+                <label for="stato">Stato:</label>
+                <input type="text" id="stato" name="stato" placeholder="Stato" required>
 
-    <label for="provincia">Provincia:</label>
-    <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
+                <label for="provincia">Provincia:</label>
+                <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
 
-    <label for="citta">Città:</label>
-    <input type="text" id="citta" name="citta" placeholder="Città" required>
+                <label for="citta">Città:</label>
+                <input type="text" id="citta" name="citta" placeholder="Città" required>
 
-    <label for="via">Via:</label>
-    <input type="text" id="via" name="via" placeholder="Via" required>
+                <label for="via">Via:</label>
+                <input type="text" id="via" name="via" placeholder="Via" required>
 
-    <label for="numeroCivico">Numero Civico:</label>
-    <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
+                <label for="numeroCivico">Numero Civico:</label>
+                <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
 
-    <label for="corsi">Seleziona Corsi:</label>
-    <select id="corsi" name="corsi" multiple>
-        <c:forEach items="${corsi}" var="corso">
-            <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
-        </c:forEach>
-    </select>
+                <label for="corsi">Seleziona Corsi:</label>
+                <select id="corsi" name="corsi" multiple>
+                    <c:forEach items="${corsi}" var="corso">
+                        <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                    </c:forEach>
+                </select>
 
-    <input type="file" id="photo" name="photo">
+                <input type="file" id="photo" name="photo">
 
-    <button type="submit">Crea Saggio</button>
-</form>
+                <button type="submit">Crea Saggio</button>
+            </form>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
+
 </body>
 </html>

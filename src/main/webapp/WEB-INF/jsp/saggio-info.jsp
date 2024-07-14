@@ -33,10 +33,10 @@
             <section class="content">
                 <h1>${saggio.nome}</h1>
                 <h2>${saggio.data} dalle ${saggio.orarioInizio} alle ${saggio.orarioFine}</h2>
-                <h3>Docenti partecipanti:</h3>
+                <h3>Saggio dei corsi di:</h3>
                 <ul>
-                    <c:forEach items="${saggio.docenti}" var="docente">
-                        <li>${docente.socio.utente.nome} ${docente.socio.utente.cognome}</li>
+                    <c:forEach items="${saggio.corsi}" var="corso">
+                        <li><a href="corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></li>
                     </c:forEach>
                 </ul>
                 <% if ((Integer)request.getAttribute("availableTickets") > 0) { %>

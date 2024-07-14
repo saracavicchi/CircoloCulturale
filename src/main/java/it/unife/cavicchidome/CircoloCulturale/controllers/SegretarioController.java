@@ -3,6 +3,7 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,9 +27,11 @@ import java.util.Optional;
 public class SegretarioController {
 
     private final SocioService socioService;
+    private final CorsoService corsoService;
 
-    public SegretarioController(SocioService socioService) {
+    public SegretarioController(SocioService socioService, CorsoService corsoService) {
         this.socioService = socioService;
+        this.corsoService = corsoService;
     }
 
     @GetMapping("/soci")
@@ -97,5 +100,26 @@ public class SegretarioController {
             redirectAttributes.addAttribute("alreadyPresent", "true");
             return "redirect:/segretario/nuovoSocio";
         }
+    }
+
+    @GetMapping("/corsi")
+    public String segretarioViewCorsi(@RequestParam(name = "categoria") Optional<String> courseCategory,
+                                      @RequestParam(name = "genere") Optional<String> courseGenre,
+                                      @RequestParam(name = "livello") Optional<String> courseLevel,
+                                      @RequestParam(name = "active") Optional<Boolean> active,
+                                      Model model,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isPresent() && segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("categorie", corsoService.getCategorie());
+        model.addAttribute("generi", corsoService.getGeneri());
+        model.addAttribute("livelli", corsoService.getLivelli());
+        model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, active));
+        return "corsi-segretario";
     }
 }

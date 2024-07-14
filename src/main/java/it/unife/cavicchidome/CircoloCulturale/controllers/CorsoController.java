@@ -115,7 +115,6 @@ public class CorsoController {
                             @RequestParam(name = "categoria") Optional<String> courseCategory,
                             @RequestParam(name = "genere") Optional<String> courseGenre,
                             @RequestParam(name = "livello") Optional<String> courseLevel,
-                            @RequestParam(name = "id-socio") Optional<Integer> socioId,
                             Model model,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -130,14 +129,14 @@ public class CorsoController {
                 if (socio.isPresent()) {
                     model.addAttribute("isEnrolled", corsoService.isEnrolled(corso.get(), socio.get()));
                 }
-                return "corso/info?id=" + corsoId;
+                return "corso-info";
             }
         }
 
         model.addAttribute("categorie", corsoService.getCategorie());
         model.addAttribute("generi", corsoService.getGeneri());
         model.addAttribute("livelli", corsoService.getLivelli());
-        model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, socioId));
+        model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, Optional.empty()));
         return "corsi";
     }
 
@@ -196,7 +195,7 @@ public class CorsoController {
         }
         redirectAttributes.addAttribute("successMessage", "Corso aggiornato con successo.");
 
-        return "redirect:/corso/info"; //pagina visualizzazione corsi
+        return "redirect:/segretario/corsi"; //pagina visualizzazione corsi
 
     }
 

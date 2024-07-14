@@ -10,7 +10,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Modifica Corso</title>
+    <title>CircoloCulturale</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         function redirectToEditDocentiPage() {
             var courseId = '${corso.id}';
@@ -198,51 +199,59 @@
     </script>
 </head>
 <body>
-<h2>Modifica le informazioni del corso</h2>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
-<%
-    }
-%>
-<div>
-    <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
+<%@include file="/static/include/header.jsp"%>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Modifica corso</h1>
+        </section>
+        <section class="content">
+            <% String fail;
+                if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+            %>
+            <p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
+            <%
+                }
+            %>
+            <div>
+                <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
+            </div>
+            <form id="editCorsoForm" action="modificaBase" method="post">
+                <input type="hidden" name="idCorso" value="${corso.id}"/>
+
+                <label for="photo">Seleziona una nuova foto per il corso:</label>
+                <input type="file" id="photo" name="photo">
+
+                <label>Descrizione:</label>
+                <input type="text" id="descrizione" name="descrizione" value="${corso.descrizione}"/>
+
+                <label>Genere:</label>
+                <input type="text" id="genere" name="genere" value="${corso.genere}"/>
+
+                <label>Livello:</label>
+                <input type="text" id="livello" name="livello" value="${corso.livello}"/>
+
+                <label>Categoria:</label>
+                <input type="radio" id="danza" name="categoria" value="Danza" <c:if test="${corso.categoria == 'Danza'}">checked</c:if> required>
+                <label for="danza">Danza</label><br>
+                <input type="radio" id="musica" name="categoria" value="Musica" <c:if test="${corso.categoria == 'Musica'}">checked</c:if> required>
+                <label for="musica">Musica</label><br>
+
+                <button type="submit">Salva Modifiche</button>
+            </form>
+            <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
+            <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+
+            <p>Cancellazione Corso</p>
+            <form id="cancellaCorsoForm" action="elimina" method="POST">
+                <input type="hidden" name="idCorso" value="${corso.id}" />
+                <label for="confirmDeletion">Sei sicuro?</label>
+                <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                <button type="submit">Cancella Corso</button>
+            </form>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
 </div>
-<form id="editCorsoForm" action="modificaBase" method="post">
-    <input type="hidden" name="idCorso" value="${corso.id}"/>
-
-    <label for="photo">Seleziona una nuova foto per il corso:</label>
-    <input type="file" id="photo" name="photo">
-
-    <label>Descrizione:</label>
-    <input type="text" id="descrizione" name="descrizione" value="${corso.descrizione}"/>
-
-    <label>Genere:</label>
-    <input type="text" id="genere" name="genere" value="${corso.genere}"/>
-
-    <label>Livello:</label>
-    <input type="text" id="livello" name="livello" value="${corso.livello}"/>
-
-    <label>Categoria:</label>
-    <input type="radio" id="danza" name="categoria" value="Danza" <c:if test="${corso.categoria == 'Danza'}">checked</c:if> required>
-    <label for="danza">Danza</label><br>
-    <input type="radio" id="musica" name="categoria" value="Musica" <c:if test="${corso.categoria == 'Musica'}">checked</c:if> required>
-    <label for="musica">Musica</label><br>
-
-    <button type="submit">Salva Modifiche</button>
-</form>
-<button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
-<button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
-
-<p>Cancellazione Corso</p>
-<form id="cancellaCorsoForm" action="elimina" method="POST">
-    <input type="hidden" name="idCorso" value="${corso.id}" />
-    <label for="confirmDeletion">Sei sicuro?</label>
-    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-    <button type="submit">Cancella Corso</button>
-</form>
-
-
 </body>
 </html>

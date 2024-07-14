@@ -43,7 +43,7 @@
     <div id="main-content">
         <main class="fullsize">
             <section class="title">
-                <h1>Informazioni sulla sede</h1>
+                <h1>Informazioni sulla corso</h1>
             </section>
             <section class="content">
                 <h1>${corso.genere} ${corso.categoria} ${corso.livello}</h1>
@@ -62,7 +62,7 @@
                         <li>${docente.socio.utente.nome} ${docente.socio.utente.cognome}</li>
                     </c:forEach>
                 </ul>
-                <% if (request.getAttribute("socio") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
+                <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
                     if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
                         <form action="/corso/iscrizione" method="post">
                             <input type="hidden" name="socio-id" value="${socio.id}">
