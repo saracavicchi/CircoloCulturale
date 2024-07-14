@@ -261,7 +261,7 @@
     </script>
 </head>
 <body>
-<h2>Modifica Sede "${sede.nome}</h2>
+<h2>Modifica Sede ${sede.nome}</h2>
 <% String nameAlreadyPresent;
     if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
 %>
@@ -299,7 +299,9 @@
     <label for="numeroCivico">Numero Civico:</label>
     <span id="numeroCivico"></span>
 
+
     <div id="chiusureAttualiContainer">
+        <label>Seleziona giorni di chiusura da eliminare:</label>
         <c:forEach items="${sede.giornoChiusura}" var="giorno" varStatus="status">
             <label for="chiusura${status.index}">${giorno}</label>
             <input type="checkbox" id="chiusura${status.index}" name="deletedChiusura" value="${giorno}">

@@ -1,10 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
-import it.unife.cavicchidome.CircoloCulturale.models.PrenotazioneSala;
-import it.unife.cavicchidome.CircoloCulturale.models.Sala;
-import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
+import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SalaRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
@@ -160,7 +157,7 @@ public class PrenotazioneSalaService {
     }
 
     @Transactional
-    public List<PrenotazioneSala> findByDate(LocalDate date) {
-        return prenotazioneSalaRepository.findByDate(date);
+    public List<PrenotazioneSala> findByDateAndSede(LocalDate date, Sede sede) {
+        return prenotazioneSalaRepository.findByDateAndSede(date, sede);
     }
 }

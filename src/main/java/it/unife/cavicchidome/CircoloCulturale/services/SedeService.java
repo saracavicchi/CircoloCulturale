@@ -225,7 +225,7 @@ public class SedeService {
             }
             if(chiusura!= null && chiusura.isEmpty() == false){
                 for(LocalDate date : chiusura) {  //cancellazione di tutte le prenotazioni in quel giorno
-                    List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findByDate(date);
+                    List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findByDateAndSede(date, sede);
                     if (!prenotazioni.isEmpty()) {
                         for (PrenotazioneSala prenotazione : prenotazioni) {
                             prenotazione.setDeleted(true);
@@ -233,6 +233,8 @@ public class SedeService {
                         }
                     }
                 }
+                sede.getGiornoChiusura().addAll(chiusura);
+                sede.setGiornoChiusura(sede.getGiornoChiusura());
             }
 
             if(deletedChiusura != null && deletedChiusura.isEmpty() == false){
@@ -242,11 +244,11 @@ public class SedeService {
 
 
             }
-            sede.getGiornoChiusura().addAll(chiusura);
+
 
             sede.setNome(nome);
             sede.setRistoro(areaRistoro);
-            sede.setGiornoChiusura(sede.getGiornoChiusura());
+
             sedeRepository.save(sede);
             return true;
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.repositories;
 
 import it.unife.cavicchidome.CircoloCulturale.models.PrenotazioneSala;
+import it.unife.cavicchidome.CircoloCulturale.models.Sede;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -30,6 +31,6 @@ public interface PrenotazioneSalaRepository extends JpaRepository<PrenotazioneSa
             "(:orarioInizio <= p.orarioInizio AND :orarioFine >= p.orarioFine))")
     Optional<PrenotazioneSala> findOverlapPrenotazione(Integer salaId, LocalDate date, LocalTime orarioInizio, LocalTime orarioFine);
 
-    @Query("SELECT p FROM PrenotazioneSala p WHERE p.data = :date AND p.deleted = false")
-    List<PrenotazioneSala> findByDate(LocalDate date);
+    @Query("SELECT p FROM PrenotazioneSala p WHERE p.data = :date AND p.deleted = false AND p.idSala.idSede = :sede AND p.idSala.active=true AND p.idSala.idSede.active=true AND p.idSala.prenotabile=true")
+    List<PrenotazioneSala> findByDateAndSede(LocalDate date, Sede sede);
 }
