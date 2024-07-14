@@ -165,6 +165,7 @@ public class SedeService {
         }
         String indirizzo = stato + ", " + provincia + ", " + citta + ", " + via + ", " + numeroCivico;
         if (sedeRepository.findSedeByIndirizzo(indirizzo).isPresent()) {
+
             throw new RuntimeException("Indirizzo già presente");
         }
         if (sedeRepository.findSedeByNome(nome).isPresent()) {

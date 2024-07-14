@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Creazione Sala</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
 
@@ -64,8 +65,8 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h2Element = document.getElementsByTagName('h2')[0];
-                displayErrorMessages(h2Element);
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('creaSalaForm').submit();
@@ -152,7 +153,13 @@
     </script>
 </head>
 <body>
-<h2>Crea una nuova Sala</h2>
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Crea una nuova Sala</h1>
+        </section>
+        <section class="content">
 <% String alreadyPresent;
     if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
 %>
@@ -170,6 +177,8 @@
 </script>
 <%} %>
 <form id="creaSalaForm" action="/sede/sala/crea" method="post">
+    <fieldset>
+    <legend>Dettagli Sala</legend>
     <input type="hidden" name="idSede" value="<%= request.getParameter("idSede") %>">
 
     <label for="numero">Numero Sala:</label>
@@ -185,6 +194,12 @@
     <input type="checkbox" id="prenotabile" name="prenotabile">
 
     <button type="submit">Crea Sala</button>
+    </fieldset>
 </form>
+</section>
+</main>
+<%@include file="/static/include/aside.jsp"%>
+</div>
+
 </body>
 </html>

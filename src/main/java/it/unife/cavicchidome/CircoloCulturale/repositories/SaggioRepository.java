@@ -19,4 +19,10 @@ public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
 
     @Query("SELECT s FROM Saggio s WHERE s.nome = ?1")
     public Optional<Saggio> getSaggioByName(String nome);
+
+    @Query("SELECT s FROM Saggio s WHERE s.deleted = false")
+    public List<Saggio> findAllNotDeleted();
+
+    @Query("SELECT s FROM Saggio s WHERE s.deleted = false AND s.id = ?1")
+    public Optional<Saggio> findByIdNotDeleted(Integer id);
 }

@@ -174,8 +174,8 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h2Element = document.getElementsByTagName('h2')[0];
-                displayErrorMessages(h2Element);
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('modificaSedeForm').submit();
@@ -290,7 +290,7 @@
 <div id="main-content">
     <main class="midleft">
         <section class="title">
-        <h2>Modifica Sede ${sede.nome}</h2>
+        <h1>Modifica Sede ${sede.nome}</h1>
         </section>
     <section class="content">
 <% String nameAlreadyPresent;

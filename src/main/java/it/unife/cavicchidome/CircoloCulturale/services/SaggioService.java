@@ -325,6 +325,16 @@ public class SaggioService {
         }
     }
 
+    @Transactional
+    public List<Saggio> findAllNotDeleted(){
+        return saggioRepository.findAllNotDeleted();
+    }
+
+    @Transactional
+    public Optional<Saggio> findByIdNotDeleted(Integer id){
+        return saggioRepository.findByIdNotDeleted(id);
+    }
+
 
 
 

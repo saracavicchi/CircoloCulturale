@@ -10,6 +10,7 @@
 <html>
 <head>
     <title>Modifica Sale</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
 
@@ -66,8 +67,8 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h2Element = document.getElementsByTagName('h2')[0];
-                displayErrorMessages(h2Element);
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('modificaSalaForm').submit();
@@ -156,7 +157,14 @@
     </script>
 </head>
 <body>
-<h2>Modifica Sale</h2>
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Modifica Sale</h1>
+        </section>
+<section class="content">
+
 <% String alreadyPresent;
     if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
 %>
@@ -174,36 +182,44 @@
 </script>
 <%} %>
 <c:forEach items="${sale}" var="sala">
-    <form id="modificaSaleForm" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
-        <input type="hidden" name="idSala" value="${sala.id}" />
-        <input type="hidden" name="idSede" value="${sala.idSede.id}" />
+    <fieldset>
+        <legend>Modifica Sala ${sala.numeroSala}</legend>
+        <form id="modificaSaleForm_${sala.id}" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
+            <input type="hidden" name="idSala" value="${sala.id}" />
+            <input type="hidden" name="idSede" value="${sala.idSede.id}" />
 
-        <label for="numeroSala_${sala.id}">Numero Sala:</label>
-        <input type="text" id="numeroSala_${sala.id}" name="numero" value="${sala.numeroSala}" required />
+            <label for="numeroSala_${sala.id}">Numero Sala:</label>
+            <input type="text" id="numeroSala_${sala.id}" name="numero" value="${sala.numeroSala}" required />
 
-        <label for="descrizione_${sala.id}">Descrizione:</label>
-        <textarea id="descrizione_${sala.id}" name="descrizione">${sala.descrizione}</textarea>
+            <label for="descrizione_${sala.id}">Descrizione:</label>
+            <textarea id="descrizione_${sala.id}" name="descrizione">${sala.descrizione}</textarea>
 
-        <label for="prenotabile_${sala.id}">Prenotabile:</label>
-        <select id="prenotabile_${sala.id}" name="prenotabile">
-            <option value="true" ${sala.prenotabile ? 'selected' : ''}>Sì</option>
-            <option value="false" ${!sala.prenotabile ? 'selected' : ''}>No</option>
-        </select>
+            <label for="prenotabile_${sala.id}">Prenotabile:</label>
+            <select id="prenotabile_${sala.id}" name="prenotabile">
+                <option value="true" ${sala.prenotabile ? 'selected' : ''}>Sì</option>
+                <option value="false" ${!sala.prenotabile ? 'selected' : ''}>No</option>
+            </select>
 
-        <label>Capienza: ${sala.capienza}</label>
+            <label>Capienza: ${sala.capienza}</label>
 
-        <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
-    </form>
-    <p>Cancellazione Sala</p>
-    <form id="cancellaSalaForm" action="/sede/sala/elimina" method="POST">
-        <input type="hidden" name="idSala" value="${sala.id}" />
-        <input type="hidden" name="idSede" value="${sala.idSede.id}" />
-        <label for="confirmDeletion">Sei sicuro?</label>
-        <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-        <button type="submit">Cancella Sala</button>
-    </form>
+            <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
+        </form>
+    </fieldset>
+    <fieldset>
+        <legend>Cancellazione Sala</legend>
+        <form id="cancellaSalaForm_${sala.id}" action="/sede/sala/elimina" method="POST">
+            <input type="hidden" name="idSala" value="${sala.id}" />
+            <input type="hidden" name="idSede" value="${sala.idSede.id}" />
+            <label for="confirmDeletion_${sala.id}">Sei sicuro?</label>
+            <input type="checkbox" id="confirmDeletion_${sala.id}" name="confirmDeletion" required>
+            <button type="button" onclick="document.getElementById('cancellaSalaForm_${sala.id}').submit();">Cancella Sala</button>
+        </form>
+    </fieldset>
     <hr/>
 </c:forEach>
-
+</section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 </body>
 </html>

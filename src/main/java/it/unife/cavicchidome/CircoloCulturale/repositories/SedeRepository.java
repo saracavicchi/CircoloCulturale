@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface SedeRepository extends JpaRepository<Sede, Integer> {
@@ -33,5 +34,11 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
 
     @Query("SELECT s FROM Sede s WHERE s.indirizzo = :indirizzo")
     Optional<Sede> findSedeByIndirizzo(String indirizzo);
+
+    @Query("SELECT s FROM Sede s WHERE s.active = true")
+    List<Sede> findAll();
+
+    @Query("SELECT s FROM Sede s WHERE s.active = true AND s.id = :id")
+    Optional<Sede> findById(Integer id);
 
 }
