@@ -34,7 +34,7 @@ public class Sede {
     @Column(name = "giorno_chiusura", nullable = false)
     private Set<LocalDate> giornoChiusura = new LinkedHashSet<LocalDate>();
 
-    @OneToMany(mappedBy = "idSede")
+    @OneToMany(mappedBy = "idSede", cascade = CascadeType.ALL)
     private Set<OrarioSede> orarioSede = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "idSede")

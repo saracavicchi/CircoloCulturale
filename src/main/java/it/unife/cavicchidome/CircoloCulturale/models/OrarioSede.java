@@ -13,7 +13,7 @@ public class OrarioSede {
     private OrarioSedeId id;
 
     @MapsId("idSede")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_sede", nullable = false)
     private Sede idSede;

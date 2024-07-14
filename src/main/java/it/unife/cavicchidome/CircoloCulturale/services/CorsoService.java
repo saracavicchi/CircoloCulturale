@@ -269,7 +269,6 @@ public class CorsoService {
                     // Create new entry
                     CalendarioCorso newCalendario = new CalendarioCorso();
                     CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
-                    ;
                     calendarioCorsoId.setGiornoSettimana(weekday);
                     calendarioCorsoId.setIdCorso(corso.getId());
                     newCalendario.setId(calendarioCorsoId);

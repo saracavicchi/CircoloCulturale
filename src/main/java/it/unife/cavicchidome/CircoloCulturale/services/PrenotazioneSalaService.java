@@ -158,4 +158,9 @@ public class PrenotazioneSalaService {
             prenotazioneSalaRepository.save(prenotazione);
         }
     }
+
+    @Transactional
+    public List<PrenotazioneSala> findByDate(LocalDate date) {
+        return prenotazioneSalaRepository.findByDate(date);
+    }
 }

@@ -33,4 +33,5 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
 
     @Query("SELECT s FROM Sede s WHERE s.indirizzo = :indirizzo")
     Optional<Sede> findSedeByIndirizzo(String indirizzo);
+
 }

@@ -29,4 +29,7 @@ public interface PrenotazioneSalaRepository extends JpaRepository<PrenotazioneSa
             "(:orarioFine BETWEEN p.orarioInizio AND p.orarioFine) OR " +
             "(:orarioInizio <= p.orarioInizio AND :orarioFine >= p.orarioFine))")
     Optional<PrenotazioneSala> findOverlapPrenotazione(Integer salaId, LocalDate date, LocalTime orarioInizio, LocalTime orarioFine);
+
+    @Query("SELECT p FROM PrenotazioneSala p WHERE p.data = :date AND p.deleted = false")
+    List<PrenotazioneSala> findByDate(LocalDate date);
 }

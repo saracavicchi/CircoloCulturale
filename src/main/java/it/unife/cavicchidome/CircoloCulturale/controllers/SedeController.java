@@ -5,6 +5,8 @@ import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.cglib.core.Local;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 @Controller
 @RequestMapping("/sede")
@@ -61,14 +66,17 @@ public class SedeController {
                           @RequestParam(name = "via") String via,
                           @RequestParam(name = "numeroCivico") String numeroCivico,
                           @RequestParam(name = "areaRistoro", required = false, defaultValue = "false") boolean areaRistoro,
+                          @RequestParam(name = "orarioApertura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariApertura,
+                            @RequestParam(name = "orarioChiusura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariChiusura,
+                          @RequestParam(name = "chiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> chiusura,
                           RedirectAttributes redirectAttributes
                           ) {
         try{
-            if(!sedeService.newSede(nome, stato, citta, provincia, via, numeroCivico, areaRistoro)){
+            if(!sedeService.newSede(nome, stato, citta, provincia, via, numeroCivico, areaRistoro, chiusura, orariApertura, orariChiusura)){
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/crea";
             }
-            return "redirect:/sede/sedi";
+            return "redirect:/sede/info";
         } catch (Exception e) {
             String message = e.getMessage();
             System.out.println(message);
@@ -85,7 +93,7 @@ public class SedeController {
     public String modificaSede(@RequestParam(name = "idSede") Integer idSede, Model model) {
         Optional<Sede> sedeOpt = sedeService.findSedeById(idSede);
         if(sedeOpt.isEmpty() || !sedeOpt.isPresent()){
-            return "redirect:/sede/sedi";
+            return "redirect:/sede/info";
         }
         model.addAttribute("sede", sedeOpt.get());
         return "modifica-sede";
@@ -95,10 +103,12 @@ public class SedeController {
     public String modificaSede(@RequestParam(name = "idSede") Integer idSede,
                                @RequestParam(name = "nome") String nome,
                                @RequestParam(name = "areaRistoro", required = false, defaultValue = "false") boolean areaRistoro,
+                                 @RequestParam(name = "chiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> chiusura,
+                                    @RequestParam(name = "deletedChiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> deletedChiusura,
                                RedirectAttributes redirectAttributes
                               ) {
         try{
-            if(!sedeService.updateSede(idSede, nome, areaRistoro)){
+            if(!sedeService.updateSede(idSede, nome, areaRistoro, chiusura, deletedChiusura)){
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/modifica?idSede=" + idSede;
             }

@@ -15,9 +15,63 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaSedeForm();
+            addGiorniChiusura();
 
 
         });
+
+        function addGiorniChiusura() {
+            var maxChiusure = 10;
+            var chiusureCount = 0; // Start with 0 closure dates
+
+            document.getElementById('aggiungiChiusura').addEventListener('click', function () {
+                var allFilled = true;
+                var uniqueDate = true;
+                var today = new Date().toISOString().split('T')[0]; // Get today's date in yyyy-MM-dd format
+
+                var enteredDates = [];
+                for (var i = 1; i <= chiusureCount; i++) {
+                    var chiusuraValue = document.getElementById('chiusura' + i).value;
+                    if (chiusuraValue === '' || chiusuraValue <= today) {
+                        allFilled = false;
+                        break;
+                    }
+                    if (enteredDates.includes(chiusuraValue)) {
+                        uniqueDate = false;
+                        break;
+                    }
+                    enteredDates.push(chiusuraValue);
+                }
+
+                if (!allFilled && chiusureCount > 0) { // Check if all fields are filled only if there's at least one field
+                    alert('Per favore, compila tutti i campi dei giorni di chiusura con date future prima di aggiungere un nuovo giorno.');
+                    return;
+                }
+
+                if (!uniqueDate) {
+                    alert('La data inserita è già stata selezionata. Per favore, inserisci una data diversa.');
+                    return;
+                }
+
+                if (chiusureCount < maxChiusure && (allFilled || chiusureCount === 0) && uniqueDate) { // Allow adding if no fields are present yet
+                    chiusureCount++;
+                    var newInput = document.createElement('input');
+                    newInput.type = 'date';
+                    newInput.name = 'chiusura';
+                    newInput.id = 'chiusura' + chiusureCount;
+
+                    var newLabel = document.createElement('label');
+                    newLabel.htmlFor = 'chiusura' + chiusureCount;
+                    newLabel.textContent = 'Giorno di chiusura:';
+
+                    var container = document.getElementById('chiusureContainer');
+                    container.appendChild(newLabel);
+                    container.appendChild(newInput);
+                } else if (chiusureCount >= maxChiusure) {
+                    alert('Massimo numero di giorni di chiusura raggiunto.');
+                }
+            });
+        }
 
 
         function initCreaSedeForm() {
@@ -75,8 +129,41 @@
                 return false;
             }
 
+            // Validazione giorni di chiusura successivi alla data attuale e entro un anno
+            var today = new Date();
+            var todayFormatted = today.toISOString().split('T')[0]; // Ottieni la data attuale in formato yyyy-MM-dd
+            var nextYear = new Date(today.setFullYear(today.getFullYear() + 1)).toISOString().split('T')[0]; // Calcola la data di un anno dopo
+
+            var chiusureInputs = document.querySelectorAll('input[name="chiusura"]');
+            for (var i = 0; i < chiusureInputs.length; i++) {
+                if (chiusureInputs[i].value <= todayFormatted || chiusureInputs[i].value > nextYear) {
+                    erroredField = "chiusura" + (i + 1);
+                    errorMsg = "I giorni di chiusura devono essere successivi alla data attuale e entro un anno.";
+                    return false;
+                }
+            }
+
+            if(!validateOrariAperturaChiusura()) {
+                return false;
+            }
+
             return true;
         }
+
+        function validateOrariAperturaChiusura() {
+            for(let i = 1; i <= 7; i++) {
+                let orarioApertura = document.getElementById('apertura' + i).value;
+                let orarioChiusura = document.getElementById('chiusura' + i).value;
+
+                if(orarioApertura >= orarioChiusura) {
+                    erroredField = "apertura" + i + "/chiusura" + i;
+                    errorMsg = "L'orario di apertura deve essere antecedente all'orario di chiusura per ogni giorno.";
+                    return false;
+                }
+            }
+            return true;
+        }
+
 
         function submitForm(event) {
             // Impedisci l'invio del form
@@ -221,6 +308,29 @@
 
     <label for="areaRistoro">Area Ristoro:</label>
     <input type="checkbox" id="areaRistoro" name="areaRistoro">
+
+    <!-- Aggiungi i campi per gli orari di apertura e chiusura per ogni giorno della settimana -->
+    <div id="orariAperturaChiusura">
+        <%
+            String[] giorniSettimana = {"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"};
+            for(int i = 0; i < 7; i++) {
+        %>
+        <div>
+            <label>Orario di apertura (<%=giorniSettimana[i]%>):</label>
+            <input type="time" id="apertura<%=i+1%>" name="orarioApertura" required>
+
+            <label for="chiusura<%=i+1%>">Orario di chiusura (<%=giorniSettimana[i]%>):</label>
+            <input type="time" id="chiusura<%=i+1%>" name="orarioChiusura" required>
+        </div>
+        <% } %>
+    </div>
+
+    <div id="chiusureContainer">
+        <!-- <label for="chiusura1">Giorno di chiusura:</label>
+        <input type="date" id="chiusura1" name="chiusura"> -->
+    </div>
+    <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
+
 
     <button type="submit">Crea Sede</button>
 </form>
