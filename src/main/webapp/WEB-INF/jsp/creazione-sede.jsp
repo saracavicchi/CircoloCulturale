@@ -7,9 +7,11 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <html>
 <head>
     <title>Crea Nuova Sede</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
 
@@ -323,8 +325,13 @@
     </script>
 </head>
 <body>
-
-<h2>Crea Nuova Sede</h2>
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+        <h2>Crea Nuova Sede</h2>
+        </section>
+    <section class="content">
 <% String addressAlreadyPresent;
     if ((addressAlreadyPresent = request.getParameter("addressAlreadyPresent")) != null && addressAlreadyPresent.equals("true")) {
 %>
@@ -349,61 +356,64 @@
 </script>
 <%} %>
 <form id="creaSedeForm" action="/sede/crea" method="post">
-    <label>Nome:</label>
-    <input type="text" id="nome" name="nome" required placeholder="Nome sede"><br>
+    <fieldset>
+        <legend>Informazioni Generali</legend>
+        <label>Nome:</label>
+        <input type="text" id="nome" name="nome" required placeholder="Nome sede">
+        <label for="stato">Stato:</label>
+        <input type="text" id="stato" name="stato" placeholder="Stato" required>
+        <label for="provincia">Provincia:</label>
+        <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
+        <label for="citta">Città:</label>
+        <input type="text" id="citta" name="citta" placeholder="Città" required>
+        <label for="via">Via:</label>
+        <input type="text" id="via" name="via" placeholder="Via" required>
+        <label for="numeroCivico">Numero Civico:</label>
+        <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
+    </fieldset>
+    <fieldset>
+        <legend>Servizi</legend>
+        <label for="areaRistoro">Area Ristoro:</label>
+        <input type="checkbox" id="areaRistoro" name="areaRistoro">
+    </fieldset>
 
-    <label for="stato">Stato:</label>
-    <input type="text" id="stato" name="stato" placeholder="Stato" required>
-
-    <label for="provincia">Provincia:</label>
-    <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
-
-    <label for="citta">Città:</label>
-    <input type="text" id="citta" name="citta" placeholder="Città" required>
-
-    <label for="via">Via:</label>
-    <input type="text" id="via" name="via" placeholder="Via" required>
-
-    <label for="numeroCivico">Numero Civico:</label>
-    <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
-
-    <label for="areaRistoro">Area Ristoro:</label>
-    <input type="checkbox" id="areaRistoro" name="areaRistoro">
-
-    <!-- Aggiungi i campi per gli orari di apertura e chiusura per ogni giorno della settimana -->
+    <fieldset>
+    <legend>Orari di Apertura e Chiusura</legend>
     <div id="orariAperturaChiusura">
-        <%
-            String[] giorniSettimana = {"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"};
-            for(int i = 0; i < 7; i++) {
-        %>
+        <% String[] giorniSettimana = {"Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"};
+            for(int i = 0; i < 7; i++) { %>
         <div>
             <label>Orario di apertura (<%=giorniSettimana[i]%>):</label>
             <input type="time" id="apertura<%=i+1%>" name="orarioApertura" required>
-
             <label for="chiusura<%=i+1%>">Orario di chiusura (<%=giorniSettimana[i]%>):</label>
             <input type="time" id="chiusura<%=i+1%>" name="orarioChiusura" required>
         </div>
         <% } %>
     </div>
+    </fieldset>
 
-    <div id="chiusureContainer">
-        <!-- <label for="chiusura1">Giorno di chiusura:</label>
-        <input type="date" id="chiusura1" name="chiusura"> -->
-    </div>
-    <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
-
-    Segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
-    <c:forEach items="${sociInfo}" var="socioS" varStatus="status">
-        <option value="${socioS[3]}" ${status.index == 0 ? 'selected' : ''}>${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
-    </c:forEach>
-    </select>
-    <div id="AdminContainer"></div>
-    <!-- <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
-    <div id="StipendiContainer"></div>-->
-
-
+    <fieldset>
+        <legend>Giorni di Chiusura</legend>
+        <div id="chiusureContainer"></div>
+        <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
+    </fieldset>
+    <fieldset>
+        <legend>Segretario e Amministrazione</legend>
+        Segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
+        <c:forEach items="${sociInfo}" var="socioS" varStatus="status">
+            <option value="${socioS[3]}" ${status.index == 0 ? 'selected' : ''}>${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
+        </c:forEach>
+        </select>
+        <div id="AdminContainer"></div>
+    </fieldset>
     <button type="submit">Crea Sede</button>
 </form>
+
+
+</section>
+</main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 
 
 </body>

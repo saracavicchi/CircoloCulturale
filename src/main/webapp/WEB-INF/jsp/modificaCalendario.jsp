@@ -170,6 +170,7 @@
     </script>
 </head>
 <body>
+<
 <h2>Modifica Calendario e Sala Corso</h2>
 <% String fail;
     if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {

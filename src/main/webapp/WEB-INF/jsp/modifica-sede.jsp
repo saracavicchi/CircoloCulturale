@@ -11,6 +11,7 @@
 <html>
 <head>
     <title>Modifica Sede</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         function redirectToEditSalePage() {
             var idSede = '${sede.id}';
@@ -285,7 +286,13 @@
     </script>
 </head>
 <body>
-<h2>Modifica Sede ${sede.nome}</h2>
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+        <h2>Modifica Sede ${sede.nome}</h2>
+        </section>
+    <section class="content">
 <% String nameAlreadyPresent;
     if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
 %>
@@ -302,72 +309,92 @@
     errorPresentElement.scrollIntoView({behavior: "smooth"});
 </script>
 <%} %>
-<form id="modificaSedeForm" name="modificaSedeForm" action="/sede/modifica" method="post" >
+<form id="modificaSedeForm" name="modificaSedeForm" action="/sede/modifica" method="post">
     <input type="hidden" name="idSede" value="${sede.id}"/>
 
-    <label for="nome">Nome:</label>
-    <input type="text" id="nome" name="nome" required maxlength="30" value="${sede.nome}" laceholder="Nome sede">
+    <fieldset>
+        <legend>Informazioni Generali</legend>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required maxlength="30" value="${sede.nome}" placeholder="Nome sede">
+        <label for="stato">Stato:</label>
+        <span id="stato"></span>
+        <label for="provincia">Provincia:</label>
+        <span id="provincia"></span>
+        <label for="citta">Città:</label>
+        <span id="citta"></span>
+        <label for="via">Via:</label>
+        <span id="via"></span>
+        <label for="numeroCivico">Numero Civico:</label>
+        <span id="numeroCivico"></span>
+    </fieldset>
 
-    <label for="stato">Stato:</label>
-    <span id="stato"></span>
+    <fieldset>
+        <legend>Servizi</legend>
+        <label for="areaRistoro">Area Ristoro:</label>
+        <input type="checkbox" id="areaRistoro" name="areaRistoro" value="${sede.ristoro}">
+    </fieldset>
 
-    <label for="provincia">Provincia:</label>
-    <span id="provincia"></span>
-
-    <label for="citta">Città:</label>
-    <span id="citta"></span>
-
-    <label for="via">Via:</label>
-    <span id="via"></span>
-
-    <label for="numeroCivico">Numero Civico:</label>
-    <span id="numeroCivico"></span>
-
-
-    <div id="chiusureAttualiContainer">
-        <label>Seleziona giorni di chiusura da eliminare:</label>
-        <c:forEach items="${sede.giornoChiusura}" var="giorno" varStatus="status">
-            <label for="chiusura${status.index}">${giorno}</label>
-            <input type="checkbox" id="chiusura${status.index}" name="deletedChiusura" value="${giorno}">
-        </c:forEach>
-    </div>
-
-    <c:if test="${not empty sede.segretario}">
-        <p>Segretario: <c:out value="${sede.segretario.socio.utente.nome}"/> <c:out value="${sede.segretario.socio.utente.cognome}"/></p>
-        <p>Admin:
-            <input type="checkbox" name="isAdmin" ${sede.segretario.admin ? 'checked' : ''} />
+    <fieldset>
+        <legend>Orari di Apertura e Chiusura</legend>
+        <c:forEach items="${sede.orarioSede}" var="orario" varStatus="status">
+        <c:set var="giornoIt" value="${status.index == 0 ? 'Lunedì' : status.index == 1 ? 'Martedì' : status.index == 2 ? 'Mercoledì' : status.index == 3 ? 'Giovedì' : status.index == 4 ? 'Venerdì' : status.index == 5 ? 'Sabato' : 'Domenica'}"/>
+        <p>
+            Orario di apertura (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioApertura}"/>
+            <br>
+            Orario di chiusura (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioChiusura}"/>
         </p>
-    </c:if>
+        </c:forEach>
+    </fieldset>
 
-    Seleziona nuovo segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
-    <option value=0>Nessun segretario selezionato</option>
-    <c:forEach items="${sociInfo}" var="socioS">
-        <option value="${socioS[3]}">${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
-    </c:forEach>
-</select>
-    <div id ="AdminContainer"></div>
+    <fieldset>
+        <legend>Giorni di Chiusura</legend>
+        <div id="chiusureAttualiContainer">
+            <label>Seleziona giorni di chiusura da eliminare:</label>
+            <c:forEach items="${sede.giornoChiusura}" var="giorno" varStatus="status">
+                <label for="chiusura${status.index}">${giorno}</label>
+                <input type="checkbox" id="chiusura${status.index}" name="deletedChiusura" value="${giorno}">
+            </c:forEach>
+        </div>
+        <div id="chiusureContainer"></div>
+        <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
+    </fieldset>
 
-
-
-    <div id="chiusureContainer">
-        <!-- <label for="chiusura1">Aggiungi giorno di chiusura:</label>
-        <input type="date" id="chiusura1" name="chiusura"> -->
-    </div>
-    <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
+    <fieldset>
+        <legend>Segretario e Amministrazione</legend>
+        <c:if test="${not empty sede.segretario}">
+            <p>Segretario: <c:out value="${sede.segretario.socio.utente.nome}"/> <c:out value="${sede.segretario.socio.utente.cognome}"/></p>
+            <p>Admin:
+                <input type="checkbox" name="isAdmin" ${sede.segretario.admin ? 'checked' : ''} />
+            </p>
+        </c:if>
+        Seleziona nuovo segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
+        <option value=0>Nessun segretario selezionato</option>
+        <c:forEach items="${sociInfo}" var="socioS">
+            <option value="${socioS[3]}">${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
+        </c:forEach>
+    </select>
+        <div id="AdminContainer"></div>
+    </fieldset>
 
     <button type="submit">Modifica Sede</button>
 </form>
+</section>
+<section class="content">
+    <button type="button" onclick="redirectToEditSalePage()">Modifica Sale</button>
+    <button type="button" onclick="redirectToAddSalaPage()">Aggiungi Sala</button>
+</section>
 
-<button type="button" onclick="redirectToEditSalePage()">Modifica Sale</button>
-<button type="button" onclick="redirectToAddSalaPage()">Aggiungi Sala</button>
-
-<p>Cancellazione Sede</p>
-<form id="cancellaSedeForm" action="/sede/elimina" method="POST">
-    <input type="hidden" name="idSede" value="${sede.id}" />
-    <label for="confirmDeletion">Sei sicuro?</label>
-    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-    <button type="submit">Cancella Sede</button>
-</form>
-
+<section class="content">
+    <p>Cancellazione Sede</p>
+    <form id="cancellaSedeForm" action="/sede/elimina" method="POST">
+        <input type="hidden" name="idSede" value="${sede.id}" />
+        <label for="confirmDeletion">Sei sicuro?</label>
+        <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+        <button type="submit">Cancella Sede</button>
+    </form>
+</section>
+</main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 </body>
 </html>
