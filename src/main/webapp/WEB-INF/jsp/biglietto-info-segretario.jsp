@@ -24,7 +24,15 @@
                 <h1>Biglietto per ${biglietto.idSaggio.nome}</h1>
                 ${biglietto.dataOraAcquisto}
                 <form action="/biglietto/modifica" method="post">
-                    <input type="hidden" name="id" value="${biglietto.id}">
+                    <input type="hidden" name="bigliettoId" value="${biglietto.id}">
+                    <label for="deleted">Cancellato</label>
+                    <input type="radio" id="deleted" name="deleted" value="true" <c:if test="${biglietto.deleted}">checked</c:if>>
+                    <label for="notDeleted">Non cancellato</label>
+                    <input type="radio" id="notDeleted" name="deleted" value="false" <c:if test="${!biglietto.deleted}">checked</c:if>>
+                    <label for="pending">Pagamento in sospeso</label>
+                    <input type="radio" name="pending" id="pending" value="p" <%= ((it.unife.cavicchidome.CircoloCulturale.models.Biglietto)request.getAttribute("biglietto")).getStatoPagamento().equals('p') ? "checked" : ""%>>
+                    <label for="paid">Pagato</label>
+                    <input type="radio" name="pending" id="paid" value="c" <%=((it.unife.cavicchidome.CircoloCulturale.models.Biglietto)request.getAttribute("biglietto")).getStatoPagamento().equals('c') ? "checked" : ""%>>
                     <input type="submit" value="Modifica">
                 </form>
             </section>

@@ -41,7 +41,7 @@
             <section class="content clearfix">
                 <c:forEach items="${biglietti}" var="biglietto">
                     <article>
-                        <h1><a href="/biglietto/modifica?id=${biglietto.id}">#${biglietto.id}</a></h1>
+                        <h1><a href="/biglietto/modifica?bigliettoId=${biglietto.id}">#${biglietto.id}</a></h1>
                         <h2>${biglietto.idUtente.cf}</h2>
                         <p>${biglietto.idSaggio.nome}</p>
                         <p>${biglietto.dataOraAcquisto}</p>
