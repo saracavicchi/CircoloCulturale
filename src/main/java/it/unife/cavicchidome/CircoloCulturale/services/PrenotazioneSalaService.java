@@ -165,4 +165,9 @@ public class PrenotazioneSalaService {
     public List<PrenotazioneSala> findBySala(Integer idSala) {
         return prenotazioneSalaRepository.findBySala(idSala);
     }
+
+    @Transactional
+    public List<PrenotazioneSala> findBySedeId(Integer idSede) {
+        return prenotazioneSalaRepository.findBySedeId(idSede);
+    }
 }

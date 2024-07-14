@@ -321,5 +321,13 @@
 <button type="button" onclick="redirectToEditSalePage()">Modifica Sale</button>
 <button type="button" onclick="redirectToAddSalaPage()">Aggiungi Sala</button>
 
+<p>Cancellazione Sede</p>
+<form id="cancellaSedeForm" action="/sede/elimina" method="POST">
+    <input type="hidden" name="idSede" value="${sede.id}" />
+    <label for="confirmDeletion">Sei sicuro?</label>
+    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+    <button type="submit">Cancella Sede</button>
+</form>
+
 </body>
 </html>

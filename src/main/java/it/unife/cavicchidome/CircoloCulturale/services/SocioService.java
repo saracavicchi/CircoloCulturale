@@ -388,6 +388,11 @@ public class SocioService {
         return socioRepository.findById(utente.get().getId()).isPresent();
     }
 
+    @Transactional
+    public List<Object[]> findSociPossibiliSegretari() {
+        return socioRepository.findSociPossibiliSegretari();
+    }
+
 
 
 

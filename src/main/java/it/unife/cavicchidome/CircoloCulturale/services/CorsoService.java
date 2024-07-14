@@ -839,4 +839,9 @@ public class CorsoService {
         return corsoRepository.findBySalaId(idSala);
     }
 
+    @Transactional
+    public List<Corso> findBySedeId(Integer idSede){
+        return corsoRepository.findBySedeId(idSede);
+    }
+
 }

@@ -54,7 +54,8 @@ public class SedeController {
     }
 
     @GetMapping("/crea")
-    public String creaSede() {
+    public String creaSede(Model model) {
+        model.addAttribute("sociInfo", socioService.findSociPossibiliSegretari());
         return "creazione-sede";
     }
 
@@ -65,14 +66,16 @@ public class SedeController {
                           @RequestParam(name = "provincia") String provincia,
                           @RequestParam(name = "via") String via,
                           @RequestParam(name = "numeroCivico") String numeroCivico,
+                            @RequestParam(name = "segretari") Integer idSegretario,
+                          @RequestParam(name = "stipendioSegretario") Integer stipendioSegretario,
                           @RequestParam(name = "areaRistoro", required = false, defaultValue = "false") boolean areaRistoro,
                           @RequestParam(name = "orarioApertura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariApertura,
-                            @RequestParam(name = "orarioChiusura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariChiusura,
+                          @RequestParam(name = "orarioChiusura") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalTime> orariChiusura,
                           @RequestParam(name = "chiusura", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> chiusura,
                           RedirectAttributes redirectAttributes
                           ) {
         try{
-            if(!sedeService.newSede(nome, stato, citta, provincia, via, numeroCivico, areaRistoro, chiusura, orariApertura, orariChiusura)){
+            if(!sedeService.newSede(nome, stato, citta, provincia, via, numeroCivico, areaRistoro, chiusura, orariApertura, orariChiusura, stipendioSegretario, idSegretario)){
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/crea";
             }
@@ -119,6 +122,24 @@ public class SedeController {
             redirectAttributes.addAttribute("fail", "true");
             if(message != null && message.equals("Nome già presente"))
                 redirectAttributes.addAttribute("nameAlreadyPresent", "true");
+            return "redirect:/sede/modifica?idSede=" + idSede;
+        }
+    }
+
+    @PostMapping("/elimina")
+    public String eliminaSede(@RequestParam(name = "idSede") Integer idSede,
+                              RedirectAttributes redirectAttributes
+    ){
+        try{
+            if(sedeService.deleteSede(idSede))
+                return "redirect:/sede/info";
+            else{
+                redirectAttributes.addAttribute("failed", "true");
+                return "redirect:/sede/modifica?idSede=" + idSede;
+            }
+        }
+        catch (Exception e){
+            redirectAttributes.addAttribute("failed", "true");
             return "redirect:/sede/modifica?idSede=" + idSede;
         }
     }

@@ -45,6 +45,9 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
 
     @Query("SELECT c FROM Corso c WHERE c.idSala.id = :idSala AND c.active = true AND c.idSala.active = true")
     List<Corso> findBySalaId(Integer idSala);
+
+    @Query("SELECT c FROM Corso c WHERE c.idSala.idSede.id = :idSede AND c.active = true AND c.idSala.active = true AND c.idSala.idSede.active = true")
+    List<Corso> findBySedeId(Integer idSede);
 }
 
 

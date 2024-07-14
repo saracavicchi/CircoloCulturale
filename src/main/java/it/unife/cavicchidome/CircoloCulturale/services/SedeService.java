@@ -1,14 +1,12 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
 import it.unife.cavicchidome.CircoloCulturale.models.*;
-import it.unife.cavicchidome.CircoloCulturale.repositories.OrarioSedeRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SalaRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.*;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -23,12 +21,18 @@ public class SedeService {
     private final SedeRepository sedeRepository;
     private final PrenotazioneSalaRepository prenotazioneSalaRepository;
     private final OrarioSedeRepository orarioSedeRepository;
+    private final CorsoRepository corsoRepository;
+    private final SegretarioRepository segretarioRepository;
+    private final SocioRepository socioRepository;
 
-    SedeService(SedeRepository sedeRepository, SalaRepository salaRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, OrarioSedeRepository orarioSedeRepository) {
+    SedeService(SedeRepository sedeRepository, SalaRepository salaRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, OrarioSedeRepository orarioSedeRepository, CorsoRepository corsoRepository, SegretarioRepository segretarioRepository, SocioRepository socioRepository) {
         this.sedeRepository = sedeRepository;
         this.salaRepository = salaRepository;
         this.prenotazioneSalaRepository = prenotazioneSalaRepository;
         this.orarioSedeRepository = orarioSedeRepository;
+        this.corsoRepository = corsoRepository;
+        this.segretarioRepository = segretarioRepository;
+        this.socioRepository = socioRepository;
     }
 
     @Transactional
@@ -67,9 +71,9 @@ public class SedeService {
         }
     }
 
-    public boolean validateSedeInfo(String nome, String stato, String provincia, String citta, String via, String numeroCivico, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes) {
+    private boolean validateSedeInfo(String nome, String stato, String provincia, String citta, String via, String numeroCivico, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes, Integer stipendioSegretario) {
 
-        if(!validateNome(nome) || !validateIndirizzo(stato, provincia, citta, via, numeroCivico) || !validateOpeningClosingTimes(openingTimes, closingTimes)){
+        if(!validateNome(nome) || !validateIndirizzo(stato, provincia, citta, via, numeroCivico) || !validateOpeningClosingTimes(openingTimes, closingTimes) || !validateStipendio(stipendioSegretario)){
             return false;
         }
         if(chiusura != null && !validateChiusura(chiusura)){
@@ -79,7 +83,7 @@ public class SedeService {
         return true;
     }
 
-    public boolean validateChiusura(List<LocalDate> chiusura) {
+    private boolean validateChiusura(List<LocalDate> chiusura) {
         LocalDate now = LocalDate.now();
         LocalDate oneYearFromNow = now.plusYears(1);
 
@@ -95,7 +99,7 @@ public class SedeService {
         return true;
     }
 
-    public boolean validateNome(String nome) {
+    private boolean validateNome(String nome) {
         String regex = "^[A-Za-z\\s\\-]+$";
         int maxLengthNome = 30;
 
@@ -112,7 +116,7 @@ public class SedeService {
         return true;
     }
 
-    public boolean validateIndirizzo(String stato, String provincia, String citta, String via, String numeroCivico) {
+    private boolean validateIndirizzo(String stato, String provincia, String citta, String via, String numeroCivico) {
         String regex = "^[A-Za-z\\s\\-]+$";
         int maxLengthTotal = 80;
 
@@ -130,7 +134,7 @@ public class SedeService {
 
         return true;
     }
-    public boolean validateOpeningClosingTimes(List<LocalTime> openingTimes, List<LocalTime> closingTimes) {
+    private boolean validateOpeningClosingTimes(List<LocalTime> openingTimes, List<LocalTime> closingTimes) {
         if (openingTimes.size() != 7 || closingTimes.size() != 7) {
             return false;
         }
@@ -147,10 +151,16 @@ public class SedeService {
         return true;
     }
 
+    private boolean validateStipendio(Integer stipendio){
+        if (stipendio == null || stipendio < 10000 || stipendio > 150000) return false;
+
+        return true;
+    }
+
     @Transactional
-    public boolean newSede(String nome, String stato, String provincia, String citta, String via, String numeroCivico, boolean areaRistoro, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes) {
+    public boolean newSede(String nome, String stato, String provincia, String citta, String via, String numeroCivico, boolean areaRistoro, List<LocalDate> chiusura, List<LocalTime> openingTimes, List<LocalTime> closingTimes, Integer stipendioSegretario, Integer idSegretario) {
         // Valida parametri
-        if (!validateSedeInfo(nome, stato, provincia, citta, via, numeroCivico, chiusura, openingTimes, closingTimes)) {
+        if (!validateSedeInfo(nome, stato, provincia, citta, via, numeroCivico, chiusura, openingTimes, closingTimes, stipendioSegretario)) {
             return false;
         }
         String indirizzo = stato + ", " + provincia + ", " + citta + ", " + via + ", " + numeroCivico;
@@ -173,6 +183,32 @@ public class SedeService {
             Set<LocalDate> giorniChiusura = new HashSet<>(chiusura);
             newSede.setGiornoChiusura(giorniChiusura);
         }
+
+        Optional<Socio> socioOpt = socioRepository.findById(idSegretario);
+        if (!socioOpt.isPresent()) {
+            return false;
+        }
+        Segretario segretario;
+        Optional<Segretario> segretarioOpt = segretarioRepository.findByIdEvenIfNotActive(idSegretario);
+        if(segretarioOpt.isPresent()){
+            if(segretarioOpt.get().getActive() == true){
+                throw new RuntimeException("Segretario già presente");
+            }
+            else {
+                segretario = segretarioOpt.get();
+                segretario.setActive(true);
+            }
+        }
+        else{
+            segretario = new Segretario();
+            segretario.setActive(true);
+
+        }
+        segretario.setSocio(socioOpt.get());
+        segretario.setStipendio(BigDecimal.valueOf(stipendioSegretario));
+        segretario.setAdmin(false);
+        segretario.setSedeAmministrata(newSede);
+        segretarioRepository.save(segretario);
 
         sedeRepository.save(newSede);
         sedeRepository.flush();
@@ -265,5 +301,55 @@ public class SedeService {
             }
         }
         return false;
+    }
+
+    @Transactional
+    public boolean deleteSede(Integer idSede) {
+        try {
+            Optional<Sede> sedeOpt = sedeRepository.findById(idSede);
+            if (!sedeOpt.isPresent()) {
+                return false;
+            }
+            Sede sede = sedeOpt.get();
+            List<Sala> sale = salaRepository.findAllBySedeId(idSede);
+            if(!sale.isEmpty()){
+                for(Sala sala : sale){
+                    sala.setActive(false);
+                    salaRepository.save(sala);
+                }
+            }
+            List<Corso> corsi = corsoRepository.findBySedeId(idSede);
+            if(!corsi.isEmpty()){
+                for(Corso corso : corsi){
+                    Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
+                    for(CalendarioCorso calendarioCorso : calendarioCorsoSet){
+                        calendarioCorso.setActive(false);
+                    }
+                    corso.setCalendarioCorso(null);
+                    corso.setActive(false);
+                    corsoRepository.save(corso);
+                }
+            }
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySedeId(idSede);
+            if (!prenotazioni.isEmpty()) {
+                for (PrenotazioneSala prenotazione : prenotazioni) {
+                    prenotazione.setDeleted(true);
+                    prenotazioneSalaRepository.save(prenotazione);
+                }
+            }
+
+            Segretario segretario = sede.getSegretario();
+            segretario.setActive(false);
+            segretarioRepository.save(segretario);
+            sede.setActive(false);
+            sedeRepository.save(sede);
+
+            return true;
+        } catch (Exception e) {
+            // Log the exception
+            System.out.println("Error deleting Sede: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -194,8 +194,8 @@
 
         <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
     </form>
-    <p>Cancellazione Sede</p>
-    <form id="cancellasedeForm" action="/sede/sala/elimina" method="POST">
+    <p>Cancellazione Sala</p>
+    <form id="cancellaSalaForm" action="/sede/sala/elimina" method="POST">
         <input type="hidden" name="idSala" value="${sala.id}" />
         <input type="hidden" name="idSede" value="${sala.idSede.id}" />
         <label for="confirmDeletion">Sei sicuro?</label>

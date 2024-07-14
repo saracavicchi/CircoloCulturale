@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
     <title>Crea Nuova Sede</title>
@@ -16,6 +17,7 @@
 
             initCreaSedeForm();
             addGiorniChiusura();
+            gestisciStipendioSegretario();
 
 
         });
@@ -259,6 +261,42 @@
                 inputs[i].style.border = '';
             }
         }
+
+        function gestisciStipendioSegretario() {
+            var selectSegretari = document.getElementsByName('segretari')[0];
+            var stipendiContainer = document.getElementById('StipendiContainer');
+            stipendiContainer.innerHTML = ''; // Clears the current list
+
+            var selectedSegretario = selectSegretari.value;
+            if (selectedSegretario) { // Check if a secretary is selected
+                var stipendioDiv = document.createElement('div');
+                var stipendioLabel = document.createElement('label');
+                stipendioLabel.textContent = 'Stipendio per il segretario selezionato:';
+
+                var stipendioInput = document.createElement('input');
+                stipendioInput.setAttribute('type', 'number');
+                stipendioInput.setAttribute('name', 'stipendioSegretario');
+                stipendioInput.setAttribute('placeholder', 'Inserisci lo stipendio');
+                stipendioInput.setAttribute('required', '');
+                stipendioInput.setAttribute('min', '10000');
+                stipendioInput.setAttribute('max', '150000');
+
+                // Validate the salary input on change
+                stipendioInput.addEventListener('change', function() {
+                    var value = parseInt(this.value, 10);
+                    if (isNaN(value) || value < 10000 || value > 150000) {
+                        alert('Lo stipendio deve essere un numero intero tra 10.000 e 150.000 euro.');
+                        this.value = ''; // Clear the input if validation fails
+                    }
+                });
+
+                stipendioDiv.appendChild(stipendioLabel);
+                stipendioDiv.appendChild(stipendioInput);
+                stipendiContainer.appendChild(stipendioDiv);
+            }
+        }
+
+
     </script>
 </head>
 <body>
@@ -330,6 +368,14 @@
         <input type="date" id="chiusura1" name="chiusura"> -->
     </div>
     <button type="button" id="aggiungiChiusura">Aggiungi un giorno di chiusura</button>
+
+    Segretario: <select name="segretari" onchange="updateDocentiSelection()">
+    <c:forEach items="${sociInfo}" var="socioS">
+        <option value="${socioS[3]}">${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
+    </c:forEach>
+</select>
+    <!-- <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p> -->
+    <div id="StipendiContainer"></div>
 
 
     <button type="submit">Crea Sede</button>

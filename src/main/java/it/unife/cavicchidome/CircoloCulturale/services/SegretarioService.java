@@ -21,8 +21,13 @@ public class SegretarioService {
     }
 
     @Transactional
-    public Optional<Segretario> findById(int id) {
+    public Optional<Segretario> findById(Integer id) {
         return segretarioRepository.findById(id);
+    }
+
+    @Transactional
+    public Optional<Segretario> findByIdEvenIfNotActive(Integer id) {
+        return segretarioRepository.findByIdEvenIfNotActive(id);
     }
 
 
