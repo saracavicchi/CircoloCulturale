@@ -223,16 +223,24 @@ public class SedeService {
             if(chiusura != null && checkIfGiornoChiusuraAlreadyPresent(sede, chiusura)){
                 throw new RuntimeException("Giorno chiusura già presente");
             }
-            if(deletedChiusura != null && deletedChiusura.isEmpty() == false){
-                for(LocalDate date : deletedChiusura){  //cancellazione di tutte le prenotazioni in quel giorno
+            if(chiusura!= null && chiusura.isEmpty() == false){
+                for(LocalDate date : chiusura) {  //cancellazione di tutte le prenotazioni in quel giorno
                     List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findByDate(date);
-                    if(!prenotazioni.isEmpty()){
+                    if (!prenotazioni.isEmpty()) {
                         for (PrenotazioneSala prenotazione : prenotazioni) {
                             prenotazione.setDeleted(true);
+                            prenotazioneSalaRepository.save(prenotazione);
                         }
                     }
+                }
+            }
+
+            if(deletedChiusura != null && deletedChiusura.isEmpty() == false){
+                for(LocalDate date : deletedChiusura){
                     sede.getGiornoChiusura().remove(date);
                 }
+
+
             }
             sede.getGiornoChiusura().addAll(chiusura);
 
