@@ -160,4 +160,9 @@ public class PrenotazioneSalaService {
     public List<PrenotazioneSala> findByDateAndSede(LocalDate date, Sede sede) {
         return prenotazioneSalaRepository.findByDateAndSede(date, sede);
     }
+
+    @Transactional
+    public List<PrenotazioneSala> findBySala(Integer idSala) {
+        return prenotazioneSalaRepository.findBySala(idSala);
+    }
 }

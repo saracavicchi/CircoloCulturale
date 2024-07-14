@@ -82,4 +82,23 @@ class SalaController {
             return "redirect:/sede/sala/modifica?idSede=" + idSede;
         }
     }
+
+    @PostMapping("/elimina")
+    public String eliminaSala(@RequestParam(name = "idSala") Integer idSala,
+                              @RequestParam(name = "idSede") Integer idSede,
+                              RedirectAttributes redirectAttributes
+    ){
+        try{
+            if(salaService.deleteSala(idSala))
+                return "redirect:/sede/info?idSede=" + idSede;
+            else{
+                redirectAttributes.addAttribute("failed", "true");
+                return "redirect:/sede/sala/modifica?idSede=" + idSede;
+            }
+        }
+        catch (Exception e){
+            redirectAttributes.addAttribute("failed", "true");
+            return "redirect:/sede/sala/modifica?idSede=" + idSede;
+        }
+    }
 }

@@ -1,8 +1,8 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
-import it.unife.cavicchidome.CircoloCulturale.models.Sala;
-import it.unife.cavicchidome.CircoloCulturale.models.Sede;
-import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
+import it.unife.cavicchidome.CircoloCulturale.models.*;
+import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SalaRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
 import org.springframework.stereotype.Service;
@@ -11,15 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SalaService {
     private final SalaRepository salaRepository;
     private final SedeRepository sedeRepository;
+    private final PrenotazioneSalaRepository prenotazioneSalaRepository;
+    private final CorsoRepository corsoRepository;
 
-    public SalaService(SalaRepository salaRepository, SedeRepository sedeRepository) {
+    public SalaService(SalaRepository salaRepository, SedeRepository sedeRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, CorsoRepository corsoRepository) {
         this.salaRepository = salaRepository;
         this.sedeRepository = sedeRepository;
+        this.prenotazioneSalaRepository = prenotazioneSalaRepository;
+        this.corsoRepository = corsoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -108,12 +113,60 @@ public class SalaService {
             sala.setNumeroSala(Integer.parseInt(numeroSala));
             if(descrizione != null && !descrizione.isEmpty())
                 sala.setDescrizione(descrizione);
-            sala.setPrenotabile(prenotabile); //TODO: accettare prenotabile = false solo se non ci sono corsi/prenotazioni
+            if(prenotabile == false){
+                List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySala(idSala);
+                if (!prenotazioni.isEmpty()) {
+                    for (PrenotazioneSala prenotazione : prenotazioni) {
+                        prenotazione.setDeleted(true);
+                        prenotazioneSalaRepository.save(prenotazione);
+                    }
+                }
+            }
+            sala.setPrenotabile(prenotabile);
             salaRepository.save(sala);
             return true;
         } catch (Exception e) {
             // Log the exception
             System.out.println("Error updating Sala: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean deleteSala(Integer idSala) {
+        try {
+            Optional<Sala> salaOpt = salaRepository.findById(idSala);
+            if (!salaOpt.isPresent()) {
+                return false;
+            }
+            Sala sala = salaOpt.get();
+            List<Corso> corsi = corsoRepository.findBySalaId(idSala);
+            if(!corsi.isEmpty()){
+                for(Corso corso : corsi){
+                    Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
+                    for(CalendarioCorso calendarioCorso : calendarioCorsoSet){
+                        calendarioCorso.setActive(false);
+                    }
+                    corso.setCalendarioCorso(null);
+                    corso.setActive(false);
+                    corsoRepository.save(corso);
+                }
+            }
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySala(idSala);
+            if (!prenotazioni.isEmpty()) {
+                for (PrenotazioneSala prenotazione : prenotazioni) {
+                    prenotazione.setDeleted(true);
+                    prenotazioneSalaRepository.save(prenotazione);
+                }
+            }
+            sala.setActive(false);
+            sala.setPrenotabile(false);
+            salaRepository.save(sala);
+            return true;
+        } catch (Exception e) {
+            // Log the exception, if logging is set up
+            System.out.println("Error deleting Sala: "  + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

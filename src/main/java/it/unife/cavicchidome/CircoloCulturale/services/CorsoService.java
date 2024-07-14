@@ -830,8 +830,13 @@ public class CorsoService {
     }
 
     @Transactional
-    List<Corso> findCorsiByDocenteId(Integer docenteId){
+    public List<Corso> findCorsiByDocenteId(Integer docenteId){
         return corsoRepository.findCorsiByDocenteId(docenteId);
+    }
+
+    @Transactional
+    public List<Corso> findBySalaId(Integer idSala){
+        return corsoRepository.findBySalaId(idSala);
     }
 
 }

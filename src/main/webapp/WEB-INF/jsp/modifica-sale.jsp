@@ -15,6 +15,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             initModificaSalaForm();
+
         });
 
         function initModificaSalaForm() {
@@ -150,6 +151,8 @@
                 inputs[i].style.border = '';
             }
         }
+
+
     </script>
 </head>
 <body>
@@ -189,9 +192,18 @@
 
         <label>Capienza: ${sala.capienza}</label>
 
-        <button type="submit">Salva Modifiche per la sala "${sala.numeroSala}</button>
+        <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
+    </form>
+    <p>Cancellazione Sede</p>
+    <form id="cancellasedeForm" action="/sede/sala/elimina" method="POST">
+        <input type="hidden" name="idSala" value="${sala.id}" />
+        <input type="hidden" name="idSede" value="${sala.idSede.id}" />
+        <label for="confirmDeletion">Sei sicuro?</label>
+        <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+        <button type="submit">Cancella Sala</button>
     </form>
     <hr/>
 </c:forEach>
+
 </body>
 </html>

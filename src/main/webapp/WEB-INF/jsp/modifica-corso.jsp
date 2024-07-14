@@ -184,10 +184,10 @@
 
         function handleCancellaCorsoFormSubmission() {
 
-            document.getElementById('cancellaCorsoForm').addEventListener('submit', confirmDisiscrizione);
+            document.getElementById('cancellaCorsoForm').addEventListener('submit', confirmDeletion);
         }
 
-        function confirmDisiscrizione(event) {
+        function confirmDeletion(event) {
             var confirmDeletion = document.getElementById('confirmDeletion');
             if (!confirmDeletion.checked) {
                 alert('Per favore, conferma se sei sicuro di voler cancellare il corso.');
