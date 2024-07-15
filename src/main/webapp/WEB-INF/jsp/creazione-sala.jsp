@@ -6,12 +6,18 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Creazione Sala</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
+
+        function redirectToEditSedePage() {
+            var idSede = '<%= request.getParameter("idSede") %>';
+            window.location.href = '/sede/modifica?idSede=' + idSede;
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             initCreaSalaForm();
@@ -160,43 +166,46 @@
             <h1>Crea una nuova Sala</h1>
         </section>
         <section class="content">
-<% String alreadyPresent;
-    if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già una sala con lo stesso numero nella sede con id <%= request.getParameter("idSede") %></p>
-<%
-    }
-%>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
-<script>
-    var errorPresentElement = document.getElementById("fail");
-    errorPresentElement.scrollIntoView({behavior: "smooth"});
-</script>
-<%} %>
-<form id="creaSalaForm" action="/sede/sala/crea" method="post">
-    <fieldset>
-    <legend>Dettagli Sala</legend>
-    <input type="hidden" name="idSede" value="<%= request.getParameter("idSede") %>">
+        <% String alreadyPresent;
+            if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
+        %>
+        <p>Errore, esiste già una sala con lo stesso numero nella sede con id <%= request.getParameter("idSede") %></p>
+        <%
+            }
+        %>
+        <% String fail;
+            if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+        %>
+        <p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+        <script>
+            var errorPresentElement = document.getElementById("fail");
+            errorPresentElement.scrollIntoView({behavior: "smooth"});
+        </script>
+        <%} %>
+        <form id="creaSalaForm" action="/sede/sala/crea" method="post">
+            <fieldset>
+            <legend>Dettagli Sala</legend>
+            <input type="hidden" name="idSede" value="<%= request.getParameter("idSede") %>">
 
-    <label for="numero">Numero Sala:</label>
-    <input type="text" id="numero" name="numero" required pattern="\d+" title="Solo numeri sono permessi."><br>
+            <label for="numero">Numero Sala:</label>
+            <input type="text" id="numero" name="numero" required pattern="\d+" title="Solo numeri sono permessi."><br>
 
-    <label for="capienza">Capienza:</label>
-    <input type="number" id="capienza" name="capienza" required><br>
+            <label for="capienza">Capienza:</label>
+            <input type="number" id="capienza" name="capienza" required><br>
 
-    <label for="descrizione">Descrizione (Opzionale):</label>
-    <textarea id="descrizione" name="descrizione"></textarea><br>
+            <label for="descrizione">Descrizione (Opzionale):</label>
+            <textarea id="descrizione" name="descrizione"></textarea><br>
 
-    <label for="prenotabile">Prenotabile:</label>
-    <input type="checkbox" id="prenotabile" name="prenotabile">
+            <label for="prenotabile">Prenotabile:</label>
+            <input type="checkbox" id="prenotabile" name="prenotabile">
 
-    <button type="submit">Crea Sala</button>
-    </fieldset>
-</form>
-</section>
+            <button type="submit">Crea Sala</button>
+            </fieldset>
+        </form>
+        </section>
+        <section class="content">
+            <button type="button" onclick="redirectToEditSedePage()">Modifica Sede</button>
+        </section>
 </main>
 <%@include file="/static/include/aside.jsp"%>
 </div>

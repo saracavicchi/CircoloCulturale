@@ -24,6 +24,10 @@
         function warningDocentiOverlap() {
             alert("Attenzione: le informazioni sono state salvate ma sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti.");
         }
+
+        function redirectToCreaCorsoPage() {
+            window.location.href = '/corso/crea';
+        }
     </script>
 </head>
 <body>
@@ -60,6 +64,9 @@
                     <input type="checkbox" name="active" id="active" value="true" <c:if test="${param.active == true}">checked</c:if>>
                     <input type="submit" value="Filtra">
                 </form>
+                <section class="content">
+                    <button type="button" onclick="redirectToCreaCorsoPage()">Crea Nuovo Corso</button>
+                </section>
             </section>
             <section class="content clearfix">
                 <c:forEach items="${corsi}" var="corso">

@@ -22,7 +22,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     @Query("SELECT DISTINCT c.livello FROM Corso c")
     List<String> findDistinctLivello();
 
-    @Query("SELECT c FROM Corso c WHERE (c.active = :active OR c.active = false)")
+    @Query("SELECT c FROM Corso c WHERE (c.active != :active OR c.active = true)")
     List<Corso> findAllActive(Boolean active);
 
     @Query("SELECT c FROM Corso c WHERE c.active = true")

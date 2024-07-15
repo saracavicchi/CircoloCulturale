@@ -37,7 +37,7 @@ public class HomepageController {
 
         socioService.setSocioFromCookie(request, response, model);
 
-        model.addAttribute("saggi", saggioService.getNextMonth());
+        model.addAttribute("saggi", saggioService.getNextMonth()); //solo saggi attivi
         return "index";
     }
 

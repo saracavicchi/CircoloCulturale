@@ -34,6 +34,7 @@
             <li><a href="/segretario/corsi">Corsi</a></li>
             <li><a href="/segretario/prenotazioni">Prenotazioni</a></li>
             <li><a href="/segretario/biglietti">Biglietti</a></li>
+            <li><a href="/segretario/sedi">Sedi</a></li>
         </ul>
     </section>
 <% } %>

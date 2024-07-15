@@ -34,7 +34,7 @@
                 <h1>Tutti i saggi del circolo</h1>
             </section>
             <section class="filter">
-                <form action="/saggi" method="get">
+                <form action="/saggio/info" method="get">
                     <label for="data">Filtra per data:</label>
                     <input type="date" name="data" id="data" value="<%= request.getParameter("data") != null ? request.getParameter("data") : java.time.LocalDate.now()%>>">
                     <input type="submit" value="Filtra"/>

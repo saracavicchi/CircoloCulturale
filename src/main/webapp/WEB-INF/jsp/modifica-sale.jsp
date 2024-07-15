@@ -7,12 +7,18 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
+
+        function redirectToEditSedePage() {
+            var idSede = '<%= request.getParameter("idSede") %>';
+            window.location.href = '/sede/modifica?idSede=' + idSede;
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             initModificaSalaForm();
@@ -181,65 +187,68 @@
         <section class="title">
             <h1>Modifica Sale</h1>
         </section>
-<section class="content">
+        <section class="content">
 
-<% String alreadyPresent;
-    if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già una sala con lo stesso numero nella sede con id <%= request.getParameter("idSede") %></p>
-<%
-    }
-%>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
-<script>
-    var errorPresentElement = document.getElementById("fail");
-    errorPresentElement.scrollIntoView({behavior: "smooth"});
-</script>
-<%} %>
-<c:forEach items="${sale}" var="sala">
-    <fieldset>
-        <legend>Modifica Sala ${sala.numeroSala}</legend>
+        <% String alreadyPresent;
+            if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
+        %>
+        <p>Errore, esiste già una sala con lo stesso numero nella sede con id <%= request.getParameter("idSede") %></p>
+        <%
+            }
+        %>
+        <% String fail;
+            if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+        %>
+        <p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+        <script>
+            var errorPresentElement = document.getElementById("fail");
+            errorPresentElement.scrollIntoView({behavior: "smooth"});
+        </script>
+        <%} %>
+        <c:forEach items="${sale}" var="sala">
+            <fieldset>
+                <legend>Modifica Sala ${sala.numeroSala}</legend>
 
-        <label for="enableEdit_${sala.id}">Modifica abilitata:</label>
-        <input type="checkbox" id="enableEdit_${sala.id}" name="enableEdit">
+                <label for="enableEdit_${sala.id}">Modifica abilitata:</label>
+                <input type="checkbox" id="enableEdit_${sala.id}" name="enableEdit">
 
-        <form id="modificaSaleForm_${sala.id}" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
-            <input type="hidden" name="idSala" value="${sala.id}" />
-            <input type="hidden" name="idSede" value="${sala.idSede.id}" />
+                <form id="modificaSaleForm_${sala.id}" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
+                    <input type="hidden" name="idSala" value="${sala.id}" />
+                    <input type="hidden" name="idSede" value="${sala.idSede.id}" />
 
-            <label for="numeroSala_${sala.id}">Numero Sala:</label>
-            <input type="text" id="numeroSala_${sala.id}" name="numero" value="${sala.numeroSala}" required />
+                    <label for="numeroSala_${sala.id}">Numero Sala:</label>
+                    <input type="text" id="numeroSala_${sala.id}" name="numero" value="${sala.numeroSala}" required />
 
-            <label for="descrizione_${sala.id}">Descrizione:</label>
-            <textarea id="descrizione_${sala.id}" name="descrizione">${sala.descrizione}</textarea>
+                    <label for="descrizione_${sala.id}">Descrizione:</label>
+                    <textarea id="descrizione_${sala.id}" name="descrizione">${sala.descrizione}</textarea>
 
-            <label for="prenotabile_${sala.id}">Prenotabile:</label>
-            <select id="prenotabile_${sala.id}" name="prenotabile">
-                <option value="true" ${sala.prenotabile ? 'selected' : ''}>Sì</option>
-                <option value="false" ${!sala.prenotabile ? 'selected' : ''}>No</option>
-            </select>
+                    <label for="prenotabile_${sala.id}">Prenotabile:</label>
+                    <select id="prenotabile_${sala.id}" name="prenotabile">
+                        <option value="true" ${sala.prenotabile ? 'selected' : ''}>Sì</option>
+                        <option value="false" ${!sala.prenotabile ? 'selected' : ''}>No</option>
+                    </select>
 
-            <label>Capienza: ${sala.capienza}</label>
+                    <label>Capienza: ${sala.capienza}</label>
 
-            <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
-        </form>
-    </fieldset>
-    <fieldset>
-        <legend>Cancellazione Sala</legend>
-        <form id="cancellaSalaForm_${sala.id}" action="/sede/sala/elimina" method="POST">
-            <input type="hidden" name="idSala" value="${sala.id}" />
-            <input type="hidden" name="idSede" value="${sala.idSede.id}" />
-            <label for="confirmDeletion_${sala.id}">Sei sicuro?</label>
-            <input type="checkbox" id="confirmDeletion_${sala.id}" name="confirmDeletion" required>
-            <button type="button" onclick="document.getElementById('cancellaSalaForm_${sala.id}').submit();">Cancella Sala</button>
-        </form>
-    </fieldset>
-    <hr/>
-</c:forEach>
-</section>
+                    <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
+                </form>
+            </fieldset>
+            <fieldset>
+                <legend>Cancellazione Sala</legend>
+                <form id="cancellaSalaForm_${sala.id}" action="/sede/sala/elimina" method="POST">
+                    <input type="hidden" name="idSala" value="${sala.id}" />
+                    <input type="hidden" name="idSede" value="${sala.idSede.id}" />
+                    <label for="confirmDeletion_${sala.id}">Sei sicuro?</label>
+                    <input type="checkbox" id="confirmDeletion_${sala.id}" name="confirmDeletion" required>
+                    <button type="button" onclick="document.getElementById('cancellaSalaForm_${sala.id}').submit();">Cancella Sala</button>
+                </form>
+            </fieldset>
+            <hr/>
+        </c:forEach>
+        </section>
+        <section class="content">
+            <button type="button" onclick="redirectToEditSedePage()">Modifica Sede</button>
+        </section>
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>

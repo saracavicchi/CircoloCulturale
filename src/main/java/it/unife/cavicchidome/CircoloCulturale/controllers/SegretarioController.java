@@ -3,11 +3,9 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
+import it.unife.cavicchidome.CircoloCulturale.models.Sede;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
-import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
-import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
-import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
-import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
+import it.unife.cavicchidome.CircoloCulturale.services.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,12 +31,14 @@ public class SegretarioController {
     private final CorsoService corsoService;
     private final SaggioService saggioService;
     private final BigliettoService bigliettoService;
+    private final SedeService sedeService;
 
-    public SegretarioController(SocioService socioService, CorsoService corsoService, SaggioService saggioService, BigliettoService bigliettoService) {
+    public SegretarioController(SocioService socioService, CorsoService corsoService, SaggioService saggioService, BigliettoService bigliettoService, SedeService sedeService) {
         this.socioService = socioService;
         this.corsoService = corsoService;
         this.saggioService = saggioService;
         this.bigliettoService = bigliettoService;
+        this.sedeService = sedeService;
     }
 
     @GetMapping("/soci")
@@ -164,6 +164,30 @@ public class SegretarioController {
         model.addAttribute("biglietti", bigliettoService.findBigliettoNameSurnameSaggioDeleted(nome, cognome, saggioId, deleted));
         return "biglietti-segretario";
     }
+
+    @GetMapping("/sedi")
+    public String sedi(@RequestParam(name = "id") Optional<Integer> sedeId,
+                       HttpServletRequest request,
+                       HttpServletResponse response,
+                       Model model) {
+
+        socioService.setSocioFromCookie(request, response, model);
+
+        // TODO: fix JSP return
+        /*if (sedeId.isPresent()) {
+            Optional<Sede> sede = sedeService.findSedeByIdActive(sedeId.get());//TODO: ho messo active
+            if (sede.isPresent()) {
+                model.addAttribute("sede", sede.get());
+            }
+            return "sede-info";
+        } else {
+
+         */
+            model.addAttribute("sedi", sedeService.getAllSediActive());//TODO: ho messo active
+            return "sedi-segretario";
+        //}
+    }
+
 
 
 }

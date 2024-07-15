@@ -54,7 +54,8 @@ public class SedeController {
     }
 
     @GetMapping("/crea")
-    public String creaSede(Model model) {
+    public String creaSede(Model model, HttpServletRequest request, HttpServletResponse response) {
+        socioService.setSocioFromCookie(request, response, model);
         model.addAttribute("sociInfo", socioService.findSociPossibiliSegretari());
         return "creazione-sede";
     }
@@ -93,7 +94,8 @@ public class SedeController {
     }
 
     @GetMapping("/modifica")
-    public String modificaSede(@RequestParam(name = "idSede") Integer idSede, Model model) {
+    public String modificaSede(@RequestParam(name = "idSede") Integer idSede, Model model, HttpServletRequest request, HttpServletResponse response) {
+        socioService.setSocioFromCookie(request, response, model);
         Optional<Sede> sedeOpt = sedeService.findSedeByIdActive(idSede);
         if(sedeOpt.isEmpty() || !sedeOpt.isPresent()){
             return "redirect:/sede/info";

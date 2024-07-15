@@ -326,46 +326,56 @@
             <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
 
-                <label for="photo">Seleziona una nuova Foto Profilo:</label>
-                <input type="file" id="photo" name="photo">
+                <fieldset>
+                    <legend>Informazioni personali</legend>
+                    <label for="name">Nome:</label>
+                    <input type="text" id="name" name="name" value="${socio.utente.nome}" placeholder="Nome"/>
 
-                <label for="name">Nome:</label>
-                <input type="text" id="name" name="name" value="${socio.utente.nome}" placeholder="Nome"/>
+                    <label for="surname">Cognome:</label>
+                    <input type="text" id="surname" name="surname" value="${socio.utente.cognome}" placeholder="Cognome"/>
 
-                <label for="surname">Cognome:</label>
-                <input type="text" id="surname" name="surname" value="${socio.utente.cognome}" placeholder="Cognome"/>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="${socio.email}" placeholder="Email"/>
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="${socio.email}" placeholder="Email"/>
+                    <label for="phoneNumber">Numero di Telefono:</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}"
+                           placeholder="Numero di Telefono"/>
 
-                <label for="cf">Codice Fiscale:</label>
-                <input type="text" id="cf" name="cf" value="${socio.utente.cf}" placeholder="Codice Fiscale"/>
+                    <label for="cf">Codice Fiscale:</label>
+                    <input type="text" id="cf" name="cf" value="${socio.utente.cf}" placeholder="Codice Fiscale"/>
 
-                <label for="dob">Data di nascita:</label>
-                <input type="date" id="dob" name="dob" value="${socio.utente.dataNascita}" placeholder="Data di nascita"/>
+                    <label for="dob">Data di nascita:</label>
+                    <input type="date" id="dob" name="dob" value="${socio.utente.dataNascita}" placeholder="Data di nascita"/>
 
-                <label for="birthplace">Luogo di nascita (città):</label>
-                <input type="text" id="birthplace" name="birthplace" value="${socio.utente.luogoNascita}"
-                       placeholder="Luogo di nascita (città)"/>
+                    <label for="birthplace">Luogo di nascita (città):</label>
+                    <input type="text" id="birthplace" name="birthplace" value="${socio.utente.luogoNascita}"
+                           placeholder="Luogo di nascita (città)"/>
+                </fieldset>
 
-                <label for="state">Stato:</label>
-                <input type="text" id="state" name="state" placeholder="Stato"/>
+                <fieldset>
+                    <legend>Indirizzo</legend>
+                    <label for="state">Stato:</label>
+                    <input type="text" id="state" name="state" placeholder="Stato"/>
 
-                <label for="province">Provincia:</label>
-                <input type="text" id="province" name="province" placeholder="Provincia"/>
+                    <label for="province">Provincia:</label>
+                    <input type="text" id="province" name="province" placeholder="Provincia"/>
 
-                <label for="city">Città:</label>
-                <input type="text" id="city" name="city" placeholder="Città"/>
+                    <label for="city">Città:</label>
+                    <input type="text" id="city" name="city" placeholder="Città"/>
 
-                <label for="street">Via:</label>
-                <input type="text" id="street" name="street" placeholder="Via"/>
+                    <label for="street">Via:</label>
+                    <input type="text" id="street" name="street" placeholder="Via"/>
 
-                <label for="houseNumber">Numero Civico:</label>
-                <input type="text" id="houseNumber" name="houseNumber" placeholder="Numero Civico"/>
+                    <label for="houseNumber">Numero Civico:</label>
+                    <input type="text" id="houseNumber" name="houseNumber" placeholder="Numero Civico"/>
+                </fieldset>
 
-                <label for="phoneNumber">Numero di Telefono:</label>
-                <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}"
-                       placeholder="Numero di Telefono"/>
+                <fieldset>
+                    <legend>Altri Dettagli</legend>
+                    <label for="photo">Seleziona una nuova Foto Profilo:</label>
+                    <input type="file" id="photo" name="photo">
+                </fieldset>
+
                 <button type="submit">Aggiorna</button>
             </form>
         </section>

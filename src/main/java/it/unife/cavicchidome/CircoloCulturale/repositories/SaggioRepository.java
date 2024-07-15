@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
     @Query("""
-       SELECT s FROM Saggio s WHERE s.data <= ?1
+       SELECT s FROM Saggio s WHERE s.deleted = false AND s.data <= ?1
     """)
     public List<Saggio> getNextSaggi(LocalDate untilDate);
 

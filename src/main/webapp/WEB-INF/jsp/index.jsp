@@ -32,10 +32,10 @@
             <section class="content">
                 <ul>
                     <c:forEach items="${saggi}" var="saggio">
-                        <li>${saggio.nome}</li>
+                        <li><a href="/saggio/info?id=${saggio.id}">${saggio.nome}</a></li>
                     </c:forEach>
                 </ul>
-                <p>Vedi tutti i saggi</p>
+                <a href="/saggio/info">Vedi tutti i saggi</a>
             </section>
         </aside>
     </div>

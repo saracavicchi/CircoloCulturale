@@ -204,3 +204,25 @@ section.content>article {
     margin: 0 18px 16px 0;
     background: linear-gradient(to right,#fdfbfb,#ebedee);
 }
+
+section.content input[type="button"],
+section.content input[type="submit"],
+section.content button {
+    background: white;
+    font-weight: bold;
+    font-variant: small-caps;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+section.content input[type="button"]:hover,
+section.content input[type="submit"]:hover,
+section.content button:hover{
+    background: var(--foreground);
+    font-weight: bold;
+    font-variant: small-caps;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px;
+}
