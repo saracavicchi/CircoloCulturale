@@ -239,19 +239,19 @@
                 <fieldset>
                     <legend>Informazioni Personali</legend>
                     <label for="name">Nome:</label>
-                    <input type="text" id="name" name="name" maxlength="20" required>
+                    <input type="text" id="name" name="name" maxlength="20" required placeholder="Nome">
 
                     <label for="surname">Cognome:</label>
-                    <input type="text" id="surname" name="surname" maxlength="20" required>
+                    <input type="text" id="surname" name="surname" maxlength="20" required placeholder="Cognome">
 
                     <label for="cf">Codice fiscale:</label>
-                    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
+                    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required placeholder="Codice Fiscale">
 
                     <label for="dob">Data di nascita:</label>
-                    <input type="date" id="dob" name="dob" required>
+                    <input type="date" id="dob" name="dob" required placeholder="Data di Nascita">
 
                     <label for="birthplace">Luogo di nascita (città):</label>
-                    <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
+                    <input type="text" id="birthplace" name="birthplace" maxlength="20" required placeholder="Città di nascita">
                 </fieldset>
 
                 <fieldset>

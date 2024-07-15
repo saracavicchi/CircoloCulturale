@@ -9,7 +9,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Modifica Sale</title>
+    <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
@@ -17,7 +17,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             initModificaSalaForm();
 
+            // Inizializza tutti i form come disabilitati
+            document.querySelectorAll('[id^="enableEdit_"]').forEach(function(checkbox) {
+                toggleFormElements(checkbox.checked, checkbox.getAttribute('id').split('_')[1]);
+                checkbox.addEventListener('change', function() {
+                    toggleFormElements(this.checked, this.getAttribute('id').split('_')[1]);
+                });
+            });
+
         });
+
+        function toggleFormElements(isEnabled, salaId) {
+            var form = document.getElementById('modificaSaleForm_' + salaId);
+            if (form) {
+                var formElements = form.elements;
+                for (var i = 0; i < formElements.length; i++) {
+                    formElements[i].disabled = !isEnabled;
+                }
+            }
+        }
 
         function initModificaSalaForm() {
             var modificaSalaForm = document.getElementById('modificaSalaForm');
@@ -184,6 +202,10 @@
 <c:forEach items="${sale}" var="sala">
     <fieldset>
         <legend>Modifica Sala ${sala.numeroSala}</legend>
+
+        <label for="enableEdit_${sala.id}">Modifica abilitata:</label>
+        <input type="checkbox" id="enableEdit_${sala.id}" name="enableEdit">
+
         <form id="modificaSaleForm_${sala.id}" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
             <input type="hidden" name="idSala" value="${sala.id}" />
             <input type="hidden" name="idSede" value="${sala.idSede.id}" />

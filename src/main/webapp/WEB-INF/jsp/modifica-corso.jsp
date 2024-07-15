@@ -27,7 +27,12 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             initEditCorsoForm();
-            handleCancellaCorsoFormSubmission()
+            //handleCancellaCorsoFormSubmission();
+            toggleFormElements(false); // Disabilita gli elementi del form all'avvio
+
+            document.getElementById('enableEdit').addEventListener('change', function() {
+                toggleFormElements(this.checked);
+            });
 
 
         });
@@ -184,7 +189,7 @@
             }
         }
 
-        function handleCancellaCorsoFormSubmission() {
+        /*function handleCancellaCorsoFormSubmission() {
 
             document.getElementById('cancellaCorsoForm').addEventListener('submit', confirmDeletion);
         }
@@ -194,6 +199,18 @@
             if (!confirmDeletion.checked) {
                 alert('Per favore, conferma se sei sicuro di voler cancellare il corso.');
                 event.preventDefault(); // Prevent form submission
+            }
+        }
+
+         */
+
+
+        function toggleFormElements(isEnabled) {
+            var formElements = document.getElementById('editCorsoForm').elements;
+            for (var i = 0; i < formElements.length; i++) {
+                if (formElements[i].id !== 'enableEdit') { // Evita di disabilitare il checkbox stesso
+                    formElements[i].disabled = !isEnabled;
+                }
             }
         }
 
@@ -217,6 +234,10 @@
             <div>
                 <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
             </div>
+
+            <label for="enableEdit">Modifica abilitata:</label>
+            <input type="checkbox" id="enableEdit" name="enableEdit">
+
             <form id="editCorsoForm" action="modificaBase" method="post">
                 <input type="hidden" name="idCorso" value="${corso.id}"/>
 
@@ -227,10 +248,10 @@
                 <textarea id="descrizione" name="descrizione" placeholder="Descrizione del corso">${corso.descrizione}</textarea>
 
                 <label>Genere:</label>
-                <input type="text" id="genere" name="genere" value="${corso.genere}"/>
+                <input type="text" id="genere" name="genere" value="${corso.genere}" required/>
 
                 <label>Livello:</label>
-                <input type="text" id="livello" name="livello" value="${corso.livello}"/>
+                <input type="text" id="livello" name="livello" value="${corso.livello}" required/>
 
                 <label>Categoria:</label>
                 <input type="radio" id="danza" name="categoria" value="Danza" <c:if test="${corso.categoria == 'Danza'}">checked</c:if> required>

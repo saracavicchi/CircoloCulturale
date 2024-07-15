@@ -207,49 +207,49 @@
                 <fieldset>
                     <legend>Informazioni Personali</legend>
                     <label for="name">Nome:</label>
-                    <input type="text" id="name" name="name" maxlength="20" required>
+                    <input type="text" id="name" name="name" maxlength="20" required placeholder="Nome">
 
                     <label for="surname">Cognome:</label>
-                    <input type="text" id="surname" name="surname" maxlength="20" required>
+                    <input type="text" id="surname" name="surname" maxlength="20" required placeholder="Cognome">
 
                     <label for="cf">Codice fiscale:</label>
-                    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
+                    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required placeholder="Codice Fiscale">
 
                     <label for="dob">Data di nascita:</label>
-                    <input type="date" id="dob" name="dob" required>
+                    <input type="date" id="dob" name="dob" required placeholder="Data di Nascita">
 
                     <label for="birthplace">Luogo di nascita (città):</label>
-                    <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
+                    <input type="text" id="birthplace" name="birthplace" maxlength="20" required placeholder="Città di nascita">
                 </fieldset>
 
                 <fieldset>
                     <legend>Indirizzo di Residenza</legend>
                     <label for="country">Stato:</label>
-                    <input type="text" id="country" name="country" required>
+                    <input type="text" id="country" name="country" required placeholder="Stato">
 
                     <label for="province">Provincia:</label>
-                    <input type="text" id="province" name="province" required>
+                    <input type="text" id="province" name="province" required placeholder="Provincia">
 
                     <label for="city">Città:</label>
-                    <input type="text" id="city" name="city" required>
+                    <input type="text" id="city" name="city" required placeholder="Città">
 
                     <label for="street">Via:</label>
-                    <input type="text" id="street" name="street" required>
+                    <input type="text" id="street" name="street" required placeholder="Via">
 
                     <label for="houseNumber">Numero Civico:</label>
-                    <input type="text" id="houseNumber" name="houseNumber" required>
+                    <input type="text" id="houseNumber" name="houseNumber" required placeholder="Numero Civico">
                 </fieldset>
 
                 <fieldset>
                     <legend>Contatti e Altri Dettagli</legend>
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" maxlength="50" required>
+                    <input type="email" id="email" name="email" maxlength="50" required placeholder="Email">
 
                     <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" maxlength="50" required>
+                    <input type="password" id="password" name="password" maxlength="50" required placeholder="Password">
 
                     <label for="phoneNumber">Numero di telefono:</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
+                    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10" placeholder="Numero di Telefono">
 
                     <input type="file" id="photo" name="photo">
 

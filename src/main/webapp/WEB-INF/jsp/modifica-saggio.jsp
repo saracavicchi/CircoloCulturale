@@ -9,7 +9,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Modifica Saggio</title>
+    <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
         .img-responsive {
@@ -23,6 +23,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeAddressFields();
             initModificaSaggioForm();
+            // Disabilita gli elementi del form all'avvio
+            toggleFormElements(false);
+
+            // Aggiungi un listener al checkbox per abilitare/disabilitare il form
+            document.getElementById('enableEdit').addEventListener('change', function() {
+                toggleFormElements(this.checked);
+            });
             //handleEliminaSaggioFormSubmission()
 
         });
@@ -42,6 +49,15 @@
         }
 
          */
+        function toggleFormElements(isEnabled) {
+            var formElements = document.getElementById('modificaSaggioForm').elements;
+            for (var i = 0; i < formElements.length; i++) {
+                // Evita di disabilitare il checkbox stesso
+                if (formElements[i].id !== 'enableEdit') {
+                    formElements[i].disabled = !isEnabled;
+                }
+            }
+        }
 
         function initModificaSaggioForm() {
             var modificaSaggioForm = document.getElementById('modificaSaggioForm');
@@ -300,6 +316,10 @@
             <div>
                 <img class="img-responsive" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
             </div>
+
+            <label for="enableEdit">Modifica abilitata:</label>
+            <input type="checkbox" id="enableEdit" name="enableEdit">
+
             <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="saggioId" value="${saggio.id}"/>
 

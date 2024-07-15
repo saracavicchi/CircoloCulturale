@@ -660,7 +660,7 @@ public class CorsoService {
     public List<Corso> filterCorsi(Optional<String> category,
                                    Optional<String> genre,
                                    Optional<String> level,
-                                   Optional<Boolean> active) {
+                                   Optional<Boolean> active) { //TODO: DOME Ho commentato la linea perche da corso/info si vedevano anche i corsi cancellati
         //List<Corso> corsi = corsoRepository.findAllActive(active.orElse(true));
         List<Corso> corsi = corsoRepository.findAllActive();
         if (category.isPresent() && !category.get().isEmpty()) {

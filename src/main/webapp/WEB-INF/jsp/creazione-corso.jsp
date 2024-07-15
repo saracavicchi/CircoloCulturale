@@ -332,9 +332,9 @@
                 <fieldset>
                     <legend>Informazioni del Corso</legend>
                     <label for="descrizione">Descrizione:</label>
-                    <textarea id="descrizione" name="descrizione">${corso.descrizione}</textarea>
-                    <label>Genere: <input type="text" id="genere" name="genere" required></label><br>
-                    <label>Livello: <input type="text" id="livello" name="livello" required></label><br>
+                    <textarea id="descrizione" name="descrizione" placeholder="descrizione (facoltativa)">${corso.descrizione}</textarea>
+                    <label>Genere: <input type="text" id="genere" name="genere" required placeholder="genere"></label><br>
+                    <label>Livello: <input type="text" id="livello" name="livello" required placeholder="livello"></label><br>
                 </fieldset>
 
                 <fieldset>

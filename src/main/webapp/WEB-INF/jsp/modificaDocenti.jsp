@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Modifica Docenti</title>
+    <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
@@ -27,7 +27,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             initForm();
             gestisciStipendiDocenti();
+            // Disabilita gli elementi del form all'avvio
+            toggleFormElements(false);
 
+            // Aggiungi un listener al checkbox per abilitare/disabilitare il form
+            document.getElementById('enableEdit').addEventListener('change', function() {
+                toggleFormElements(this.checked);
+            });
 
         });
     /*
@@ -194,7 +200,16 @@
                 specificErrorElement.remove();
             }
 
+        }
 
+        function toggleFormElements(isEnabled) {
+            var formElements = document.getElementById('modificaDocentiForm').elements;
+            for (var i = 0; i < formElements.length; i++) {
+                // Evita di disabilitare il checkbox stesso
+                if (formElements[i].id !== 'enableEdit') {
+                    formElements[i].disabled = !isEnabled;
+                }
+            }
         }
     </script>
 </head>
@@ -213,6 +228,8 @@
                 <%
                 }
             %>
+            <label for="enableEdit">Modifica abilitata:</label>
+            <input type="checkbox" id="enableEdit" name="enableEdit">
             <form id="modificaDocentiForm" action="modificaDocenti" method="post">
                 <fieldset>
                     <legend>Docenti Attuali</legend>
