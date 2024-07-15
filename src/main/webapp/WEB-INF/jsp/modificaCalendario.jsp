@@ -10,6 +10,7 @@
 <html>
 <head>
     <title>Modifica Orari Corso</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
         var errorMsg = "";
@@ -98,8 +99,8 @@
             if (!validation) {
                 // Ottieni l'elemento h1
 
-                var h2Element = document.getElementsByTagName('h2')[0];
-                displayErrorMessages(h2Element);
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {
                 // Ottiene tutti i checkbox
                 var checkboxes = document.querySelectorAll('input[type="checkbox"][name="giorni"]');
@@ -170,61 +171,72 @@
     </script>
 </head>
 <body>
-<
-<h2>Modifica Calendario e Sala Corso</h2>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
-<%
-    }
-%>
-<form id="modificaCalendarioForm" action="modificaCalendario" method="post">
-    <input type="hidden" name="idCorso" value="${corso.id}"/>
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Modifica Calendario e Sala Corso</h1>
+        </section>
+        <section class="content">
+            <% String fail;
+                if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+            %>
+            <p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
+            <%
+                }
+            %>
+            <form id="modificaCalendarioForm" action="modificaCalendario" method="post">
+                <input type="hidden" name="idCorso" value="${corso.id}"/>
 
-    <label>Sala:</label>
-    <select name="idSala" required>
-        <c:forEach items="${sale}" var="sala">
-            <c:choose>
-                <c:when test="${sala.id.toString() == corso.idSala.id.toString()}">
-                    <option value="${sala.id}" selected="selected">${sala.numeroSala}</option>
-                </c:when>
-                <c:otherwise>
-                    <option value="${sala.id}">${sala.numeroSala}</option>
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
-    </select>
+                <label>Sala:</label>
+                <select name="idSala" required>
+                    <c:forEach items="${sale}" var="sala">
+                        <c:choose>
+                            <c:when test="${sala.id.toString() == corso.idSala.id.toString()}">
+                                <option value="${sala.id}" selected="selected">${sala.numeroSala}</option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${sala.id}">${sala.numeroSala}</option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </select>
 
-    <c:forEach var="dayIndex" begin="1" end="5">
-        <c:set var="giornoIt" value="${dayIndex == 1 ? 'Lunedì' : dayIndex == 2 ? 'Martedì' : dayIndex == 3 ? 'Mercoledì' : dayIndex == 4 ? 'Giovedì' : 'Venerdì'}"/>
-        <c:set var="giorno" value="${dayIndex == 1 ? 'monday' : dayIndex == 2 ? 'tuesday' : dayIndex == 3 ? 'wednesday' : dayIndex == 4 ? 'thursday' : 'friday'}"/>
-        <c:set var="found" value="false"/>
-        <c:forEach items="${calendarioCorso}" var="calendario" varStatus="status">
-            <c:if test="${giorno == calendario.giornoSettimana and not found}">
-                <label for="giorno${giorno}">${giornoIt}: </label>
-                <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');" checked>
-                <div id="orario${giorno}" style="display:block;">
-                    Orario Inizio: <input type="time" name="orariInizio" value="${calendario.orarioInizio}"><br>
-                    Orario Fine: <input type="time" name="orariFine" value="${calendario.orarioFine}"><br>
-                </div>
-                <br>
-                <c:set var="found" value="true"/>
-            </c:if>
-        </c:forEach>
-        <c:if test="${not found}">
-            <label for="giorno${giorno}">${giornoIt}: </label>
-            <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');">
-            <div id="orario${giorno}" style="display:none;">
-                Orario Inizio: <input type="time" name="orariInizio"><br>
-                Orario Fine: <input type="time" name="orariFine"><br>
-            </div>
-            <br>
-        </c:if>
-    </c:forEach>
-    <button type="submit">Salva Modifiche</button>
-</form>
-<button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
-<button type="button" onclick="redirectToEditCorsoPage()">Torna alla pagina modifica corso</button>
+                <c:forEach var="dayIndex" begin="1" end="5">
+                    <c:set var="giornoIt" value="${dayIndex == 1 ? 'Lunedì' : dayIndex == 2 ? 'Martedì' : dayIndex == 3 ? 'Mercoledì' : dayIndex == 4 ? 'Giovedì' : 'Venerdì'}"/>
+                    <c:set var="giorno" value="${dayIndex == 1 ? 'monday' : dayIndex == 2 ? 'tuesday' : dayIndex == 3 ? 'wednesday' : dayIndex == 4 ? 'thursday' : 'friday'}"/>
+                    <c:set var="found" value="false"/>
+                    <c:forEach items="${calendarioCorso}" var="calendario" varStatus="status">
+                        <c:if test="${giorno == calendario.giornoSettimana and not found}">
+                            <label for="giorno${giorno}">${giornoIt}: </label>
+                            <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');" checked>
+                            <div id="orario${giorno}" style="display:block;">
+                                Orario Inizio: <input type="time" name="orariInizio" value="${calendario.orarioInizio}"><br>
+                                Orario Fine: <input type="time" name="orariFine" value="${calendario.orarioFine}"><br>
+                            </div>
+                            <br>
+                            <c:set var="found" value="true"/>
+                        </c:if>
+                    </c:forEach>
+                    <c:if test="${not found}">
+                        <label for="giorno${giorno}">${giornoIt}: </label>
+                        <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');">
+                        <div id="orario${giorno}" style="display:none;">
+                            Orario Inizio: <input type="time" name="orariInizio"><br>
+                            Orario Fine: <input type="time" name="orariFine"><br>
+                        </div>
+                        <br>
+                    </c:if>
+                </c:forEach>
+                <button type="submit">Salva Modifiche</button>
+            </form>
+        </section>
+        <section class="content">
+            <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
+            <button type="button" onclick="redirectToEditCorsoPage()">Torna alla pagina modifica corso</button>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 </body>
 </html>

@@ -10,6 +10,7 @@
 <html>
 <head>
     <title>Crea Corso</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
 
@@ -319,58 +320,78 @@
     </script>
 </head>
 <body>
-<h1>Crea un corso</h1>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p>Errore durante la creazione del corso, verificare le informazioni e riprovare</p>
-<%
-    }
-%>
-<form id="creaCorsoForm" action="crea" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Crea un corso</h1>
+        </section>
+        <section class="content">
+            <% String fail;
+                if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+            %>
+            <p>Errore durante la creazione del corso, verificare le informazioni e riprovare</p>
+            <%
+                }
+            %>
+            <form id="creaCorsoForm" action="crea" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
 
-    <label for="descrizione">Descrizione:</label>
-    <textarea id="descrizione" name="descrizione">${corso.descrizione}</textarea>
-    Genere: <input type="text" id="genere" name="genere" required><br>
-    Livello: <input type="text" id="livello" name="livello" required><br>
-    <!-- Categoria: <input type="text" id="categoria" name="categoria" required><br> -->
-    Categoria:
-    <input type="radio" id="danza" name="categoria" value="Danza" required>
-    <label for="danza">Danza</label><br>
-    <input type="radio" id="musica" name="categoria" value="Musica" required>
-    <label for="musica">Musica</label><br>
+                <fieldset>
+                    <legend>Informazioni del Corso</legend>
+                    <label for="descrizione">Descrizione:</label>
+                    <textarea id="descrizione" name="descrizione">${corso.descrizione}</textarea>
+                    <label>Genere: <input type="text" id="genere" name="genere" required></label><br>
+                    <label>Livello: <input type="text" id="livello" name="livello" required></label><br>
+                </fieldset>
 
+                <fieldset>
+                    <legend>Categoria e Sala</legend>
+                    Categoria:
+                    <label><input type="radio" id="danza" name="categoria" value="Danza" required>Danza</label><br>
+                    <label><input type="radio" id="musica" name="categoria" value="Musica" required>Musica</label><br>
+                    <label>Sala:
+                        <select name="idSala" required>
+                            <c:forEach items="${sale}" var="sala">
+                                <option value="${sala.id}">${sala.numeroSala}</option>
+                            </c:forEach>
+                        </select>
+                    </label><br>
+                </fieldset>
 
-    Sala: <select name="idSala" required>
-    <c:forEach items="${sale}" var="sala">
-        <option value="${sala.id}">${sala.numeroSala}</option>
-    </c:forEach>
-    </select><br>
-    <label for="photo">Seleziona una foto per il corso:</label>
-    Foto: <input type="file" id="photo" name="photo" enctype="multipart/form-data"><br>
-
-    <p>Docenti selezionati:</p>
-    <div id="selectedDocentiContainer"></div>
-    Docenti: <select name="docenti" multiple onchange="updateDocentiSelection()">
-    <c:forEach items="${sociInfo}" var="socioD">
-        <option value="${socioD[0]}">${socioD[1]} ${socioD[2]} (${socioD[0]})</option>
-    </c:forEach>
-    </select>
-    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
-    <div id="docentiStipendiContainer"></div>
-
-    Calendario Settimanale: <br>
-    <c:forEach items="${giorniSettimana}" var="giorno">
-        <div>
-            <script>document.write(mapDayNumberToWeekday(${giorno}) + ':');</script> <input type="checkbox" name="giorni" value="${giorno}" onchange="toggleTimeInputs(this,'${giorno}');"><br>
-            <div id="orario${giorno}" style="display:none;">
-                Orario Inizio: <input type="time" name="orariInizio"><br>
-                Orario Fine: <input type="time" name="orariFine"><br>
-            </div>
-        </div>
-    </c:forEach>
-    <input type="submit" value="Crea Corso">
-</form>
+                <fieldset>
+                    <legend>Docenti</legend>
+                    <label for="photo">Seleziona una foto per il corso:</label>
+                    <input type="file" id="photo" name="photo" enctype="multipart/form-data"><br>
+                    <p>Docenti selezionati:</p>
+                    <div id="selectedDocentiContainer"></div>
+                    Docenti:
+                    <select name="docenti" multiple onchange="updateDocentiSelection()">
+                        <c:forEach items="${sociInfo}" var="socioD">
+                            <option value="${socioD[0]}">${socioD[1]} ${socioD[2]} (${socioD[0]})</option>
+                        </c:forEach>
+                    </select>
+                    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
+                    <div id="docentiStipendiContainer"></div>
+                </fieldset>
+                <fieldset>
+                    <legend>Calendario Settimanale</legend>
+                    <c:forEach items="${giorniSettimana}" var="giorno">
+                        <div>
+                            <script>document.write(mapDayNumberToWeekday(${giorno}) + ':');</script>
+                            <input type="checkbox" name="giorni" value="${giorno}" onchange="toggleTimeInputs(this, '${giorno}');"><br>
+                            <div id="orario${giorno}" style="display:none;">
+                                Orario Inizio: <input type="time" name="orariInizio"><br>
+                                Orario Fine: <input type="time" name="orariFine"><br>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </fieldset>
+                <input type="submit" value="Crea Corso">
+            </form>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 </body>
 </html>

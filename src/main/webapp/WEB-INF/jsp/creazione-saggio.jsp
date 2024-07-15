@@ -10,6 +10,7 @@
 <html>
 <head>
     <title>Creazione Saggio</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
 
@@ -150,8 +151,8 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h2Element = document.getElementsByTagName('h2')[0];
-                displayErrorMessages(h2Element);
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('creaSaggioForm').submit();
@@ -240,76 +241,86 @@
     </style>
 </head>
 <body>
-<h2>Creazione Saggio</h2>
-<% String dateAlreadyPresent;
-    if ((dateAlreadyPresent = request.getParameter("dateAlreadyPresent")) != null && dateAlreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già un saggio per la data selezionata</p>
-<%
-    }
-%>
-<% String nameAlreadyPresent;
-    if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
-%>
-<p>Errore, esiste già un saggio con lo stesso nome</p>
-<%
-    }
-%>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
-<script>
-    var errorPresentElement = document.getElementById("fail");
-    errorPresentElement.scrollIntoView({behavior: "smooth"});
-</script>
-<%
-} %>
-<form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
-    <label for="nome">Nome:</label>
-    <!-- <input type="text" id="nome" name="nome" required maxlength="30" pattern="[A-Za-z\s\-]+" placeholder="Nome del saggio"> -->
-    <input type="text" id="nome" name="nome" required maxlength="30" placeholder="Nome del saggio">
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Creazione Saggio</h1>
+        </section>
+        <section class="content">
 
-    <label for="data">Data:</label>
-    <input type="date" id="data" name="data" required>
-
-    <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
-    <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" placeholder="Numero massimo partecipanti">
-
-    <label for="descrizione">Descrizione:</label>
-    <textarea id="descrizione" name="descrizione" placeholder="Descrizione del saggio (facoltativo)"></textarea>
-
-    <label for="orarioInizio">Orario inizio:</label>
-    <input type="time" id="orarioInizio" name="orarioInizio" >
-
-    <label for="orarioFine">Orario fine:</label>
-    <input type="time" id="orarioFine" name="orarioFine" >
-
-    <label for="stato">Stato:</label>
-    <input type="text" id="stato" name="stato" placeholder="Stato" required>
-
-    <label for="provincia">Provincia:</label>
-    <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
-
-    <label for="citta">Città:</label>
-    <input type="text" id="citta" name="citta" placeholder="Città" required>
-
-    <label for="via">Via:</label>
-    <input type="text" id="via" name="via" placeholder="Via" required>
-
-    <label for="numeroCivico">Numero Civico:</label>
-    <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
-
-    <label for="corsi">Seleziona Corsi:</label>
-    <select id="corsi" name="corsi" multiple>
-        <c:forEach items="${corsi}" var="corso">
-            <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
-        </c:forEach>
-    </select>
-
-    <input type="file" id="photo" name="photo">
-
-    <button type="submit">Crea Saggio</button>
-</form>
+        <% String dateAlreadyPresent;
+            if ((dateAlreadyPresent = request.getParameter("dateAlreadyPresent")) != null && dateAlreadyPresent.equals("true")) {
+        %>
+        <p>Errore, esiste già un saggio per la data selezionata</p>
+        <%
+            }
+        %>
+        <% String nameAlreadyPresent;
+            if ((nameAlreadyPresent = request.getParameter("nameAlreadyPresent")) != null && nameAlreadyPresent.equals("true")) {
+        %>
+        <p>Errore, esiste già un saggio con lo stesso nome</p>
+        <%
+            }
+        %>
+        <% String fail;
+            if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+        %>
+        <p id="fail">Errore durante la creazione del saggio, verificare le informazioni e riprovare</p>
+        <script>
+            var errorPresentElement = document.getElementById("fail");
+            errorPresentElement.scrollIntoView({behavior: "smooth"});
+        </script>
+        <%
+        } %>
+            <form id="creaSaggioForm" action="/saggio/crea" method="post" enctype="multipart/form-data">
+                <fieldset>
+                    <legend>Informazioni Generali</legend>
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" required maxlength="30" placeholder="Nome del saggio">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" name="data" required>
+                    <label for="numeroPartecipanti">Numero massimo partecipanti:</label>
+                    <input type="number" id="numeroPartecipanti" name="numeroPartecipanti" required min="1" placeholder="Numero massimo partecipanti">
+                    <label for="descrizione">Descrizione:</label>
+                    <textarea id="descrizione" name="descrizione" placeholder="Descrizione del saggio (facoltativo)"></textarea>
+                </fieldset>
+                <fieldset>
+                    <legend>Dettagli Evento</legend>
+                    <label for="orarioInizio">Orario inizio:</label>
+                    <input type="time" id="orarioInizio" name="orarioInizio">
+                    <label for="orarioFine">Orario fine:</label>
+                    <input type="time" id="orarioFine" name="orarioFine">
+                    <label for="stato">Stato:</label>
+                    <input type="text" id="stato" name="stato" placeholder="Stato" required>
+                    <label for="provincia">Provincia:</label>
+                    <input type="text" id="provincia" name="provincia" placeholder="Provincia" required>
+                    <label for="citta">Città:</label>
+                    <input type="text" id="citta" name="citta" placeholder="Città" required>
+                    <label for="via">Via:</label>
+                    <input type="text" id="via" name="via" placeholder="Via" required>
+                    <label for="numeroCivico">Numero Civico:</label>
+                    <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
+                </fieldset>
+                <fieldset>
+                    <legend>Corsi Associati</legend>
+                    <label for="corsi">Seleziona Corsi:</label>
+                    <select id="corsi" name="corsi" multiple>
+                        <c:forEach items="${corsi}" var="corso">
+                            <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                        </c:forEach>
+                    </select>
+                </fieldset>
+                <fieldset>
+                    <legend>Foto</legend>
+                    <label for="photo">Carica una foto per il saggio:</label>
+                    <input type="file" id="photo" name="photo">
+                </fieldset>
+                <button type="submit">Crea Saggio</button>
+            </form>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 </body>
 </html>

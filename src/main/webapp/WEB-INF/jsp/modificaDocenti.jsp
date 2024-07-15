@@ -11,6 +11,7 @@
 <html>
 <head>
     <title>Modifica Docenti</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         var errorDisplayed = false;
         var errorMsg = "";
@@ -98,8 +99,8 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h2Element = document.getElementsByTagName('h2')[0];
-                displayErrorMessages(h2Element);
+                var h1Element = document.getElementsByTagName('h1')[0];
+                displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('modificaDocentiForm').submit();
@@ -190,40 +191,55 @@
     </script>
 </head>
 <body>
-<h2>Docenti Correnti</h2>
-<% String fail;
-    if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
-%>
-<p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
-<%
-    }
-%>
-<form id="modificaDocentiForm" action="modificaDocenti" method="post">
-    <input type="hidden" name="idCorso" value="${corso.id}"/>
-    <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
-    <p>Seleziona i docenti da eliminare<p>
-    <c:forEach var="docente" items="${docentiCorso}">
-        <div>
-            <input type="checkbox" id="docentiDaEliminare" name="docentiDaEliminare" value="${docente.id}" />
-            <span>${docente.socio.utente.nome} ${docente.socio.utente.cognome} (${docente.socio.utente.cf}): </span>
-    <input type="number" name="stipendiAttuali" value="${docente.stipendio}" title="Per favore inserire un importo corretto senza cifre decimali" required/>
-        </div>
-    </c:forEach>
-    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
-    <h2>Aggiungi Nuovi Docenti</h2>
-    <select name="nuoviDocenti" multiple="multiple" onchange="gestisciStipendiDocenti()">
-        <c:forEach var="socio" items="${sociInfo}">
-            <option value="${socio[0]}">${socio[1]} ${socio[2]} (${socio[0]})</option>
-        </c:forEach>
-    </select>
-    <div id="containerStipendi"></div>
-    <!-- <label for="stipendiNuoviDocenti">Inserisci gli stipendi per i nuovi docenti (separati da virgola, nell'ordine di selezione):</label>
-    <input type="text" id="stipendiNuoviDocenti" name="stipendiNuoviDocenti" placeholder="Esempio: 1500,1200,1300" /> -->
-
-    <button type="submit">Salva Modifiche</button>
-</form>
-<button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
-<button type="button" onclick="redirectToEditCorsoPage()">Torna alla pagina modifica corso</button>
-
+<%@ include file="/static/include/header.jsp" %>
+<div id="main-content">
+    <main class="midleft">
+        <section class="title">
+            <h1>Docenti Correnti</h1>
+        </section>
+        <section class="content">
+            <% String fail;
+                if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
+            %>
+            <p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
+            <%
+                }
+            %>
+            <form id="modificaDocentiForm" action="modificaDocenti" method="post">
+                <fieldset>
+                    <legend>Docenti Attuali</legend>
+                        <input type="hidden" name="idCorso" value="${corso.id}"/>
+                        <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
+                        <p>Seleziona i docenti da eliminare<p>
+                        <c:forEach var="docente" items="${docentiCorso}">
+                            <div>
+                                <input type="checkbox" id="docentiDaEliminare" name="docentiDaEliminare" value="${docente.id}" />
+                                <span>${docente.socio.utente.nome} ${docente.socio.utente.cognome} (${docente.socio.utente.cf}): </span>
+                        <input type="number" name="stipendiAttuali" value="${docente.stipendio}" title="Per favore inserire un importo corretto senza cifre decimali" required/>
+                            </div>
+                        </c:forEach>
+                        <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
+                </fieldset>
+                <fieldset>
+                    <legend>Aggiungi Nuovi Docenti</legend>
+                        <select name="nuoviDocenti" multiple="multiple" onchange="gestisciStipendiDocenti()">
+                            <c:forEach var="socio" items="${sociInfo}">
+                                <option value="${socio[0]}">${socio[1]} ${socio[2]} (${socio[0]})</option>
+                            </c:forEach>
+                        </select>
+                        <div id="containerStipendi"></div>
+                        <!-- <label for="stipendiNuoviDocenti">Inserisci gli stipendi per i nuovi docenti (separati da virgola, nell'ordine di selezione):</label>
+                        <input type="text" id="stipendiNuoviDocenti" name="stipendiNuoviDocenti" placeholder="Esempio: 1500,1200,1300" /> -->
+                </fieldset>
+                <button type="submit">Salva Modifiche</button>
+            </form>
+        </section>
+        <section class="content">
+            <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+            <button type="button" onclick="redirectToEditCorsoPage()">Torna alla pagina modifica corso</button>
+        </section>
+    </main>
+    <%@include file="/static/include/aside.jsp"%>
+</div>
 </body>
 </html>
