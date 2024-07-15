@@ -18,28 +18,10 @@
 
             initCreaCorsoForm();
             updateDocentiSelection();
-            var fail = "${param.fail}";
-            if (fail == 'true') {
-                scrollToErrorMsg();
-            }
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
 
 
         });
 
-        function warningDocentiOverlap() {
-            alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
-        }
-
-        function scrollToErrorMsg() {
-            var ErrorMsgElement = document.getElementById('ErroreMsg');
-            if (ErrorMsgElement) {
-                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
-            }
-        }
         function initCreaCorsoForm() {
             var creaCorsoForm = document.getElementById('creaCorsoForm');
             if (creaCorsoForm) {
@@ -63,6 +45,7 @@
         function validateForm() {
             var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
             var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
+
 
             var descrizione = document.getElementById('descrizione').value;
             var genere = document.getElementById('genere').value;
@@ -193,7 +176,7 @@
             }
 
             // Colora il bordo del campo o dei campi che hanno dato errore
-            if(erroredField != "") {
+            if (erroredField != "") {
                 var fields = erroredField.split(', ');
                 for (var i = 0; i < fields.length; i++) {
                     var fieldElement = document.getElementById(fields[i]);
@@ -201,8 +184,18 @@
                         fieldElement.style.border = '1px solid red';
                     }
                 }
+                if (errorMessageElement) {
+                    scrollToErrorMsg();
+                }
+
             }
         }
+            function scrollToErrorMsg() {
+                var ErrorMsgElement = document.getElementById('error-message');
+                if (ErrorMsgElement) {
+                    ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+                }
+            }
 
         function removeError(formName) {
             if(!errorDisplayed){
@@ -226,7 +219,7 @@
             var allInputs = document.getElementById(formName).getElementsByTagName('input');
             // Filtra per ottenere solo gli input di tipo 'text'
             var inputs = Array.from(allInputs).filter(function(input) {
-                return input.type === 'text';
+                return input.type === 'text' || input.type==='number';
             });
 
             // Itera su ogni elemento input
@@ -320,6 +313,7 @@
     </script>
 </head>
 <body>
+<h1>Crea un corso</h1>
 <%@ include file="/static/include/header.jsp" %>
 <div id="main-content">
     <main class="midleft">
@@ -327,16 +321,14 @@
             <h1>Crea un corso</h1>
         </section>
         <section class="content">
-            <% String fail;
+                <% String fail;
                 if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
             %>
             <p>Errore durante la creazione del corso, verificare le informazioni e riprovare</p>
-            <%
+                <%
                 }
             %>
             <form id="creaCorsoForm" action="crea" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
-
                 <fieldset>
                     <legend>Informazioni del Corso</legend>
                     <label for="descrizione">Descrizione:</label>
@@ -352,8 +344,22 @@
                     <label><input type="radio" id="musica" name="categoria" value="Musica" required>Musica</label><br>
                     <label>Sala:
                         <select name="idSala" required>
+                            <c:set var="currentSedeId" value="" />
                             <c:forEach items="${sale}" var="sala">
+                                <c:choose>
+                                    <c:when test="${not currentSedeId.equals(sala.idSede.id)}">
+                                        <optgroup label="Nome Sede: ${sala.idSede.nome}">
+                                        <c:set var="currentSedeId" value="${sala.idSede.id}" />
+                                    </c:when>
+                                    <c:otherwise></c:otherwise>
+                                </c:choose>
                                 <option value="${sala.id}">${sala.numeroSala}</option>
+                                <c:if test="${sale.get(sale.size() -1) == sala}">
+                                    </optgroup>
+                                </c:if>
+                                <c:if test="${sale.indexOf(sala) == sale.size() - 1}">
+                                    </optgroup>
+                                </c:if>
                             </c:forEach>
                         </select>
                     </label><br>
@@ -361,8 +367,6 @@
 
                 <fieldset>
                     <legend>Docenti</legend>
-                    <label for="photo">Seleziona una foto per il corso:</label>
-                    <input type="file" id="photo" name="photo" enctype="multipart/form-data"><br>
                     <p>Docenti selezionati:</p>
                     <div id="selectedDocentiContainer"></div>
                     Docenti:
@@ -387,6 +391,12 @@
                         </div>
                     </c:forEach>
                 </fieldset>
+
+                <fielset>
+                    <legend>Foto del corso:</legend>
+                    <label for="photo">Seleziona una foto per il corso:</label>
+                    <input type="file" id="photo" name="photo" enctype="multipart/form-data"><br>
+                </fielset>
                 <input type="submit" value="Crea Corso">
             </form>
         </section>

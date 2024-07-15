@@ -1,6 +1,5 @@
 package it.unife.cavicchidome.CircoloCulturale.repositories;
 
-import it.unife.cavicchidome.CircoloCulturale.models.CalendarioCorso;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Weekday;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +27,8 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     @Query("SELECT c FROM Corso c WHERE c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello")
     Optional<Corso> findByCategoriaAndGenereAndLivelloAll(@Param("categoria") String categoria, @Param("genere") String genere, @Param("livello") String livello);
 
+    @Query("SELECT c FROM Corso c WHERE c.id = :idCorso AND c.active = true")
+    Optional<Corso> findById(Integer idCorso);
 
     @Query("SELECT c FROM Corso c WHERE c.id = :idCorso AND c.active = true")
     Optional<Corso> findByIdActive(Integer idCorso);
@@ -52,8 +53,6 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
 
     @Query("SELECT c FROM Corso c WHERE c.idSala.idSede.id = :idSede AND c.active = true AND c.idSala.active = true AND c.idSala.idSede.active = true")
     List<Corso> findBySedeId(Integer idSede);
-
-
 }
 
 

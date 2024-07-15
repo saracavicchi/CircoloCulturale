@@ -32,4 +32,7 @@ public interface SalaRepository extends JpaRepository<Sala, Integer> {
     @Query("SELECT s FROM Sala s WHERE s.idSede.id = :idSede AND s.active = true AND s.idSede.active = true")
     List<Sala> findAllActiveBySedeId(Integer idSede);
 
+    @Query("SELECT s FROM Sala s WHERE s.active = true")
+    List<Sala> findAllIfActive();
+
 }

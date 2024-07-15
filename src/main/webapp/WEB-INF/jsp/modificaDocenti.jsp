@@ -27,19 +27,15 @@
         document.addEventListener('DOMContentLoaded', function() {
             initForm();
             gestisciStipendiDocenti();
-            var fail = "${param.fail}";
-            if (fail == 'true') {
-                scrollToErrorMsg();
-            }
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
-        });
 
+
+        });
+    /*
         function warningDocentiOverlap() {
             alert("Attenzione: sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti. Se è previsto e non un errore, si prega di selezionare nuovamente i dati e confermare.");
         }
+
+
 
         function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
@@ -47,6 +43,8 @@
                 ErrorMsgElement.scrollIntoView({behavior: "smooth"});
             }
         }
+
+     */
 
         function gestisciStipendiDocenti() {
             var selectDocenti = document.getElementsByName('nuoviDocenti')[0];
@@ -166,6 +164,16 @@
                 specificErrorElement.textContent = errorMsg;
                 Element.appendChild(specificErrorElement);
             }
+            if(errorMessageElement){
+                scrollToErrorMsg();
+            }
+
+        }
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('error-message');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
         }
 
         function removeError(formName) {
@@ -191,45 +199,44 @@
     </script>
 </head>
 <body>
-<%@ include file="/static/include/header.jsp" %>
+<<%@ include file="/static/include/header.jsp" %>
 <div id="main-content">
     <main class="midleft">
         <section class="title">
             <h1>Docenti Correnti</h1>
         </section>
         <section class="content">
-            <% String fail;
+                <% String fail;
                 if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
             %>
             <p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
-            <%
+                <%
                 }
             %>
             <form id="modificaDocentiForm" action="modificaDocenti" method="post">
                 <fieldset>
                     <legend>Docenti Attuali</legend>
                         <input type="hidden" name="idCorso" value="${corso.id}"/>
-                        <input type="hidden" name="docentiOverlap" value="<%= request.getParameter("docentiOverlap") != null ? request.getParameter("docentiOverlap") : "null" %>">
-                        <p>Seleziona i docenti da eliminare<p>
-                        <c:forEach var="docente" items="${docentiCorso}">
-                            <div>
-                                <input type="checkbox" id="docentiDaEliminare" name="docentiDaEliminare" value="${docente.id}" />
-                                <span>${docente.socio.utente.nome} ${docente.socio.utente.cognome} (${docente.socio.utente.cf}): </span>
+                    <p>Seleziona i docenti da eliminare<p>
+                    <c:forEach var="docente" items="${docentiCorso}">
+                    <div>
+                        <input type="checkbox" id="docentiDaEliminare" name="docentiDaEliminare" value="${docente.id}" />
+                        <span>${docente.socio.utente.nome} ${docente.socio.utente.cognome} (${docente.socio.utente.cf}): </span>
                         <input type="number" name="stipendiAttuali" value="${docente.stipendio}" title="Per favore inserire un importo corretto senza cifre decimali" required/>
-                            </div>
-                        </c:forEach>
-                        <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
+                    </div>
+                    </c:forEach>
+                    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
                 </fieldset>
                 <fieldset>
                     <legend>Aggiungi Nuovi Docenti</legend>
-                        <select name="nuoviDocenti" multiple="multiple" onchange="gestisciStipendiDocenti()">
-                            <c:forEach var="socio" items="${sociInfo}">
-                                <option value="${socio[0]}">${socio[1]} ${socio[2]} (${socio[0]})</option>
-                            </c:forEach>
-                        </select>
-                        <div id="containerStipendi"></div>
-                        <!-- <label for="stipendiNuoviDocenti">Inserisci gli stipendi per i nuovi docenti (separati da virgola, nell'ordine di selezione):</label>
-                        <input type="text" id="stipendiNuoviDocenti" name="stipendiNuoviDocenti" placeholder="Esempio: 1500,1200,1300" /> -->
+                    <select name="nuoviDocenti" multiple="multiple" onchange="gestisciStipendiDocenti()">
+                        <c:forEach var="socio" items="${sociInfo}">
+                            <option value="${socio[0]}">${socio[1]} ${socio[2]} (${socio[0]})</option>
+                        </c:forEach>
+                    </select>
+                    <div id="containerStipendi"></div>
+                    <!-- <label for="stipendiNuoviDocenti">Inserisci gli stipendi per i nuovi docenti (separati da virgola, nell'ordine di selezione):</label>
+                    <input type="text" id="stipendiNuoviDocenti" name="stipendiNuoviDocenti" placeholder="Esempio: 1500,1200,1300" /> -->
                 </fieldset>
                 <button type="submit">Salva Modifiche</button>
             </form>
@@ -243,3 +250,4 @@
 </div>
 </body>
 </html>
+

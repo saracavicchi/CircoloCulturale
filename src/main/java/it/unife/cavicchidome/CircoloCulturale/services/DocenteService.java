@@ -49,6 +49,11 @@ public class DocenteService {
         return docenteRepository.findById(docenteId);
     }
 
+    @Transactional
+    public List<Docente> findDocentiByCorsoId(Integer corsoId) {
+        return docenteRepository.findDocentiByCorsoId(corsoId);
+    }
+
 
 
 

@@ -28,19 +28,11 @@
         document.addEventListener('DOMContentLoaded', function () {
             initEditCorsoForm();
             handleCancellaCorsoFormSubmission()
-            var fail = "${param.fail}";
-            if (fail == 'true') {
-                scrollToErrorMsg();
-            }
+
 
         });
 
-        function scrollToErrorMsg() {
-            var ErrorMsgElement = document.getElementById('ErroreMsg');
-            if (ErrorMsgElement) {
-                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
-            }
-        }
+
 
         function initEditCorsoForm() {
             var editCorsoForm = document.getElementById('editCorsoForm');
@@ -148,7 +140,16 @@
                     }
                 }
             }
+            if(errorMessageElement){
+                scrollToErrorMsg();
+            }
 
+        }
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('error-message');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
         }
 
         function removeError(formName) {

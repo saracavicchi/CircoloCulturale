@@ -17,12 +17,8 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
-            var fail = "${param.fail}";
-            if (fail == 'true') {
-                scrollToErrorMsg();
-            }
-
         });
+
 
         function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
@@ -138,6 +134,16 @@
                 specificErrorElement.textContent = errorMsg;
                 Element.appendChild(specificErrorElement);
             }
+            if(errorMessageElement){
+                scrollToErrorMsg();
+            }
+
+        }
+        function scrollToErrorMsg() {
+            var ErrorMsgElement = document.getElementById('error-message');
+            if (ErrorMsgElement) {
+                ErrorMsgElement.scrollIntoView({behavior: "smooth"});
+            }
         }
 
         function removeError(formName) {
@@ -170,7 +176,6 @@
         }
     </script>
 </head>
-<body>
 <%@ include file="/static/include/header.jsp" %>
 <div id="main-content">
     <main class="midleft">
@@ -178,11 +183,11 @@
             <h1>Modifica Calendario e Sala Corso</h1>
         </section>
         <section class="content">
-            <% String fail;
+                <% String fail;
                 if ((fail = request.getParameter("fail")) != null && fail.equals("true")) {
             %>
             <p>Errore durante la modifica del corso, verificare le informazioni e riprovare</p>
-            <%
+                <%
                 }
             %>
             <form id="modificaCalendarioForm" action="modificaCalendario" method="post">
@@ -190,7 +195,15 @@
 
                 <label>Sala:</label>
                 <select name="idSala" required>
+                    <c:set var="currentSedeId" value="" />
                     <c:forEach items="${sale}" var="sala">
+                        <c:choose>
+                            <c:when test="${not currentSedeId.equals(sala.idSede.id)}">
+                                <optgroup label="Nome Sede: ${sala.idSede.id}">
+                                <c:set var="currentSedeId" value="${sala.idSede.id}" />
+                            </c:when>
+                            <c:otherwise></c:otherwise>
+                        </c:choose>
                         <c:choose>
                             <c:when test="${sala.id.toString() == corso.idSala.id.toString()}">
                                 <option value="${sala.id}" selected="selected">${sala.numeroSala}</option>
@@ -199,36 +212,43 @@
                                 <option value="${sala.id}">${sala.numeroSala}</option>
                             </c:otherwise>
                         </c:choose>
+                        <c:if test="${sale.get(sale.size() -1) == sala}">
+                            </optgroup>
+                        </c:if>
+                        <c:if test="${sale.indexOf(sala) == sale.size() - 1}">
+                            </optgroup>
+                        </c:if>
                     </c:forEach>
                 </select>
 
-                <c:forEach var="dayIndex" begin="1" end="5">
-                    <c:set var="giornoIt" value="${dayIndex == 1 ? 'Lunedì' : dayIndex == 2 ? 'Martedì' : dayIndex == 3 ? 'Mercoledì' : dayIndex == 4 ? 'Giovedì' : 'Venerdì'}"/>
-                    <c:set var="giorno" value="${dayIndex == 1 ? 'monday' : dayIndex == 2 ? 'tuesday' : dayIndex == 3 ? 'wednesday' : dayIndex == 4 ? 'thursday' : 'friday'}"/>
-                    <c:set var="found" value="false"/>
-                    <c:forEach items="${calendarioCorso}" var="calendario" varStatus="status">
-                        <c:if test="${giorno == calendario.giornoSettimana and not found}">
-                            <label for="giorno${giorno}">${giornoIt}: </label>
-                            <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');" checked>
-                            <div id="orario${giorno}" style="display:block;">
-                                Orario Inizio: <input type="time" name="orariInizio" value="${calendario.orarioInizio}"><br>
-                                Orario Fine: <input type="time" name="orariFine" value="${calendario.orarioFine}"><br>
-                            </div>
-                            <br>
-                            <c:set var="found" value="true"/>
-                        </c:if>
-                    </c:forEach>
-                    <c:if test="${not found}">
+
+            <c:forEach var="dayIndex" begin="1" end="5">
+                <c:set var="giornoIt" value="${dayIndex == 1 ? 'Lunedì' : dayIndex == 2 ? 'Martedì' : dayIndex == 3 ? 'Mercoledì' : dayIndex == 4 ? 'Giovedì' : 'Venerdì'}"/>
+                <c:set var="giorno" value="${dayIndex == 1 ? 'monday' : dayIndex == 2 ? 'tuesday' : dayIndex == 3 ? 'wednesday' : dayIndex == 4 ? 'thursday' : 'friday'}"/>
+                <c:set var="found" value="false"/>
+                <c:forEach items="${calendarioCorso}" var="calendario" varStatus="status">
+                    <c:if test="${giorno == calendario.giornoSettimana and not found}">
                         <label for="giorno${giorno}">${giornoIt}: </label>
-                        <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');">
-                        <div id="orario${giorno}" style="display:none;">
-                            Orario Inizio: <input type="time" name="orariInizio"><br>
-                            Orario Fine: <input type="time" name="orariFine"><br>
+                        <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');" checked>
+                        <div id="orario${giorno}" style="display:block;">
+                            Orario Inizio: <input type="time" name="orariInizio" value="${calendario.orarioInizio}"><br>
+                            Orario Fine: <input type="time" name="orariFine" value="${calendario.orarioFine}"><br>
                         </div>
                         <br>
+                        <c:set var="found" value="true"/>
                     </c:if>
                 </c:forEach>
-                <button type="submit">Salva Modifiche</button>
+                <c:if test="${not found}">
+                    <label for="giorno${giorno}">${giornoIt}: </label>
+                    <input type="checkbox" id="giorno${giorno}" name="giorni" value="${dayIndex}" onchange="toggleTimeInputs(this,'${giorno}');">
+                    <div id="orario${giorno}" style="display:none;">
+                        Orario Inizio: <input type="time" name="orariInizio">
+                        Orario Fine: <input type="time" name="orariFine">
+                    </div>
+                    <br>
+                </c:if>
+            </c:forEach>
+        <button type="submit">Salva Modifiche</button>
             </form>
         </section>
         <section class="content">

@@ -108,13 +108,13 @@ public class SalaService {
         return true;
     }
     @Transactional(readOnly = true)
-    public Optional<Sala> findByNumeroSalaAndIdSede(Integer numeroSala, Sede idSede){
-        return salaRepository.findByNumeroSalaAndIdSede(numeroSala, idSede);
+    public Optional<Sala> findByNumeroSalaAndIdSedeActive(Integer numeroSala, Sede idSede){
+        return salaRepository.findByNumeroSalaAndIdSedeActive(numeroSala, idSede);
     }
 
     @Transactional(readOnly = true)
     public Optional<Sala> findByNumeroSalaAndIdSedeEvenIfNotActive(Integer numeroSala, Sede idSede){
-        return salaRepository.findByNumeroSalaAndIdSede(numeroSala, idSede);
+        return salaRepository.findByNumeroSalaAndIdSedeEvenIfNotActive(numeroSala, idSede);
     }
 
     @Transactional(readOnly = true)
@@ -191,6 +191,11 @@ public class SalaService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Sala> findAllIfActive() {
+        return salaRepository.findAll();
     }
 
 
