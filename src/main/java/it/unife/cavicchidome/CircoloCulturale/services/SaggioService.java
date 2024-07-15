@@ -370,6 +370,11 @@ public class SaggioService {
     public Optional<Saggio> findByIdNotDeleted(Integer id){
         return saggioRepository.findByIdNotDeleted(id);
     }
+    @Transactional
+    public List<Saggio> getSaggioAfterDateDeleted(Optional<LocalDate> date, Optional<Boolean> deleted) {
+        return saggioRepository.getSaggioAfterDateDeleted(date.orElse(LocalDate.now()), deleted.orElse(false));
+    }
+
 
 
 

@@ -33,20 +33,8 @@
                 content.insertBefore(successParagraph, content.querySelector('h1'));
             }
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            addMessages();
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
 
-        });
-
-        function warningDocentiOverlap() {
-            alert("Attenzione: le informazioni sono state salvate ma sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti.");
-        }
-
-        //window.addEventListener('DOMContentLoaded', addMessages);
+        window.addEventListener('DOMContentLoaded', addMessages);
 
     </script>
 </head>
@@ -55,7 +43,7 @@
     <div id="main-content">
         <main class="fullsize">
             <section class="title">
-                <h1>Informazioni sulla sede</h1>
+                <h1>Informazioni sulla corso</h1>
             </section>
             <section class="content">
                 <h1>${corso.genere} ${corso.categoria} ${corso.livello}</h1>
@@ -74,7 +62,7 @@
                         <li>${docente.socio.utente.nome} ${docente.socio.utente.cognome}</li>
                     </c:forEach>
                 </ul>
-                <% if (request.getAttribute("socio") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
+                <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
                     if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
                         <form action="/corso/iscrizione" method="post">
                             <input type="hidden" name="socio-id" value="${socio.id}">

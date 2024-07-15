@@ -660,8 +660,8 @@ public class CorsoService {
     public List<Corso> filterCorsi(Optional<String> category,
                                    Optional<String> genre,
                                    Optional<String> level,
-                                   Optional<Integer> socioId) {
-        List<Corso> corsi = corsoRepository.findAll();
+                                   Optional<Boolean> active) {
+        List<Corso> corsi = corsoRepository.findAllActive(active.orElse(true));
 
         if (category.isPresent() && !category.get().isEmpty()) {
             List<Corso> categoryFilteredCorsi = new ArrayList<>();
@@ -691,26 +691,6 @@ public class CorsoService {
                 }
             }
             corsi = levelFilteredCorsi;
-        }
-
-        if (socioId.isPresent()) {
-            List<Corso> docenteFilteredCorsi = new ArrayList<>();
-            for (Corso c : corsi) {
-                for (Docente d : c.getDocenti()) {
-                    if (d.getSocio().getId().equals(socioId.get())) {
-                        docenteFilteredCorsi.add(c);
-                        break;
-                    }
-                }
-            }
-
-            List<Corso> segretarioFilteredCorsi = new ArrayList<>();
-            for (Corso c : docenteFilteredCorsi) {
-                if (c.getIdSala().getIdSede().getSegretario().getId().equals(socioId.get())) {
-                    segretarioFilteredCorsi.add(c);
-                }
-            }
-            corsi = segretarioFilteredCorsi;
         }
 
         return corsi;

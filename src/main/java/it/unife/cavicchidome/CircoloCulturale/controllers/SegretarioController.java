@@ -2,7 +2,11 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
 import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
+import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
+import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
+import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,9 +30,15 @@ import java.util.Optional;
 public class SegretarioController {
 
     private final SocioService socioService;
+    private final CorsoService corsoService;
+    private final SaggioService saggioService;
+    private final BigliettoService bigliettoService;
 
-    public SegretarioController(SocioService socioService) {
+    public SegretarioController(SocioService socioService, CorsoService corsoService, SaggioService saggioService, BigliettoService bigliettoService) {
         this.socioService = socioService;
+        this.corsoService = corsoService;
+        this.saggioService = saggioService;
+        this.bigliettoService = bigliettoService;
     }
 
     @GetMapping("/soci")
@@ -98,4 +108,62 @@ public class SegretarioController {
             return "redirect:/segretario/nuovoSocio";
         }
     }
+
+    @GetMapping("/corsi")
+    public String segretarioViewCorsi(@RequestParam(name = "categoria") Optional<String> courseCategory,
+                                      @RequestParam(name = "genere") Optional<String> courseGenre,
+                                      @RequestParam(name = "livello") Optional<String> courseLevel,
+                                      @RequestParam(name = "active") Optional<Boolean> active,
+                                      Model model,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response) {
+
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isPresent() && segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("categorie", corsoService.getCategorie());
+        model.addAttribute("generi", corsoService.getGeneri());
+        model.addAttribute("livelli", corsoService.getLivelli());
+        model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, active));
+        return "corsi-segretario";
+    }
+
+    @GetMapping("/saggi")
+    public String viewSaggi(@RequestParam(name = "data") Optional<LocalDate> date,
+                            @RequestParam(name = "deleted") Optional<Boolean> deleted,
+                            Model model,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
+
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("saggi", saggioService.getSaggioAfterDateDeleted(date, deleted));
+        return "saggi-segretario";
+    }
+
+    @GetMapping("/biglietti")
+    public String viewBiglietti (@RequestParam(name = "saggioId") Optional<Integer> saggioId,
+                                 @RequestParam(name = "nome") Optional<String> nome,
+                                 @RequestParam(name = "cognome") Optional<String> cognome,
+                                 @RequestParam(name = "deleted") Optional<Boolean> deleted,
+                                 Model model,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
+
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("saggi", saggioService.findAllSaggi());
+        model.addAttribute("biglietti", bigliettoService.findBigliettoNameSurnameSaggioDeleted(nome, cognome, saggioId, deleted));
+        return "biglietti-segretario";
+    }
+
+
 }

@@ -48,6 +48,8 @@ public class SaggioController {
 
     @GetMapping("/info")
     public String viewSaggi(@RequestParam(name = "id") Optional<Integer> saggioId,
+                            @RequestParam(name = "data") Optional<LocalDate> date,
+                            @RequestParam(name = "deleted") Optional<Boolean> deleted,
                             Model model,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -62,7 +64,7 @@ public class SaggioController {
                 return "saggio-info";
             }
         }
-        model.addAttribute("saggi", saggioService.findAllSaggi());
+        model.addAttribute("saggi", saggioService.getSaggioAfterDateDeleted(date, deleted));
         return "saggi";
     }
 
@@ -157,6 +159,10 @@ public class SaggioController {
 
     @GetMapping("/modifica")
     public String viewModificaSaggio(@RequestParam("saggioId") Integer saggioId, Model model, HttpServletRequest request, HttpServletResponse response) {
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+            return "redirect:/";
+        }
         Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
         if (saggio.isPresent() && corsoService.aggiungiCorsiBaseRuolo(request, response, model)) {
             model.addAttribute("saggio", saggio.get());
