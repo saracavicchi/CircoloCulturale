@@ -62,11 +62,19 @@ public class CorsoService {
     }
 
     public boolean validateBasicInfo(String descrizione, String genere, String livello, String categoria) {
-        String regex = "^[a-zA-Z- ]+$";
-        return descrizione != null && descrizione.matches(regex) &&
-                genere != null && genere.matches(regex) && genere.length() <= 20 &&
-                livello != null && livello.matches(regex) && livello.length() <= 20 &&
-                categoria != null && !categoria.isEmpty();
+        String nomeIndirizzoPattern = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
+        String descrizionePattern = "^(?=.*\\p{L})[\\p{L}\\p{P}\\s\\-()]+$";
+        if( !descrizione.isEmpty() && descrizione != null && !descrizione.matches(descrizionePattern)){
+            return false;
+        }
+        if(genere == null || genere.isEmpty() || livello == null || livello.isEmpty() || categoria == null || categoria.isEmpty()){
+            return false;
+        }
+        if(!genere.matches(nomeIndirizzoPattern) || !livello.matches(nomeIndirizzoPattern)){
+            return false;
+        }
+
+        return true;
     }
 
     public boolean validateDocentiAndStipendi(List<String> docentiCf, List<Integer> stipendi) {

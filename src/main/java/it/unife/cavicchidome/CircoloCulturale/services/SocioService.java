@@ -328,7 +328,7 @@ public class SocioService {
             );
             message.setSubject("Benvenuto al Circolo Culturale");
             message.setText("Ciao " + socio.getUtente().getNome() + ","
-                    + "\n\n Benvenuto al Circolo Culturale! Il tuo codice tessera è: " + socio.getTessera().getId());
+                    + "\n\nBenvenuto al Circolo Culturale! Il tuo codice tessera è: " + socio.getTessera().getId());
 
             Transport.send(message);
 

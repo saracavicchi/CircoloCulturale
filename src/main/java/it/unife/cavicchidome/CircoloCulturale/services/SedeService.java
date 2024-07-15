@@ -117,13 +117,18 @@ public class SedeService {
     }
 
     private boolean validateIndirizzo(String stato, String provincia, String citta, String via, String numeroCivico) {
-        String regex = "^[A-Za-z\\s\\-]+$";
+        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
         int maxLengthTotal = 80;
 
         if (stato == null || provincia == null || citta == null || via == null || numeroCivico == null) {
             return false;
         }
         if (!stato.matches(regex) || !provincia.matches(regex) || !citta.matches(regex) || !via.matches(regex)) {
+            return false;
+        }
+        
+        String houseNumberRegex = "^(?=.*[0-9])[0-9a-zA-Z/]+$";;
+        if (numeroCivico.isEmpty() || numeroCivico== null || !numeroCivico.matches(houseNumberRegex)) {
             return false;
         }
 

@@ -47,7 +47,7 @@
             //var photoUrl = form.photoUrl.value;
 
             // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
-            var regex = /^[A-Za-z\s]+$/;
+            var regex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
             if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(country) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
                 errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
                 erroredField = "name, surname, birthplace, country, province, city, street";
@@ -204,49 +204,58 @@
             <%  }
             } %>
             <form id="registrationForm" name="registrationForm" method="post" action="nuovoSocio" onsubmit="return submitForm()" enctype="multipart/form-data">
-                <label for="name">Nome:</label>
-                <input type="text" id="name" name="name" maxlength="20" required>
+                <fieldset>
+                    <legend>Informazioni Personali</legend>
+                    <label for="name">Nome:</label>
+                    <input type="text" id="name" name="name" maxlength="20" required>
 
-                <label for="surname">Cognome:</label>
-                <input type="text" id="surname" name="surname" maxlength="20" required>
+                    <label for="surname">Cognome:</label>
+                    <input type="text" id="surname" name="surname" maxlength="20" required>
 
-                <label for="cf">Codice fiscale:</label>
-                <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
+                    <label for="cf">Codice fiscale:</label>
+                    <input type="text" id="cf" name="cf" maxlength="16" minlength="16" required>
 
-                <label for="dob">Data di nascita:</label>
-                <input type="date" id="dob" name="dob" required>
+                    <label for="dob">Data di nascita:</label>
+                    <input type="date" id="dob" name="dob" required>
 
-                <label for="birthplace">Luogo di nascita (città):</label>
-                <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
+                    <label for="birthplace">Luogo di nascita (città):</label>
+                    <input type="text" id="birthplace" name="birthplace" maxlength="20" required>
+                </fieldset>
 
-                <label for="country">Stato:</label>
-                <input type="text" id="country" name="country" required>
+                <fieldset>
+                    <legend>Indirizzo di Residenza</legend>
+                    <label for="country">Stato:</label>
+                    <input type="text" id="country" name="country" required>
 
-                <label for="province">Provincia:</label>
-                <input type="text" id="province" name="province" required>
+                    <label for="province">Provincia:</label>
+                    <input type="text" id="province" name="province" required>
 
-                <label for="city">Città:</label>
-                <input type="text" id="city" name="city" required>
+                    <label for="city">Città:</label>
+                    <input type="text" id="city" name="city" required>
 
-                <label for="street">Via:</label>
-                <input type="text" id="street" name="street" required>
+                    <label for="street">Via:</label>
+                    <input type="text" id="street" name="street" required>
 
-                <label for="houseNumber">Numero Civico:</label>
-                <input type="text" id="houseNumber" name="houseNumber" required>
+                    <label for="houseNumber">Numero Civico:</label>
+                    <input type="text" id="houseNumber" name="houseNumber" required>
+                </fieldset>
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" maxlength="50" required>
+                <fieldset>
+                    <legend>Contatti e Altri Dettagli</legend>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" maxlength="50" required>
 
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" maxlength="50" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" maxlength="50" required>
 
-                <label for="phoneNumber">Numero di telefono:</label>
-                <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
+                    <label for="phoneNumber">Numero di telefono:</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
 
-                <input type="file" id="photo" name="photo">
+                    <input type="file" id="photo" name="photo">
 
-                <label for="price">Prezzo</label>
-                <input type="number" id="price" name="price" value="10">
+                    <label for="price">Prezzo</label>
+                    <input type="number" id="price" name="price" value="10">
+                </fieldset>
 
                 <input type="submit" name="confirm" value="Conferma">
             </form>

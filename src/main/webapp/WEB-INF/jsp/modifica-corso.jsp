@@ -62,7 +62,8 @@
         var errorMsg = "";
 
         function validateForm() {
-            var charSpaceDashRegex = /^[A-Za-z\s\-]+$/;
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
 
             var descrizione = document.getElementById('descrizione').value;
             var genere = document.getElementById('genere').value;
@@ -71,21 +72,20 @@
             var categoriaMusica = document.getElementById('musica').checked;
 
 
-            if (!descrizione.match(charSpaceDashRegex) || descrizione==null || descrizione=="") {
-                erroredField = "descrizione";
-                errorMsg = "Descrizione deve contenere solo caratteri";
+            if (descrizione && !descrizione.match(charDescrizioneRegex)) {
+                errorMsg = "Descrizione contiene alcuni caratteri non validi";
                 return false;
             }
 
             if (!genere.match(charSpaceDashRegex) || genere.length > 20 || genere==null || genere=="") {
                 erroredField = "genere";
-                errorMsg = "Genere deve contenere solo caratteri e deve essere di massimo 20 caratteri. ";
+                errorMsg = "Genere contiene alcuni caratteri non validi e deve essere di massimo 20 caratteri. ";
                 return false;
             }
 
             if (!livello.match(charSpaceDashRegex) || livello.length > 20 || livello==null || livello=="") {
                 erroredField = "livello";
-                errorMsg = "Livello deve contenere solo lettere, spazi o trattini e deve essere di massimo 20 caratteri. ";
+                errorMsg = "Livello contiene alcuni caratteri non validi e deve essere di massimo 20 caratteri. ";
                 return false;
             }
 
@@ -216,7 +216,7 @@
     <input type="file" id="photo" name="photo">
 
     <label>Descrizione:</label>
-    <input type="text" id="descrizione" name="descrizione" value="${corso.descrizione}"/>
+    <textarea id="descrizione" name="descrizione" placeholder="Descrizione del corso">${corso.descrizione}</textarea>
 
     <label>Genere:</label>
     <input type="text" id="genere" name="genere" value="${corso.genere}"/>

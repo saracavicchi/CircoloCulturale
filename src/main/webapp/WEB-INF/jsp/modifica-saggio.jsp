@@ -75,11 +75,12 @@
             var via = document.getElementById('via').value;
             var numeroCivico = document.getElementById('numeroCivico').value;
 
-            var charSpaceDashRegex = /^[A-Za-z\s\-]+$/;
-            var charDescrizioneRegex = /^[A-Za-z\s\-()]+$/;
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
+
 
             if (!nome.match(charSpaceDashRegex) || !nome || nome.length > 30 || nome == "") {
-                errorMsg = "Nome deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                errorMsg = "Nome contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
                 erroredField = "nome";
                 return false;
             }
@@ -99,8 +100,7 @@
 
             // Optional fields validation
             if (descrizione && !descrizione.match(charDescrizioneRegex)) {
-                erroredField = "descrizione";
-                errorMsg += "Descrizione deve contenere solo lettere, spazi o trattini";
+                errorMsg = "Descrizione contiene alcuni caratteri non validi";
                 return false;
             }
 
@@ -129,25 +129,25 @@
             }
 
             if (!stato.match(charSpaceDashRegex) || !stato || stato == "" ) {
-                errorMsg = "Lo stato deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                errorMsg = "Lo stato contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
                 erroredField = "stato";
                 return false;
             }
 
             if (!provincia.match(charSpaceDashRegex) || !provincia || provincia == "" ) {
-                errorMsg = "La provincia deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                errorMsg = "La provincia contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
                 erroredField = "provincia";
                 return false;
             }
 
             if (!citta.match(charSpaceDashRegex) || !citta || citta == "" ) {
-                errorMsg = "La città deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                errorMsg = "La città contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
                 erroredField = "citta";
                 return false;
             }
 
             if (!via.match(charSpaceDashRegex) || !via || via == "" ) {
-                errorMsg = "La via deve contenere solo lettere, spazi o trattini e deve essere di massimo 30 caratteri";
+                errorMsg = "La via contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
                 erroredField = "via";
                 return false;
             }

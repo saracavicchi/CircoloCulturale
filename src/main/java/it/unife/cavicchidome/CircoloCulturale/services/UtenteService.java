@@ -74,13 +74,14 @@ public class UtenteService {
         }
 
         // Controlla che nome, cognome, luogo di nascita, stato, provincia, città e via siano formati solo da caratteri e non numeri
-        String regex = "^[A-Za-z\\s]+$";
+        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
         if (!name.matches(regex) || !surname.matches(regex) || !birthplace.matches(regex) || !country.matches(regex) || !province.matches(regex) || !city.matches(regex) || !street.matches(regex)) {
             throw new ValidationException("Campi non validi");
         }
 
-        String houseNumberRegex = "^[0-9a-zA-Z]+$";
-        if (!houseNumber.matches(houseNumberRegex)) {
+
+        String houseNumberRegex = "^(?=.*[0-9])[0-9a-zA-Z/]+$";;
+        if (houseNumber.isEmpty() || houseNumber== null || !houseNumber.matches(houseNumberRegex)) {
             throw new ValidationException("Numero civico non valido");
         }
 

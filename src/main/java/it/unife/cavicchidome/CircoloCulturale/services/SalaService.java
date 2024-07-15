@@ -1,5 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
 import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
@@ -62,7 +63,13 @@ public class SalaService {
         return true;
     }
 
-    public boolean newSala(String numeroSala, Integer capienza, String descrizione, Boolean prenotabile, Integer idSede) {
+    public boolean newSala(
+            String numeroSala,
+            Integer capienza,
+            String descrizione,
+            Boolean prenotabile,
+            Integer idSede
+    ) throws IllegalArgumentException {
         if(!validateSalaInfo(numeroSala, capienza)) {
             return false;
         }
@@ -72,11 +79,20 @@ public class SalaService {
         if (!sedeOptional.isPresent()) {
             throw new IllegalArgumentException("Sede with the provided ID does not exist.");
         }
-        if(salaRepository.findByNumeroSalaAndIdSede(Integer.parseInt(numeroSala), sedeOptional.get()).isPresent())
-            throw new IllegalArgumentException("Sala già presente");
+        Optional<Sala> salaOptional = salaRepository.findByNumeroSalaAndIdSedeEvenIfNotActive(Integer.parseInt(numeroSala), sedeOptional.get());
+        Sala newSala;
+        if(salaOptional.isPresent()){
+            if(salaOptional.get().getActive() == false){
+                newSala = salaOptional.get();
+                newSala.setActive(true);
+            }
+            else{
+                throw new IllegalArgumentException("Sala già presente");
+            }
+        }else{
+            newSala = new Sala();
+        }
 
-        // Step 3: Create a new Sala instance
-        Sala newSala = new Sala();
         newSala.setNumeroSala(Integer.parseInt(numeroSala));
         newSala.setCapienza(capienza);
         if(descrizione != null && !descrizione.isEmpty())
@@ -93,6 +109,11 @@ public class SalaService {
     }
     @Transactional(readOnly = true)
     public Optional<Sala> findByNumeroSalaAndIdSede(Integer numeroSala, Sede idSede){
+        return salaRepository.findByNumeroSalaAndIdSede(numeroSala, idSede);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Sala> findByNumeroSalaAndIdSedeEvenIfNotActive(Integer numeroSala, Sede idSede){
         return salaRepository.findByNumeroSalaAndIdSede(numeroSala, idSede);
     }
 

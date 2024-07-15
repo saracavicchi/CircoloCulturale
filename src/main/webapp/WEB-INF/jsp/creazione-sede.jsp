@@ -99,7 +99,7 @@
         var errorMsg = "";
 
         function validateForm() {
-            var charSpaceDashRegex = /^[A-Za-z\s\-]+$/;
+            var charSpaceDashRegex =/^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
             var maxLengthNome = 30;
             var maxLengthTotal = 80;
 

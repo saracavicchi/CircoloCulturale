@@ -1,5 +1,6 @@
 package it.unife.cavicchidome.CircoloCulturale.services;
 
+import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Biglietto;
 import it.unife.cavicchidome.CircoloCulturale.models.Corso;
 import it.unife.cavicchidome.CircoloCulturale.models.Saggio;
@@ -76,20 +77,25 @@ public class SaggioService {
             String numeroCivico,
             List<Integer> corsiIds
     ) {
-        String nomeIndirizzoPattern = "^[A-Za-z\\s\\-]+$";
-        String descrizionePattern = "^[A-Za-z\\s\\-()]+$";
+        String nomeIndirizzoPattern = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
+        String descrizionePattern = "^(?=.*\\p{L})[\\p{L}\\p{P}\\s\\-()]+$";
 
 
         if (nome == null || nome.trim().isEmpty() || !nome.matches(nomeIndirizzoPattern) || nome.length() > 30) {
             return false;
         }
 
-        if (!descrizione.isEmpty() && !descrizione.matches(descrizionePattern)) {
+        if (!descrizione.isEmpty() && descrizione != null && !descrizione.matches(descrizionePattern)) {
             System.out.println("descrizione: " + descrizione);
             return false;
         }
 
         if (!stato.matches(nomeIndirizzoPattern) || !provincia.matches(nomeIndirizzoPattern) || !citta.matches(nomeIndirizzoPattern) || !via.matches(nomeIndirizzoPattern)) {
+            return false;
+        }
+
+        String houseNumberRegex = "^(?=.*[0-9])[0-9a-zA-Z/]+$";;
+        if (numeroCivico.isEmpty() || numeroCivico== null || !numeroCivico.matches(houseNumberRegex)) {
             return false;
         }
 
