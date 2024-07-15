@@ -193,7 +193,7 @@
         <c:forEach items="${sale}" var="sala">
             <c:choose>
             <c:when test="${not currentSedeId.equals(sala.idSede.id)}">
-            <optgroup label="Sede Id: ${sala.idSede.id}">
+            <optgroup label="Nome Sede: ${sala.idSede.id}">
                 <c:set var="currentSedeId" value="${sala.idSede.id}" />
             </c:when>
                 <c:otherwise></c:otherwise>
