@@ -53,7 +53,8 @@
                 <strong>Calendario:</strong>
                 <ul>
                     <c:forEach items="${corso.calendarioCorso}" var="giornoSettimana">
-                        <li>${giornoSettimana.giornoSettimana} dalle ${giornoSettimana.orarioInizio} alle ${giornoSettimana.orarioFine}</li>
+                        <c:set var="giornoIt" value="${giornoSettimana.giornoSettimana == 'monday' ? 'Lunedì' : giornoSettimana.giornoSettimana == 'tuesday' ? 'Martedì' : giornoSettimana.giornoSettimana == 'wednesday' ? 'Mercoledì' : giornoSettimana.giornoSettimana == 'thursday' ? 'Giovedì' : 'Venerdì'}"/>
+                        <li>${giornoIt} dalle ${giornoSettimana.orarioInizio} alle ${giornoSettimana.orarioFine}</li>
                     </c:forEach>
                 </ul>
                 <strong>Docenti:</strong>

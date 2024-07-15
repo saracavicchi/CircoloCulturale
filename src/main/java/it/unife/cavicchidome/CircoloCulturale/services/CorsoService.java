@@ -661,8 +661,8 @@ public class CorsoService {
                                    Optional<String> genre,
                                    Optional<String> level,
                                    Optional<Boolean> active) {
-        List<Corso> corsi = corsoRepository.findAllActive(active.orElse(true));
-
+        //List<Corso> corsi = corsoRepository.findAllActive(active.orElse(true));
+        List<Corso> corsi = corsoRepository.findAllActive();
         if (category.isPresent() && !category.get().isEmpty()) {
             List<Corso> categoryFilteredCorsi = new ArrayList<>();
             for (Corso c : corsi) {

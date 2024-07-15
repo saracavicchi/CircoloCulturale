@@ -36,7 +36,7 @@
                 <h3>Saggio dei corsi di:</h3>
                 <ul>
                     <c:forEach items="${saggio.corsi}" var="corso">
-                        <li><a href="corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></li>
+                        <li><a href="/corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></li>
                     </c:forEach>
                 </ul>
                 <% if ((Integer)request.getAttribute("availableTickets") > 0) { %>
