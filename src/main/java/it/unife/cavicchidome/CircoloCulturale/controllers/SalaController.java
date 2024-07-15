@@ -2,6 +2,9 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.services.SalaService;
 import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
+import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,14 +18,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 class SalaController {
     private final SalaService salaService;
     private final SedeService sedeService;
+    private final SocioService socioService;
 
-    public SalaController(SalaService salaService, SedeService sedeService) {
+    public SalaController(SalaService salaService, SedeService sedeService, SocioService socioService) {
         this.salaService = salaService;
         this.sedeService = sedeService;
+        this.socioService = socioService;
     }
 
     @GetMapping("/crea")
-    public String creaSala(@RequestParam(name = "idSede") Integer idSede) {
+    public String creaSala(@RequestParam(name = "idSede") Integer idSede, Model model, HttpServletRequest request, HttpServletResponse response) {
+        socioService.setSocioFromCookie(request, response, model);
         return "creazione-sala";
     }
 
@@ -52,8 +58,8 @@ class SalaController {
     }
 
     @GetMapping("/modifica")
-    public String modificaSala(@RequestParam(name = "idSede") Integer idSede, Model model) {
-
+    public String modificaSala(@RequestParam(name = "idSede") Integer idSede, Model model, HttpServletRequest request, HttpServletResponse response) {
+        socioService.setSocioFromCookie(request, response, model);
         model.addAttribute("sale", salaService.findAllBySedeId(idSede));
 
         return "modifica-sale";

@@ -50,9 +50,10 @@ public class CorsoController {
     }
 
     @GetMapping("/crea")
-    public String creaCorso(Model model) {
+    public String creaCorso(Model model, HttpServletRequest request, HttpServletResponse response) {
+        socioService.setSocioFromCookie(request, response, model);
 
-        //TODO: Aggiungi controllo per verificare che si tratta di ADMIN
+
 
         // Ottenere le sale dal servizio e aggiungerle al model
         List<Sala> sale = new ArrayList<>(salaService.findAllIfActive());

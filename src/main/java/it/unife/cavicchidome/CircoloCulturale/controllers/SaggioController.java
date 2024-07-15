@@ -116,6 +116,7 @@ public class SaggioController {
 
     @GetMapping("/crea")
     public String viewCreateSaggio(Model model, HttpServletRequest request, HttpServletResponse response) {
+        socioService.setSocioFromCookie(request, response, model);
         if(corsoService.aggiungiCorsiBaseRuolo(request, response, model)){
             return "creazione-saggio";
         }
