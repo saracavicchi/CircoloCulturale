@@ -118,7 +118,7 @@ public class SalaService {
     }
 
     @Transactional(readOnly = true)
-    public List<Sala> findAllBySedeId(Integer idSede) { return salaRepository.findAllBySedeId(idSede); }
+    public List<Sala> findAllBySedeId(Integer idSede) { return salaRepository.findAllActiveBySedeId(idSede); }
 
     public boolean updateSala(Integer idSala, String numeroSala, String descrizione, Boolean prenotabile) {
         try {
@@ -126,12 +126,13 @@ public class SalaService {
             if (!salaOpt.isPresent()) {
                 return false;
             }
-            Optional<Sala> salaOptNumero = salaRepository.findByNumeroSalaAndIdSede(Integer.parseInt(numeroSala), salaOpt.get().getIdSede());
+            Optional<Sala> salaOptNumero = salaRepository.findByNumeroSalaAndIdSedeActive(Integer.parseInt(numeroSala), salaOpt.get().getIdSede());
             if (salaOptNumero.isPresent() && !salaOptNumero.get().getId().equals(idSala)) {
                 throw new RuntimeException("Sala già presente");
             }
             Sala sala = salaOpt.get();
             sala.setNumeroSala(Integer.parseInt(numeroSala));
+            sala.setActive(true);
             if(descrizione != null && !descrizione.isEmpty())
                 sala.setDescrizione(descrizione);
             if(prenotabile == false){
@@ -173,7 +174,7 @@ public class SalaService {
                     corsoRepository.save(corso);
                 }
             }
-            List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySala(idSala);
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySala(idSala); //solo prenotazioni e sale attive
             if (!prenotazioni.isEmpty()) {
                 for (PrenotazioneSala prenotazione : prenotazioni) {
                     prenotazione.setDeleted(true);
@@ -185,7 +186,7 @@ public class SalaService {
             salaRepository.save(sala);
             return true;
         } catch (Exception e) {
-            // Log the exception, if logging is set up
+            // Log eccezione
             System.out.println("Error deleting Sala: "  + e.getMessage());
             e.printStackTrace();
             return false;

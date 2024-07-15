@@ -36,18 +36,23 @@ public class SedeService {
     }
 
     @Transactional
-    public List<Sede> getAllSedi() {
-        return sedeRepository.findAll();
+    public List<Sede> getAllSediActive() {
+        return sedeRepository.findAllActive();
     }
 
     @Transactional
-    public Optional<Sede> findSedeById(Integer id) {
-        return sedeRepository.findById(id);
+    public Optional<Sede> findSedeByIdActive(Integer id) {
+        return sedeRepository.findByIdActive(id);
     }
 
     @Transactional
-    public Optional<Sede> findSedeByIdSala(Integer idSala) {
-        return sedeRepository.findSedeByIdSala(idSala);
+    public Optional<Sede> findSedeByIdAll(Integer id) {
+        return sedeRepository.findByIdAll(id);
+    }
+
+    @Transactional
+    public Optional<Sede> findSedeByIdSalaActive(Integer idSala) {
+        return sedeRepository.findSedeByIdSalaActive(idSala);
     }
 
     @Transactional
@@ -100,7 +105,7 @@ public class SedeService {
     }
 
     private boolean validateNome(String nome) {
-        String regex = "^[A-Za-z\\s\\-]+$";
+        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
         int maxLengthNome = 30;
 
         if (nome == null) {
@@ -143,7 +148,6 @@ public class SedeService {
         if (openingTimes.size() != 7 || closingTimes.size() != 7) {
             return false;
         }
-
         for (int i = 0; i < 7; i++) {
             LocalTime opening = openingTimes.get(i);
             LocalTime closing = closingTimes.get(i);
@@ -156,8 +160,8 @@ public class SedeService {
         return true;
     }
 
-    private boolean validateStipendio(Integer stipendio){
-        if (stipendio == null || stipendio < 10000 || stipendio > 150000) return false;
+    public boolean validateStipendio(Integer stipendio){
+        if (stipendio == null ) return false;
 
         return true;
     }
@@ -169,15 +173,13 @@ public class SedeService {
             return false;
         }
         String indirizzo = stato + ", " + provincia + ", " + citta + ", " + via + ", " + numeroCivico;
-        if (sedeRepository.findSedeByIndirizzo(indirizzo).isPresent()) {
-
+        if (sedeRepository.findSedeByIndirizzoActive(indirizzo).isPresent()) {
             throw new RuntimeException("Indirizzo già presente");
         }
-        if (sedeRepository.findSedeByNome(nome).isPresent()) {
+
+        if (sedeRepository.findSedeByNomeActive(nome).isPresent()) {
             throw new RuntimeException("Nome già presente");
         }
-
-
 
         // Crea nuova sede
         Sede newSede = new Sede();
@@ -190,7 +192,7 @@ public class SedeService {
             newSede.setGiornoChiusura(giorniChiusura);
         }
 
-        Optional<Socio> socioOpt = socioRepository.findById(idSegretario);
+        Optional<Socio> socioOpt = socioRepository.findById(idSegretario); //solo soci active
         if (!socioOpt.isPresent()) {
             return false;
         }
@@ -260,11 +262,11 @@ public class SedeService {
             return false;
         }
         try {
-            Optional<Sede> sedeOpt = sedeRepository.findById(idSede);
+            Optional<Sede> sedeOpt = sedeRepository.findByIdActive(idSede);
             if (!sedeOpt.isPresent()) {
                 return false;
             }
-            Optional<Sede> sedeOptNome = sedeRepository.findSedeByNome(nome);
+            Optional<Sede> sedeOptNome = sedeRepository.findSedeByNomeActive(nome);
             if (sedeOptNome.isPresent() && !sedeOptNome.get().getId().equals(idSede)) {
                 throw new RuntimeException("Nome già presente");
             }
@@ -296,7 +298,7 @@ public class SedeService {
             }
             Segretario segretario;
             if(idSegretario != 0) {//significa che è stato selezionato un nuovo segretario
-                Optional<Socio> socioOpt = socioRepository.findById(idSegretario);
+                Optional<Socio> socioOpt = socioRepository.findById(idSegretario); //solo soci active
                 if (!socioOpt.isPresent()) {
                     return false;
                 }
@@ -352,7 +354,7 @@ public class SedeService {
         }
     }
 
-    boolean checkIfGiornoChiusuraAlreadyPresent(Sede sede, List<LocalDate> chiusura) {
+    public boolean checkIfGiornoChiusuraAlreadyPresent(Sede sede, List<LocalDate> chiusura) {
         for(LocalDate date : chiusura){
             if(sede.getGiornoChiusura().contains(date)){
                 return true;
@@ -369,14 +371,14 @@ public class SedeService {
                 return false;
             }
             Sede sede = sedeOpt.get();
-            List<Sala> sale = salaRepository.findAllBySedeId(idSede);
+            List<Sala> sale = salaRepository.findAllActiveBySedeId(idSede);
             if(!sale.isEmpty()){
                 for(Sala sala : sale){
                     sala.setActive(false);
                     salaRepository.save(sala);
                 }
             }
-            List<Corso> corsi = corsoRepository.findBySedeId(idSede);
+            List<Corso> corsi = corsoRepository.findBySedeId(idSede); //tutto active
             if(!corsi.isEmpty()){
                 for(Corso corso : corsi){
                     Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
@@ -388,7 +390,7 @@ public class SedeService {
                     corsoRepository.save(corso);
                 }
             }
-            List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySedeId(idSede);
+            List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySedeId(idSede); //Solo active
             if (!prenotazioni.isEmpty()) {
                 for (PrenotazioneSala prenotazione : prenotazioni) {
                     prenotazione.setDeleted(true);
@@ -409,5 +411,30 @@ public class SedeService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Transactional
+    public Optional<Sede> findSedeByNomeActive(String nome) {
+        return sedeRepository.findSedeByNomeActive(nome);
+    }
+
+    @Transactional
+    public Optional<Sede> findSedeByNomeAll(String nome) {
+        return sedeRepository.findSedeByNomeAll(nome);
+    }
+
+    @Transactional
+    public Optional<Sede> findSedeByIndirizzoActive(String indirizzo) {
+        return sedeRepository.findSedeByIndirizzoActive(indirizzo);
+    }
+
+    @Transactional
+    public Optional<Sede> findSedeByIndirizzoAll(String indirizzo) {
+        return sedeRepository.findSedeByIndirizzoAll(indirizzo);
+    }
+
+    @Transactional
+    List<Sede> findAllEvenIfNotActive(){
+        return sedeRepository.findAllEvenIfNotActive();
     }
 }

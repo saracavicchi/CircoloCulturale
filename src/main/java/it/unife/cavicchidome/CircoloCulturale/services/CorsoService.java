@@ -25,12 +25,12 @@ public class CorsoService {
     private final UtenteRepository utenteRepository;
     private final OrarioSedeService orarioSedeService;
     private final SalaService salaService;
-    private CorsoRepository corsoRepository;
-    private SalaRepository salaRepository;
-    private SocioRepository socioRepository;
-    private DocenteRepository docenteRepository;
-    private CalendarioCorsoRepository calendarioCorsoRepository;
-    private SedeService sedeService;
+    private final CorsoRepository corsoRepository;
+    private final SalaRepository salaRepository;
+    private final SocioRepository socioRepository;
+    private final DocenteRepository docenteRepository;
+    private final CalendarioCorsoRepository calendarioCorsoRepository;
+    private final SedeService sedeService;
     private final SocioService socioService;
 
     @Value("${file.corso.upload-dir}")
@@ -99,12 +99,16 @@ public class CorsoService {
         }
         for (int i = 0; i < giorni.size(); i++) {
             Integer giorno = giorni.get(i);
-            List<LocalTime> orariAperturaChiusura = orarioSedeService.findOrarioAperturaChiusuraByIdSedeAndGiornoSettimana(sedeService.findSedeByIdSala(idSala).get().getId(), Weekday.values()[giorno]);
-            LocalTime orarioApertura = orariAperturaChiusura.get(0);
-            LocalTime orarioChiusura = orariAperturaChiusura.get(1);
+            //List<LocalTime> orariAperturaChiusura = orarioSedeService.findOrarioAperturaChiusuraByIdSedeAndGiornoSettimana(sedeService.findSedeByIdSalaActive(idSala).get().getId(), Weekday.values()[giorno]);
+            //LocalTime orarioApertura = orariAperturaChiusura.get(0);
+            //LocalTime orarioChiusura = orariAperturaChiusura.get(1);
             LocalTime inizio = orarioInizio.get(giorno-1);
             LocalTime fine = orarioFine.get(giorno-1);
-            if (inizio == null || fine == null || !inizio.isBefore(fine) || inizio.isBefore(orarioApertura) || fine.isAfter(orarioChiusura)) {
+            /*if (inizio == null || fine == null || !inizio.isBefore(fine) || inizio.isBefore(orarioApertura) || fine.isAfter(orarioChiusura)) {
+                return false;
+            }
+            */
+            if(sedeService.outsideOpeningHours(idSala, Weekday.fromDayNumber(giorno), inizio, fine)){ //TODO: verificare se funziona uguale
                 return false;
             }
         }
@@ -129,8 +133,13 @@ public class CorsoService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) //solo active
     public Corso findCorsoByCategoriaGenereLivello(String categoria, String genere, String livello) {
+        return corsoRepository.findByCategoriaAndGenereAndLivello(categoria, genere, livello).orElse(null);
+    }
+
+    @Transactional(readOnly = true) //anche non active
+    public Corso findCorsoByCategoriaGenereLivelloAll(String categoria, String genere, String livello) {
         return corsoRepository.findByCategoriaAndGenereAndLivello(categoria, genere, livello).orElse(null);
     }
 
@@ -150,7 +159,8 @@ public class CorsoService {
 
         boolean reactivated = false;
 
-        Optional<Corso> corsoIdentical = corsoRepository.findByCategoriaAndGenereAndLivello(categoria, genere, livello);
+
+        Optional<Corso> corsoIdentical = corsoRepository.findByCategoriaAndGenereAndLivelloAll(categoria, genere, livello);
         if(corsoIdentical.isPresent() ) {
             if(corsoIdentical.get().getActive() == true)
                 return false; //Corso Attivo già esistente
@@ -161,8 +171,8 @@ public class CorsoService {
         }
         System.out.println("reactivated: " + reactivated);
 
-        // Step 2: Fetch Sala
-        Sala sala = salaRepository.findById(idSala).orElse(null);
+
+        Sala sala = salaRepository.findByIdActive(idSala).orElse(null);
         if (sala == null) {
             return false; // Sala does not exist
         }
@@ -170,20 +180,20 @@ public class CorsoService {
         for (int i = 0; i < docentiCf.size(); i++) {
             String cf = docentiCf.get(i);
             // Step 3: Find User by CF
-            Optional<Utente> utenteOpt = utenteRepository.findByCf(cf);
+            Optional<Utente> utenteOpt = utenteRepository.findByCfNotDeleted(cf);
             if (!utenteOpt.isPresent()) {
                 return false; // Utente does not exist
             }
             Utente utente = utenteOpt.get();
 
-            // Step 4: Check if Utente is a Socio
-            Optional<Socio> socioOpt = socioRepository.findById(utente.getId());
+            // Check if Utente is a Socio
+            Optional<Socio> socioOpt = socioRepository.findById(utente.getId()); //solo soci attivi
             if (!socioOpt.isPresent()) {
                 return false; // Socio does not exist
             }
             Socio socio = socioOpt.get();
 
-            // Step 5: Check if Socio is not a Docente
+            // Check if Socio is not a Docente
             if (socio.getDocente() == null) {
                 // Socio is not a Docente, proceed to save Docente information
                 Docente docente = new Docente();
@@ -192,7 +202,7 @@ public class CorsoService {
                 docenteRepository.save(docente);
                 docenti.add(docente);
             }
-            else{
+            else{ //aggiorna stipendio solo se superiore al precedente
                 if (BigDecimal.valueOf(stipendi.get(i)).compareTo(socio.getDocente().getStipendio()) > 0){
                     socio.getDocente().setStipendio(BigDecimal.valueOf(stipendi.get(i)));
                     docenteRepository.save(socio.getDocente());
@@ -208,7 +218,7 @@ public class CorsoService {
 
 
         Corso corso;
-        // Step 6: Save Course Information
+        // Save Course Information
         if(!reactivated){
             corso = new Corso();
             corso.setGenere(genere);
@@ -218,8 +228,9 @@ public class CorsoService {
         else{
             corso=corsoIdentical.get();
         }
-
-        corso.setDescrizione(descrizione);
+        if(descrizione != null && !descrizione.isEmpty()){
+            corso.setDescrizione(descrizione);
+        }
         corso.setIdSala(sala);
         corso.setDocenti(docenti);
         corso.setActive(true);
@@ -256,7 +267,7 @@ public class CorsoService {
             Weekday weekday;
             try{
                 weekday = Weekday.fromDayNumber(giorno);
-                System.out.println(weekday);
+                //System.out.println(weekday);
             }catch (IllegalArgumentException e){
                 return false;
             }

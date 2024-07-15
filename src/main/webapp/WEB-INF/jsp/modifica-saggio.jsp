@@ -300,7 +300,7 @@
             <div>
                 <img class="img-responsive" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
             </div>
-            <<form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
+            <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="saggioId" value="${saggio.id}"/>
 
                 <fieldset>

@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SedeRepository extends JpaRepository<Sede, Integer> {
-    @Query("SELECT s FROM Sede s JOIN s.sale sala WHERE sala.id = :idSala")
-    Optional<Sede> findSedeByIdSala(@Param("idSala") Integer idSala);
+    @Query("SELECT s FROM Sede s JOIN s.sale sala WHERE sala.id = :idSala AND s.active = true AND sala.active = true")
+    Optional<Sede> findSedeByIdSalaActive(@Param("idSala") Integer idSala);
 
     /*@Query("SELECT s FROM Sede s WHERE :date NOT IN s.giornoChiusura " +
             "AND :startTime BETWEEN (SELECT a.orarioApertura FROM s.orarioSede a WHERE a.id.giornoSettimana = :dow) " +
@@ -24,21 +24,33 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
     Optional<Sede> findAvailableSede(LocalDate date, LocalTime startTime, LocalTime endTime, Weekday dow);*/
 
     @Query("SELECT s FROM Sede s WHERE s.id = :idSede AND NOT EXISTS (SELECT d FROM s.giornoChiusura d WHERE d = :date) AND EXISTS (SELECT o FROM s.orarioSede o WHERE o.id.giornoSettimana = :dow)")
-    Optional<Sede> findAvailableSedeDate(Integer idSede, LocalDate date, Weekday dow);
+    Optional<Sede> findAvailableSedeDate(Integer idSede, LocalDate date, Weekday dow); //TODO: Aggiungere active?
 
     @Query("SELECT o FROM Sede s JOIN s.orarioSede o WHERE s.id = :idSede AND o.id.giornoSettimana = :dow")
-    OrarioSede findOrarioSede(Integer idSede, Weekday dow);
+    OrarioSede findOrarioSede(Integer idSede, Weekday dow); //TODO: Aggiungere active?
 
     @Query("SELECT s FROM Sede s WHERE s.nome = :nome")
-    Optional<Sede> findSedeByNome(String nome);
+    Optional<Sede> findSedeByNomeAll(String nome);
+
+    @Query("SELECT s FROM Sede s WHERE s.nome = :nome AND s.active = true")
+    Optional<Sede> findSedeByNomeActive(String nome);
 
     @Query("SELECT s FROM Sede s WHERE s.indirizzo = :indirizzo")
-    Optional<Sede> findSedeByIndirizzo(String indirizzo);
+    Optional<Sede> findSedeByIndirizzoAll(String indirizzo);
+
+    @Query("SELECT s FROM Sede s WHERE s.indirizzo = :indirizzo")
+    Optional<Sede> findSedeByIndirizzoActive(String indirizzo);
 
     @Query("SELECT s FROM Sede s WHERE s.active = true")
-    List<Sede> findAll();
+    List<Sede> findAllActive();
+
+    @Query("SELECT s FROM Sede s ")
+    List<Sede> findAllEvenIfNotActive();
 
     @Query("SELECT s FROM Sede s WHERE s.active = true AND s.id = :id")
-    Optional<Sede> findById(Integer id);
+    Optional<Sede> findByIdActive(Integer id);
+
+    @Query("SELECT s FROM Sede s WHERE s.id = :id")
+    Optional<Sede> findByIdAll(Integer id);
 
 }

@@ -85,8 +85,6 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        // Invalida la sessione
-        //request.getSession().invalidate();
 
         // Rimuove il cookie di autenticazione
         Cookie socioCookie = new Cookie("socio-id", null);
@@ -106,7 +104,7 @@ public class AuthController {
     }
 
 
-    //TO DO: Optional e dto
+    //TODO: Optional e dto
     @PostMapping("/signup")
     public String register(
             @RequestParam String name,

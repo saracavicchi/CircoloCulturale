@@ -42,12 +42,12 @@ public class SaggioService {
         return saggioRepository.getNextSaggi(untilDate);
     }
 
-    @Transactional
+    @Transactional  //TODO: cosi retituisce anche i saggi cancellati
     public Optional<Saggio> findSaggioById(Integer saggioId) {
         return saggioRepository.findById(saggioId);
-    }
+    } //TODO: Serve not deleted?
 
-    @Transactional
+    @Transactional //TODO: cosi retituisce anche i saggi cancellati
     public List<Saggio> findAllSaggi () {
         return saggioRepository.findAll();
     }
@@ -148,16 +148,27 @@ public class SaggioService {
         )) {
             return false;
         }
-
+        //solo saggi non cancellati
         if (saggioRepository.getSaggioByData(data).isPresent()) {
             throw new RuntimeException("Data già presente");
         }
-        if (saggioRepository.getSaggioByName(nome).isPresent()) {
-            throw new RuntimeException("Nome già presente");
+        Saggio saggio;
+        Optional<Saggio> saggioOpt = saggioRepository.getSaggioByNameEvenIfDeleted(nome);
+        if (saggioOpt.isPresent()) {
+            if(saggioOpt.get().getDeleted()){
+                saggio = saggioOpt.get();
+                saggio.setDeleted(false);
+            } else {
+                throw new RuntimeException("Nome già presente");
+
+            }
+        }
+        else{
+            saggio = new Saggio();
+            saggio.setDeleted(false);
+            saggio.setNome(nome);
         }
 
-        Saggio saggio = new Saggio();
-        saggio.setNome(nome);
         saggio.setData(data);
         saggio.setMaxPartecipanti(numeroPartecipanti);
         if(!descrizione.isEmpty()) {
@@ -171,6 +182,7 @@ public class SaggioService {
         }
 
         saggio.setIndirizzo(stato, provincia, citta, via, numeroCivico);
+        saggio.setCorsi(null);
         saggioRepository.save(saggio); //per avere disponibile id per foto
 
         if(foto != null){
@@ -180,7 +192,7 @@ public class SaggioService {
 
         Set<Corso> corsi = new HashSet<>();
         for (Integer corsoId : corsiIds) {
-            Corso corso = corsoRepository.findById(corsoId).orElseThrow(() -> new RuntimeException("Corso not found for id: " + corsoId));
+            Corso corso = corsoRepository.findByIdActive(corsoId).orElseThrow(() -> new RuntimeException("Corso not found for id: " + corsoId));
             corsi.add(corso);
         }
         saggio.setCorsi(corsi);
@@ -206,7 +218,7 @@ public class SaggioService {
             List<Integer> corsiIds,
             MultipartFile foto
     ) {
-        Optional<Saggio> saggioOpt = saggioRepository.findById(saggioId);
+        Optional<Saggio> saggioOpt = saggioRepository.findByIdNotDeleted(saggioId);
         if (!saggioOpt.isPresent()) {
             return false;
         }
@@ -229,14 +241,17 @@ public class SaggioService {
             return false;
         }
 
+        //solo saggi non cancellati
         if (saggioRepository.getSaggioByData(data).isPresent() && !saggioRepository.getSaggioByData(data).get().getId().equals(saggioId)) {
             throw new RuntimeException("Data già presente");
         }
+        //solo saggi non cancellati
         if (saggioRepository.getSaggioByName(nome).isPresent() && !saggioRepository.getSaggioByName(nome).get().getId().equals(saggioId)) {
             throw new RuntimeException("Nome già presente");
         }
 
         saggio.setNome(nome);
+        saggio.setDeleted(false);
         saggio.setData(data);
         saggio.setMaxPartecipanti(numeroPartecipanti);
         if (!descrizione.isEmpty()) {
@@ -259,7 +274,7 @@ public class SaggioService {
 
         Set<Corso> corsi = new HashSet<>();
         for (Integer corsoId : corsiIds) {
-            Corso corso = corsoRepository.findById(corsoId).orElseThrow(() -> new RuntimeException("Corso not found for id: " + corsoId));
+            Corso corso = corsoRepository.findByIdActive(corsoId).orElseThrow(() -> new RuntimeException("Corso not found for id: " + corsoId));
             corsi.add(corso);
         }
         saggio.setCorsi(corsi);
@@ -268,8 +283,13 @@ public class SaggioService {
     }
 
     @Transactional
+    public Optional<Saggio> findByIdAll(Integer id){
+        return saggioRepository.findByIdAll(id);
+    }
+
+    @Transactional
     public void deleteSaggio(Integer saggioId) {
-        Saggio saggio = saggioRepository.findById(saggioId)
+        Saggio saggio = saggioRepository.findByIdNotDeleted(saggioId)
                 .orElseThrow(() -> new RuntimeException("Saggio not found for id: " + saggioId));
         saggio.setDeleted(true); // Imposta il saggio come eliminato
         saggio.setCorsi(null); // Rimuove i corsi associati al saggio
@@ -279,6 +299,16 @@ public class SaggioService {
     @Transactional
     public Optional<Saggio> getSaggioByData(LocalDate data){
         return saggioRepository.getSaggioByData(data);
+    }
+
+    @Transactional
+    public Optional<Saggio> getSaggioByDataEvenIfDeleted(LocalDate data){
+        return saggioRepository.getSaggioByDataEvenIfDeleted(data);
+    }
+
+    @Transactional
+    public Optional<Saggio> getSaggioByNameEvenIfDeleted(String nome){
+        return saggioRepository.getSaggioByNameEvenIfDeleted(nome);
     }
 
     @Transactional

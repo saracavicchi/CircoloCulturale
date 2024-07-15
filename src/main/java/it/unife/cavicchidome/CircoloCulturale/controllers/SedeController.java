@@ -42,13 +42,13 @@ public class SedeController {
 
         // TODO: fix JSP return
         if (sedeId.isPresent()) {
-            Optional<Sede> sede = sedeService.findSedeById(sedeId.get());
+            Optional<Sede> sede = sedeService.findSedeByIdActive(sedeId.get());//TODO: ho messo active
             if (sede.isPresent()) {
                 model.addAttribute("sede", sede.get());
             }
             return "sede-info";
         } else {
-            model.addAttribute("sedi", sedeService.getAllSedi());
+            model.addAttribute("sedi", sedeService.getAllSediActive());//TODO: ho messo active
             return "sedi";
         }
     }
@@ -94,7 +94,7 @@ public class SedeController {
 
     @GetMapping("/modifica")
     public String modificaSede(@RequestParam(name = "idSede") Integer idSede, Model model) {
-        Optional<Sede> sedeOpt = sedeService.findSedeById(idSede);
+        Optional<Sede> sedeOpt = sedeService.findSedeByIdActive(idSede);
         if(sedeOpt.isEmpty() || !sedeOpt.isPresent()){
             return "redirect:/sede/info";
         }

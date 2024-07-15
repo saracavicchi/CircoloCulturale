@@ -11,6 +11,10 @@ import java.util.Optional;
 
 public interface SalaRepository extends JpaRepository<Sala, Integer> {
     Optional<Sala>  findById(Integer idSala);
+
+    @Query("SELECT s FROM Sala s WHERE s.id = :idSala AND s.active = true AND s.idSede.active = true")
+    Optional<Sala>  findByIdActive(Integer idSala);
+
     List<Sala> findAll();
 
     @Query("SELECT s FROM Sala s WHERE s.prenotabile = true AND s.active = true ORDER BY s.numeroSala")
@@ -20,12 +24,12 @@ public interface SalaRepository extends JpaRepository<Sala, Integer> {
     List<Sede> findDistinctSedi();
 
     @Query("SELECT s FROM Sala s WHERE s.numeroSala = :numeroSala AND s.idSede = :idSede AND s.active = true AND s.idSede.active = true")
-    Optional<Sala> findByNumeroSalaAndIdSede(Integer numeroSala, Sede idSede);
+    Optional<Sala> findByNumeroSalaAndIdSedeActive(Integer numeroSala, Sede idSede);
 
     @Query("SELECT s FROM Sala s WHERE s.numeroSala = :numeroSala AND s.idSede = :idSede AND s.idSede.active = true")
     Optional<Sala> findByNumeroSalaAndIdSedeEvenIfNotActive(Integer numeroSala, Sede idSede);
 
     @Query("SELECT s FROM Sala s WHERE s.idSede.id = :idSede AND s.active = true AND s.idSede.active = true")
-    List<Sala> findAllBySedeId(Integer idSede);
+    List<Sala> findAllActiveBySedeId(Integer idSede);
 
 }
