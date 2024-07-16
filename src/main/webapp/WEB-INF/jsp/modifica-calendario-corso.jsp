@@ -110,10 +110,7 @@
             var validation = validateDayAndTimeSelection();
 
             if (!validation) {
-                // Ottieni l'elemento h1
-
-                var h1Element = document.getElementsByTagName('h1')[0];
-                displayErrorMessages(h1Element);
+                displayErrorMessages();
             } else {
                 // Ottiene tutti i checkbox
                 var checkboxes = document.querySelectorAll('input[type="checkbox"][name="giorni"]');
@@ -130,7 +127,7 @@
             }
         }
         function displayErrorMessages(Element) {
-
+            var formElement = document.getElementById('modificaCalendarioForm');
             errorDisplayed = true;
             // Controlla se il messaggio di errore esiste già
             var errorMessageElement = document.getElementById('error-message');
@@ -141,7 +138,7 @@
                 errorMessageElement = document.createElement('p');
                 errorMessageElement.id = 'error-message';
                 errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                Element.appendChild(errorMessageElement);
+                document.querySelector('.content').insertBefore(errorMessageElement, formElement);
             }
 
             // Se il messaggio di errore specifico non esiste, crealo
@@ -149,7 +146,7 @@
                 specificErrorElement = document.createElement('p');
                 specificErrorElement.id = 'specific-error';
                 specificErrorElement.textContent = errorMsg;
-                Element.appendChild(specificErrorElement);
+                document.querySelector('.content').insertBefore(specificErrorElement, formElement);
             }
             if(errorMessageElement){
                 scrollToErrorMsg();

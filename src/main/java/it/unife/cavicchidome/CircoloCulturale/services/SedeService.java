@@ -437,4 +437,9 @@ public class SedeService {
     List<Sede> findAllEvenIfNotActive(){
         return sedeRepository.findAllEvenIfNotActive();
     }
+
+    @Transactional
+    public Optional<Sede> findActiveSedeWithMinId() {
+        return sedeRepository.findActiveSedeWithMinId();
+    }
 }

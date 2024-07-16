@@ -12,17 +12,55 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <style>
+        h1{
+            color:  var(--border);
+            text-align: center;
+        }
+
+        .image{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 610px;
+            margin-right: 52px;
+            margin-left: 18px;
+            height: 260px;
+        }
+    </style>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
-    <div id="main-content">
+    <div id="main-content" class="clearfix">
         <main class="clearfix midleft">
             <section class="title">
                 <h1>Il nostro circolo culturale</h1>
             </section>
             <section class="content">
-                <h1>
-                </h1>
+
+                <img class="image" src="http://localhost:8080/images/circoloCulturalePhotos/circolo.jpg" alt="immagine Circolo Culturale">
+                <h1>Benvenuti al Circolo Culturale La Sinfonia</h1>
+                <p>
+                    Il nostro circolo è un punto di incontro per appassionati di danza, musica e molto altro.
+                    Unisciti a noi per esplorare nuove idee, partecipare a eventi culturali e condividere le tue passioni.
+                </p>
+            </section>
+            <section class="content">
+                <h1>Chi Siamo</h1>
+                <p>
+                    Il nostro Circolo Culturale è stato fondato nel 1988 con l'obiettivo di promuovere
+                    la cultura e l'arte nella nostra comunità. Organizziamo eventi, corsi e incontri per tutti gli amanti
+                    della cultura.
+                </p>
+            </section>
+            <section class="content">
+                <h1>Unisciti a noi</h1>
+                <p>
+                    Sei un appassionato di danza, musica, teatro o arte? Vuoi condividere le tue passioni con altre persone?
+                    Iscriviti al nostro circolo e partecipa a eventi, corsi e saggi organizzati da noi.
+                    In più avrai la possibilità di utilizzare i nostri spazi per le tue attività culturali!
+                    Se sei interessato, nella sezione contatti trovi tutte le informazioni per contattarci.
+                </p>
             </section>
         </main>
         <aside class="smallright">
@@ -39,5 +77,7 @@
             </section>
         </aside>
     </div>
+    <%@include file="/static/include/footer.jsp"%>
 </body>
+
 </html>

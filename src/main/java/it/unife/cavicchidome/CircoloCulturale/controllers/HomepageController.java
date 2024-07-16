@@ -41,4 +41,13 @@ public class HomepageController {
         return "index";
     }
 
+    @GetMapping("/contatti")
+    public String contatti(HttpServletRequest request,
+                           HttpServletResponse response,
+                           Model model) {
+        model.addAttribute("sede", sedeService.findActiveSedeWithMinId().get());//TODO: e se non c'è?
+
+        return "contatti";
+    }
+
 }

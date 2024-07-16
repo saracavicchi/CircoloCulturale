@@ -102,9 +102,8 @@
             var validation = validateForm();
 
             if (!validation) {
-                // Ottieni l'elemento h1
-                var h1Element = document.getElementsByTagName('h1')[0];
-                displayErrorMessages(h1Element);
+
+                displayErrorMessages();
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('modificaDocentiForm').submit();
@@ -149,7 +148,7 @@
          */
 
         function displayErrorMessages(Element) {
-
+            formElement=document.getElementById('modificaDocentiForm');
             errorDisplayed = true;
             // Controlla se il messaggio di errore esiste già
             var errorMessageElement = document.getElementById('error-message');
@@ -160,7 +159,7 @@
                 errorMessageElement = document.createElement('p');
                 errorMessageElement.id = 'error-message';
                 errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                Element.appendChild(errorMessageElement);
+                document.querySelector('.content').insertBefore(errorMessageElement, formElement);
             }
 
             // Se il messaggio di errore specifico non esiste, crealo
@@ -168,7 +167,7 @@
                 specificErrorElement = document.createElement('p');
                 specificErrorElement.id = 'specific-error';
                 specificErrorElement.textContent = errorMsg;
-                Element.appendChild(specificErrorElement);
+                document.querySelector('.content').insertBefore(specificErrorElement, formElement);
             }
             if(errorMessageElement){
                 scrollToErrorMsg();

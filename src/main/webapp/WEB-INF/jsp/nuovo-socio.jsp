@@ -119,7 +119,7 @@
                 event.target.submit();
             } else {
                 errorDisplayed = true;
-                // Ottieni l'elemento h1
+
                 var formElement = document.getElementById('registrationForm');
 
                 // Controlla se il messaggio di errore esiste già

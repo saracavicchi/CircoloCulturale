@@ -85,4 +85,27 @@ public class ImageController {
             return ResponseEntity.badRequest().build();
         }
     }
+    @GetMapping("/images/circoloCulturalePhotos/circolo.jpg")
+    public ResponseEntity<Resource> serveFile() {
+        String photo = "circolo.jpg";
+        try {
+            Path fileStorageLocation = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/images/circoloCulturalePhotos/");
+            Path filePath = fileStorageLocation.resolve(photo).normalize();
+            //Path filePath = uploadDir.resolve(photo).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if(resource.exists() || resource.isReadable()) {
+                String contentType = Files.probeContentType(filePath);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }
