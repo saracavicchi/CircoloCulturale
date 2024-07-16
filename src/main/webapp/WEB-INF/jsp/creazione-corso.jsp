@@ -146,7 +146,7 @@
 
             if (!validation) {
                 // Ottieni l'elemento h1
-                var h1Element = document.getElementsByTagName('h1')[0];
+                var h1Element = document.getElementById('creaCorsoForm');
                 displayErrorMessages(h1Element);
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente

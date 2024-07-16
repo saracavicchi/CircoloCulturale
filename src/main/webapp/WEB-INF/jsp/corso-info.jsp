@@ -63,23 +63,25 @@
                         <li>${docente.socio.utente.nome} ${docente.socio.utente.cognome}</li>
                     </c:forEach>
                 </ul>
-                <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
-                    if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
-                        <form action="/corso/iscrizione" method="post">
-                            <input type="hidden" name="socio-id" value="${socioHeader.id}">
-                            <input type="hidden" name="corso-id" value="${corso.id}">
-                            <input type="submit" value="Iscriviti">
-                        </form>
-                <%  } else { %>
-                        <p style="color:red">Posti non disponibili</p>
-                        <button disabled>Iscriviti</button>
-                <% }} %>
-                <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && (Boolean)request.getAttribute("isEnrolled")) { %>
-                <form action="/corso/disiscrizione" method="post">
-                    <input type="hidden" name="socio-id" value="${socioHeader.id}">
-                    <input type="hidden" name="corso-id" value="${corso.id}">
-                    <input type="submit" value="Disiscriviti">
-                </form>
+                <% if (request.getParameter("isDocente") == null ) { %>
+                    <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
+                        if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
+                            <form action="/corso/iscrizione" method="post">
+                                <input type="hidden" name="socio-id" value="${socioHeader.id}">
+                                <input type="hidden" name="corso-id" value="${corso.id}">
+                                <input type="submit" value="Iscriviti">
+                            </form>
+                    <%  } else { %>
+                            <p style="color:red">Posti non disponibili</p>
+                            <button disabled>Iscriviti</button>
+                    <% }} %>
+                    <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && (Boolean)request.getAttribute("isEnrolled")) { %>
+                    <form action="/corso/disiscrizione" method="post">
+                        <input type="hidden" name="socio-id" value="${socioHeader.id}">
+                        <input type="hidden" name="corso-id" value="${corso.id}">
+                        <input type="submit" value="Disiscriviti">
+                    </form>
+                    <% } %>
                 <% } %>
             </section>
         </main>

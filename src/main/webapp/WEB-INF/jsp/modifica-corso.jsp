@@ -238,7 +238,7 @@
             <label for="enableEdit">Modifica abilitata:</label>
             <input type="checkbox" id="enableEdit" name="enableEdit">
 
-            <form id="editCorsoForm" action="modificaBase" method="post">
+            <form id="editCorsoForm" action="modificaBase" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="idCorso" value="${corso.id}"/>
 
                 <label for="photo">Seleziona una nuova foto per il corso:</label>

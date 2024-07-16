@@ -88,7 +88,6 @@ public class CorsoController {
                             @RequestParam("orariInizio") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioInizio,
                             @RequestParam("orariFine") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) List<LocalTime> orarioFine,
                             @RequestParam ("stipendi")List<Integer> stipendi,
-                            @RequestParam("docentiOverlap") String docentiOverlap,
                             Model model,
                             RedirectAttributes redirectAttributes
     ) {
@@ -108,6 +107,7 @@ public class CorsoController {
             return "redirect:/corso/crea";
         }
         boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
+        System.out.println("checkDocentiSchedule: " + checkDocentiSchedule);
         if (!checkDocentiSchedule) {
             redirectAttributes.addAttribute("docentiOverlap", "true");
         }
@@ -120,6 +120,7 @@ public class CorsoController {
                             @RequestParam(name = "categoria") Optional<String> courseCategory,
                             @RequestParam(name = "genere") Optional<String> courseGenre,
                             @RequestParam(name = "livello") Optional<String> courseLevel,
+                            @RequestParam(name = "isDocente") Optional<String> isDocente,
                             Model model,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -210,11 +211,11 @@ public class CorsoController {
             @RequestParam("genere") String genere,
             @RequestParam("livello") String livello,
             @RequestParam("categoria") String categoria,
-            @RequestParam("photo") Optional<MultipartFile> photo,
+            @RequestParam("photo") MultipartFile photo,
             RedirectAttributes redirectAttributes
     ) {
         // Validate course data first
-        boolean isValid = corsoService.updateBasicCourseInfo(idCorso, descrizione, genere, livello, categoria);
+        boolean isValid = corsoService.updateBasicCourseInfo(idCorso, descrizione, genere, livello, categoria, photo);
         if (!isValid) {
             // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
             redirectAttributes.addAttribute("fail", "true");
@@ -260,7 +261,7 @@ public class CorsoController {
         List<Object[]> sociInfo = socioService.findSociNotDocentiAndNotSegretariByIdCorso(idCorso);
         model.addAttribute("sociInfo", sociInfo);
 
-        return "modificaDocenti"; // Nome della JSP da visualizzare
+        return "modifica-docenti-corso"; // Nome della JSP da visualizzare
     }
 
     @PostMapping("/modificaDocenti")
@@ -270,23 +271,19 @@ public class CorsoController {
             @RequestParam("stipendiAttuali") List<Integer> stipendiAttuali,
             @RequestParam("nuoviDocenti") Optional<List<String>> docentiCf,
             @RequestParam("stipendi") Optional<List<Integer>> stipendi,
-            @RequestParam("docentiOverlap")String docentiOverlap,
             RedirectAttributes redirectAttributes
     ) {
-        if(docentiOverlap.equals("null") && docentiCf.isPresent() && !corsoService.checkDocentiScheduleOverlap(docentiCf.get())){
-            System.out.println(corsoService.checkDocentiScheduleOverlap(docentiCf.get()));
-            redirectAttributes.addAttribute("docentiOverlap", "true");
-            return "redirect:/corso/modificaDocenti?idCorso=" + idCorso;
-        }
-
         boolean updateSuccess = corsoService.updateDocenti(idCorso, deletedDocentiId, docentiCf, stipendiAttuali, stipendi);
 
         if (!updateSuccess) {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
-
-
+        boolean docentiOverlap = corsoService.checkDocentiScheduleOverlap(idCorso, docentiCf.get());
+        if(!docentiOverlap){
+            System.out.println(docentiOverlap);
+            redirectAttributes.addAttribute("docentiOverlap", "true");
+        }
 
 
         redirectAttributes.addAttribute("successMessage", "Docenti aggiornati con successo.");
@@ -331,7 +328,7 @@ public class CorsoController {
         });
         model.addAttribute("sale", sale);
         // Restituisci il nome della JSP da visualizzare
-        return "modificaCalendario"; // Nome della JSP da visualizzare
+        return "modifica-calendario-corso"; // Nome della JSP da visualizzare
     }
 
     @PostMapping("/modificaCalendario")

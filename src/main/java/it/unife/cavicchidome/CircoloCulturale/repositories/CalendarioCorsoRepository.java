@@ -25,7 +25,7 @@ public interface CalendarioCorsoRepository extends JpaRepository<CalendarioCorso
     @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.idCorso.id = :corsoId AND cc.id.giornoSettimana = :giorno AND cc.active = true")
     Optional<CalendarioCorso> findByCorsoAndGiornoSettimanaId(Integer corsoId, Weekday giorno);
 
-    @Query("SELECT cc FROM CalendarioCorso cc JOIN cc.idCorso c WHERE cc.active = true AND c.active=true AND cc.id.giornoSettimana = :giorno AND cc.active = true AND (" +
+    @Query("SELECT cc FROM CalendarioCorso cc JOIN cc.idCorso c WHERE cc.active = true AND c.active=true AND cc.id.giornoSettimana = :giorno AND (" +
             "(cc.orarioInizio < :fine AND cc.orarioFine > :inizio) OR " + // Sovrappone l'inizio o la fine
             "(cc.orarioInizio >= :inizio AND cc.orarioFine <= :fine))") // Inizia e finisce all'interno
     List<CalendarioCorso> findCorsiContemporanei(Weekday giorno, LocalTime inizio, LocalTime fine);
@@ -37,4 +37,20 @@ public interface CalendarioCorsoRepository extends JpaRepository<CalendarioCorso
 
     @Query("SELECT cc FROM CalendarioCorso cc WHERE cc.id.giornoSettimana = :giorno AND cc.active = true AND cc.idCorso.idSala.id = :idSala AND cc.idCorso.active = true")
     List<CalendarioCorso> findByGiornoSettimana(Integer idSala, Weekday giorno);
+
+    @Query("SELECT cc FROM CalendarioCorso cc JOIN cc.idCorso c " +
+            "WHERE c.id = :idCorso AND cc.active = true AND c.active = true " +
+            "AND EXISTS (" +
+            "    SELECT cc2 FROM CalendarioCorso cc2 JOIN cc2.idCorso c2 " +
+            "    WHERE c2.id IN (:corsiInsegnatiId) AND cc2.active = true AND c2.active = true " +
+            "    AND cc2.id.giornoSettimana = cc.id.giornoSettimana " +
+            "    AND (" +
+            "        (cc2.orarioInizio >= cc.orarioInizio AND cc2.orarioInizio < cc.orarioFine) " +
+            "        OR " +
+            "        (cc2.orarioFine > cc.orarioInizio AND cc2.orarioFine <= cc.orarioFine)" +
+            "    )" +
+            ")")
+    List<CalendarioCorso> existsSovrapposizioneCorsiInsegnati(Integer idCorso, List<Integer> corsiInsegnatiId);
+
+
 }

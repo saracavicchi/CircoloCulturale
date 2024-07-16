@@ -92,7 +92,8 @@ public class AuthController {
         response.addCookie(socioCookie);
 
         // Reindirizza l'utente alla pagina di login
-        return "redirect:" + redirectTo;
+        //return "redirect:" + redirectTo;
+        return "redirect:/"; //TODO: ho messo home perche se ti disiscrivi da una pagina che possono vedere solo i soci non puoi rimanere in quella pagina
     }
 
     @GetMapping("/signup")

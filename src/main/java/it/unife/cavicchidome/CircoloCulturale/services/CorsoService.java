@@ -214,7 +214,7 @@ public class CorsoService {
 
         }
 
-        if(checkScheduleOverlap(null, giorni, orarioInizio, orarioFine, idSala) == false){
+        if(checkScheduleOverlap(Optional.empty(), giorni, orarioInizio, orarioFine, idSala) == false){
             return false;
         }
 
@@ -229,6 +229,8 @@ public class CorsoService {
         }
         else{
             corso=corsoIdentical.get();
+            corso.setDescrizione(null);
+            corso.setUrlFoto(null);
         }
         if(descrizione != null && !descrizione.isEmpty()){
             corso.setDescrizione(descrizione);
@@ -440,11 +442,12 @@ public class CorsoService {
     }
 
     //Controlla sovrapposizione oraria corsi senza controllare la sala
+    //TODO: se non usato eliminare
     public boolean checkTimeOverlap(
-            Optional<Corso> corso,
+            Corso corso,
             List<CalendarioCorso> calendarioCorso
     ) {
-        //Controllo sovrapposizione oraria di corsi che si tengono nella stessa sala
+        //Controllo sovrapposizione oraria di corsi
         boolean sovrapposizione = false;
         for (int i = 0; i < calendarioCorso.size(); i++) {
             Integer giorno = calendarioCorso.get(i).getId().getGiornoSettimana().getDayNumber();
@@ -452,18 +455,17 @@ public class CorsoService {
             LocalTime fine = calendarioCorso.get(i).getOrarioFine();
 
             // Trova corsi nel CalendarioCorso che si sovrappongono per orario
-            List<CalendarioCorso> calendariSovrapposti = calendarioCorsoRepository.findCorsiContemporanei(Weekday.fromDayNumber(giorno), inizio, fine);
+            List<CalendarioCorso> calendariSovrapposti = calendarioCorsoRepository.findCorsiContemporanei(Weekday.fromDayNumber(giorno), inizio, fine); //solo corsi e calendari attivi
             if (!calendariSovrapposti.isEmpty()) {
                 for (CalendarioCorso calendario : calendariSovrapposti) {
-                    //System.out.println(calendario.getIdCorso().getDescrizione());
+                    System.out.println(calendario.getIdCorso().getId());
                     Corso corsoSovrapposto = calendario.getIdCorso();
-                    if (calendario.getIdCorso().getActive() == true && corsoSovrapposto.getActive() == true) {
-                        if (corso.isPresent() && corso.get().getId().equals(corsoSovrapposto.getId())) {
-                            continue; //si esclude corso stesso dal controllo di sovrapposizione
-                        }
-                        sovrapposizione = true;
-                        break;
+                    if (corso.getId().equals(corsoSovrapposto.getId())) {
+                        continue; //si esclude corso stesso dal controllo di sovrapposizione
                     }
+                    sovrapposizione = true;
+                    break;
+
                 }
                 if (sovrapposizione) break;
             }
@@ -477,44 +479,47 @@ public class CorsoService {
 
     //per la modifica dei docenti
     @Transactional
-    public boolean checkDocentiScheduleOverlap(List<String> docentiCf) {
+    public boolean checkDocentiScheduleOverlap(Integer idCorso, List<String> docentiCf) {
+        boolean sovrapposizione = false;
         for (String cf : docentiCf) {
+            System.out.println("docente: "+cf);
             Optional<Docente> docente = docenteRepository.findByCf(cf);
             if (!docente.isPresent()) {
                 return false; //TODO: gestire caso in cui docente non esiste: eccezione
             }
             Integer idDocente = docente.get().getId();
-            List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
+            List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente); //solo corsi e docenti active
             if (!corsiInsegnati.isEmpty()) {
-                for (Corso corso : corsiInsegnati) {
-                    if (corso.getActive()) {
-                        Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
-                        List<CalendarioCorso> calendarioCorso = new ArrayList<>(calendarioCorsoSet);
-                        if (!checkTimeOverlap(Optional.of(corso), calendarioCorso)) {
-                            return false;
-                        }
+                List<Integer> corsiInsegnatiIds = corsiInsegnati.stream()
+                        .filter(corso -> !corso.getId().equals(idCorso)) // Exclude the course with id=idCorso
+                        .map(Corso::getId)
+                        .collect(Collectors.toList());
+                System.out.println(corsiInsegnatiIds.size());
+                List<CalendarioCorso> calendariSovrapposti = calendarioCorsoRepository.existsSovrapposizioneCorsiInsegnati(idCorso, corsiInsegnatiIds);
+                System.out.println(calendariSovrapposti.size());
+                if(!calendariSovrapposti.isEmpty())
+                    sovrapposizione=true;
 
-                    }
-                }
             }
 
         }
-
-        return true;
+        System.out.println(sovrapposizione);
+        return !sovrapposizione;
     }
 
     //Verifica sovrapposizione oraria di un corso (dato dall'id) con la tupla giorno, orarioInizio, orarioFine di un altro
     public boolean checkScheduleConflict(Integer idCorso, Integer giorno, LocalTime inizio, LocalTime fine) {
-        Optional<Corso> corso = corsoRepository.findById(idCorso);
+        Optional<Corso> corso = corsoRepository.findByIdActive(idCorso);
         if (!corso.isPresent()) {
             return false; //TODO: gestire caso in cui corso non esiste: eccezione
         } else {
-            Set<CalendarioCorso> calendarioCorsoSet = corso.get().getCalendarioCorso();
-            List<CalendarioCorso> calendarioCorso = new ArrayList<>(calendarioCorsoSet);
+            List<CalendarioCorso> calendarioCorso = new ArrayList<>(corso.get().getCalendarioCorso());
             for (CalendarioCorso calendario : calendarioCorso) {
                 Optional<CalendarioCorso> calendarioContemporaneo = calendarioCorsoRepository.findSeCorsoContemporaneo(Weekday.fromDayNumber(giorno), idCorso, inizio, fine); //solo calendari e corsi active
-                if (calendarioContemporaneo.isPresent() && calendarioContemporaneo.get().getIdCorso().getId() != idCorso) {
+                if (calendarioContemporaneo.isPresent() ) {
+                    System.out.println(calendarioContemporaneo.get().getIdCorso().getId());
                     return false;
+                    //&& calendarioContemporaneo.get().getIdCorso().getId() != idCorso
                 }
             }
         }
@@ -541,18 +546,16 @@ public class CorsoService {
                 List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(idDocente);
                 if (!corsiInsegnati.isEmpty()) {
                     for (Corso corso : corsiInsegnati) {
-                        if (corso.getActive()) {
-                            for (int i = 0; i < giorni.size(); i++) {
-                                Integer giorno = giorni.get(i);
-                                LocalTime inizio = orariInizio.get(giorno - 1);
-                                LocalTime fine = orariFine.get(giorno - 1);
-                                if (checkScheduleConflict(corso.getId(), giorno, inizio, fine) == false) {
-                                    sovrapposizione = true;
-                                    break;
-                                }
+                        for (int i = 0; i < giorni.size(); i++) {
+                            Integer giorno = giorni.get(i);
+                            LocalTime inizio = orariInizio.get(giorno - 1);
+                            LocalTime fine = orariFine.get(giorno - 1);
+                            if (checkScheduleConflict(corso.getId(), giorno, inizio, fine) == false) {
+                                sovrapposizione = true;
+                                break;
                             }
-
                         }
+
                     }
                 }
             }
@@ -611,6 +614,7 @@ public class CorsoService {
     }
 
     String saveCorsoPicture(MultipartFile picture, String categoria, Integer idCorso) {
+        System.out.println("Prova Salvataggio foto");
         if (picture == null || picture.isEmpty()) {
             return null;
         }
@@ -758,7 +762,7 @@ public class CorsoService {
     }
 
     @Transactional
-    public boolean updateBasicCourseInfo(Integer idCorso, String descrizione, String genere, String livello, String categoria) {
+    public boolean updateBasicCourseInfo(Integer idCorso, String descrizione, String genere, String livello, String categoria, MultipartFile photo) {
         // Validate course data first
         boolean isValid = validateBasicInfo(descrizione, genere, livello, categoria);
         if (!isValid) {
@@ -772,8 +776,13 @@ public class CorsoService {
             return false;
         }
 
-        // Update course data
         Corso corso = corsoOpt.get();
+        if(photo != null){
+            String filename = saveCorsoPicture(photo, categoria, idCorso); //TODO: controllare che funzioni alla creazione di un corso
+            corso.setUrlFoto(filename);
+        }
+
+        // Update course data
         corso.setDescrizione(descrizione);
         corso.setGenere(genere);
         corso.setLivello(livello);

@@ -19,8 +19,8 @@
     </section>
     <section class="content">
         <ul>
-            <li><a href="/docente/lezioni">Lezioni</a></li>
-            <li><a href="/docente/lezioni/aggiungi">Aggiungi Lezione</a></li>
+            <li><a href="/docente/corsi">Lezioni</a></li>
+            <!--<li><a href="/docente/lezioni/aggiungi">Aggiungi Lezione</a></li> -->
         </ul>
     </section>
 <% } %>
