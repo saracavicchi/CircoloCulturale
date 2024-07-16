@@ -7,9 +7,10 @@
     <section class="content">
         <ul>
             <li><a href="/socio/profile">Profilo</a></li>
-            <li><a href="/socio/saggi">Saggi</a></li>
+            <!-- <li><a href="/socio/saggi">Saggi</a></li> -->
             <li><a href="/socio/corsi">Corsi</a></li>
             <li><a href="/socio/prenotazioni">Prenotazioni</a></li>
+            <li><a href="/socio/biglietti">Biglietti</a></li>
         </ul>
     </section>
 <% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDocente() != null) { %>

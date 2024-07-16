@@ -20,7 +20,7 @@
 <div id="main-content">
     <main class="midleft">
         <section class="title">
-            <h1>Saggi di ${socio.utente.nome} ${socio.utente.cognome}</h1>
+            <h1>Corsi di ${socioHeader.utente.nome} ${socioHeader.utente.cognome}</h1>
         </section>
         <section class="content">
             <c:forEach items="${corsi}" var="corso">

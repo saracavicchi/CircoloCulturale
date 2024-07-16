@@ -57,7 +57,7 @@ public class Corso {
             inverseJoinColumns = @JoinColumn(name = "id_saggio"))
     private Set<Saggio> saggi = new LinkedHashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "socio_frequenta",
             joinColumns = @JoinColumn(name = "id_corso"),
             inverseJoinColumns = @JoinColumn(name = "id_socio"))

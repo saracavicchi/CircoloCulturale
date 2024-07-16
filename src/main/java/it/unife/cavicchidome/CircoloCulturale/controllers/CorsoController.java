@@ -161,6 +161,22 @@ public class CorsoController {
         }
     }
 
+    @PostMapping("/disiscrizione")
+    public String unenroll(@RequestParam(name = "socio-id") Integer socioId,
+                               @RequestParam(name = "corso-id") Integer corsoId,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+
+        try {
+            corsoService.unenroll(socioId, corsoId);
+            redirectAttributes.addAttribute("success", "true");
+            return "redirect:/corso/info?id=" + corsoId;
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("error", "true");
+            return "redirect:/corso/info?id=" + corsoId;
+        }
+    }
+
     @GetMapping("/modificaBase")
     public String viewEdit(
             @RequestParam("idCorso") Integer idCorso,

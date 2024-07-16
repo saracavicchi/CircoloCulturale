@@ -33,7 +33,7 @@
                     <input type="text" name="nome" id="nome" value="<c:if test="${param.nome ne null}">${param.nome}</c:if>">
                     <label for="cognome">Cognome:</label>
                     <input type="text" name="cognome" id="cognome" value="<c:if test="${param.cognome ne null}">${param.cognome}</c:if>">
-                    <label for="deleted">Mostra corsi cancellati</label>
+                    <label for="deleted">Mostra biglietti cancellati</label>
                     <input type="checkbox" name="deleted" id="deleted" value="true" <c:if test="${param.deleted == true}">checked</c:if>>
                     <input type="submit" value="Filtra">
                 </form>

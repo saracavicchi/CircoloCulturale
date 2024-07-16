@@ -20,7 +20,7 @@
                 const content = document.querySelector('.content');
                 const errorParagraph = document.createElement('p');
                 errorParagraph.style.color = 'red';
-                errorParagraph.textContent = "Errore nell'iscrizione al saggio";
+                errorParagraph.textContent = "Errore durante il processo";
                 content.insertBefore(errorParagraph, content.querySelector('h1'));
             }
 
@@ -29,7 +29,7 @@
                 const content = document.querySelector('.content');
                 const successParagraph = document.createElement('p');
                 successParagraph.style.color = 'green';
-                successParagraph.textContent = "Iscrizione avvenuta con successo";
+                successParagraph.textContent = "Azione avvenuta con successo";
                 content.insertBefore(successParagraph, content.querySelector('h1'));
             }
         }
@@ -43,7 +43,7 @@
     <div id="main-content">
         <main class="fullsize">
             <section class="title">
-                <h1>Informazioni sulla corso</h1>
+                <h1>Informazioni sul corso</h1>
             </section>
             <section class="content">
                 <h1>${corso.genere} ${corso.categoria} ${corso.livello}</h1>
@@ -66,7 +66,7 @@
                 <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
                     if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
                         <form action="/corso/iscrizione" method="post">
-                            <input type="hidden" name="socio-id" value="${socio.id}">
+                            <input type="hidden" name="socio-id" value="${socioHeader.id}">
                             <input type="hidden" name="corso-id" value="${corso.id}">
                             <input type="submit" value="Iscriviti">
                         </form>
@@ -74,6 +74,13 @@
                         <p style="color:red">Posti non disponibili</p>
                         <button disabled>Iscriviti</button>
                 <% }} %>
+                <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && (Boolean)request.getAttribute("isEnrolled")) { %>
+                <form action="/corso/disiscrizione" method="post">
+                    <input type="hidden" name="socio-id" value="${socioHeader.id}">
+                    <input type="hidden" name="corso-id" value="${corso.id}">
+                    <input type="submit" value="Disiscriviti">
+                </form>
+                <% } %>
             </section>
         </main>
     </div>

@@ -1,6 +1,8 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
+import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
+import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,9 +27,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SocioController {
 
     private final SocioService socioService;
+    private final SaggioService saggioService;
+    private final BigliettoService bigliettoService;
 
-    SocioController(
-            SocioService socioService) {
+    SocioController(SocioService socioService, SaggioService saggioService, BigliettoService bigliettoService) {
+        this.saggioService = saggioService;
+        this.bigliettoService = bigliettoService;
         this.socioService = socioService;
     }
 
@@ -80,6 +85,24 @@ public class SocioController {
         //model.addAttribute("saggi", socioCookie.get().getSaggi());
         return "socio-saggi";
     }*/
+
+    @GetMapping("/biglietti")
+    public String viewBiglietti (@RequestParam(name = "saggioId") Optional<Integer> saggioId,
+                                 @RequestParam(name = "deleted") Optional<Boolean> deleted,
+                                 Model model,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
+
+        Optional<Socio> socio = socioService.setSocioFromCookie(request, response, model);
+        if (!socio.isPresent()) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("biglietti", bigliettoService.findBigliettiSocio(socio.get().getId()));
+        model.addAttribute("saggi", saggioService.findSaggiSocio(socio.get().getId()));
+        return "socio-biglietti";
+    }
+
 
     @GetMapping("/corsi")
     public String getSocioCorsi(Model model,

@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CorsoService {
@@ -738,6 +739,21 @@ public class CorsoService {
             throw new EntityNotFoundException("Socio not found");
         }
         corso.getSoci().add(socio);
+        corsoRepository.save(corso);
+    }
+
+    @Transactional
+    public void unenroll(Integer socioId, Integer corsoId) throws EntityNotFoundException {
+        Corso corso = corsoRepository.getReferenceById(corsoId);
+        if (corso == null) {
+            throw new EntityNotFoundException("Corso not found");
+        }
+        Socio socio = socioRepository.getReferenceById(socioId);
+        if (socio == null) {
+            throw new EntityNotFoundException("Socio not found");
+        }
+
+        corso.getSoci().remove(socio);
         corsoRepository.save(corso);
     }
 

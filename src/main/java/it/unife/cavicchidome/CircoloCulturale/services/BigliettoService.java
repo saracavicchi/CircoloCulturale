@@ -137,4 +137,9 @@ public class BigliettoService {
         }
     }
 
+    @Transactional
+    public List<Biglietto> findBigliettiSocio(Integer socioId) {
+        return bigliettoRepository.findBigliettiSocio(socioId); //solo biglietti attivi
+    }
+
 }

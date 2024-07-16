@@ -54,7 +54,7 @@ public class Socio {
     @OneToOne(mappedBy = "socio")
     private Segretario segretario;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "socio_frequenta",
             joinColumns = @JoinColumn(name = "id_socio"),
             inverseJoinColumns = @JoinColumn(name = "id_corso"))

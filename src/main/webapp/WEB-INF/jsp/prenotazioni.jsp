@@ -24,6 +24,9 @@
             margin: 0 18px 16px 0;
             background: linear-gradient(to right,#fdfbfb,#ebedee);
         }
+        .filter{
+            margin-top: 53px;
+        }
     </style>
 </head>
 <body>

@@ -13,6 +13,7 @@
 <head>
     <title>Profilo Socio</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
+
     <script>
         var errorDisplayed = false;
 

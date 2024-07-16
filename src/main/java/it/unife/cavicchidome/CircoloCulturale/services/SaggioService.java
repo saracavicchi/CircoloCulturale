@@ -52,6 +52,14 @@ public class SaggioService {
         return saggioRepository.findAll();
     }
 
+    @Transactional
+    public List<Saggio> findSaggiSocio (Integer socioId) {
+        return saggioRepository.findSaggiSocio(socioId);
+    }
+
+
+
+
     public int getAvailableTickets(Saggio saggio) {
         int maxAvailable = saggio.getMaxPartecipanti();
         int confirmedTickets = 0;

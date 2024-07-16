@@ -13,4 +13,7 @@ public interface BigliettoRepository extends JpaRepository<Biglietto, Integer> {
 
     @Query("SELECT b FROM Biglietto b WHERE b.idUtente.nome LIKE %:nome% AND b.idUtente.cognome LIKE %:cognome% AND (b.deleted = :deleted OR b.deleted = true)")
     List<Biglietto> findBigliettoNameSurnameDeleted(String nome, String cognome, Boolean deleted);
+
+    @Query("SELECT b from Biglietto b WHERE b.idUtente.id = :socioId AND b.deleted = false")
+    List<Biglietto> findBigliettiSocio(Integer socioId);
 }
