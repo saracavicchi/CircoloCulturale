@@ -190,7 +190,7 @@ public class CorsoController {
             return "redirect:/";
         }
         // Recupera le informazioni del corso tramite il suo ID
-        Optional<Corso> corso = corsoService.findById(idCorso);
+        Optional<Corso> corso = corsoService.findByIdAll(idCorso); //anche cancellati per visualizzazione segretario
         if (!corso.isPresent()) {
             // TODO:Gestisci il caso in cui il corso non viene trovato (es. reindirizzamento a una pagina di errore)
             return "redirect:/";

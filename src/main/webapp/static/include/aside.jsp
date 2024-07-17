@@ -1,4 +1,9 @@
 <%@page import="it.unife.cavicchidome.CircoloCulturale.models.Socio"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+</head>
 <aside class="smallright">
     <section class="title">
         <!-- TODO: sistemare encoding UTF-8 -->

@@ -18,7 +18,7 @@
 </head>
 <body>
 <%@include file="/static/include/header.jsp"%>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
             <h1>Corsi del circolo</h1>
@@ -35,4 +35,5 @@
     <%@include file="/static/include/aside.jsp"%>
 </div>
 </body>
+<%@include file="/static/include/footer.jsp"%>
 </html>

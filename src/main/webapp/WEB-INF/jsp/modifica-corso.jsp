@@ -27,17 +27,18 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             initEditCorsoForm();
-            //handleCancellaCorsoFormSubmission();
-            toggleFormElements(false); // Disabilita gli elementi del form all'avvio
 
-            document.getElementById('enableEdit').addEventListener('change', function() {
-                toggleFormElements(this.checked);
-            });
+            toggleFormElements(false); // Disabilita gli elementi del form all'avvio
+            var corsoActive = '${corso.active}';
+            if(corsoActive == true) {
+                document.getElementById('enableEdit').addEventListener('change', function () {
+                    toggleFormElements(this.checked);
+                });
+            }
+
 
 
         });
-
-
 
         function initEditCorsoForm() {
             var editCorsoForm = document.getElementById('editCorsoForm');
@@ -217,7 +218,7 @@
 </head>
 <body>
 <%@ include file="/static/include/header.jsp" %>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
             <h1>Modifica le informazioni del corso</h1>
@@ -230,12 +231,12 @@
             <%
                 }
             %>
-            <div>
-                <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
-            </div>
+            <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-image"/>
 
-            <label for="enableEdit">Modifica abilitata:</label>
-            <input type="checkbox" id="enableEdit" name="enableEdit">
+            <c:if test="${corso.active}">
+                <label for="enableEdit">Modifica abilitata:</label>
+                <input type="checkbox" id="enableEdit" name="enableEdit">
+            </c:if>
 
             <form id="editCorsoForm" action="modificaBase" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="idCorso" value="${corso.id}"/>
@@ -261,23 +262,26 @@
                 <button type="submit">Salva Modifiche</button>
             </form>
         </section>
-        <section class="content">
-            <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
-            <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
-        </section>
-        <section class="content">
-            <p>Cancellazione Corso</p>
-            <form id="cancellaCorsoForm" action="elimina" method="POST">
-                <input type="hidden" name="idCorso" value="${corso.id}" />
-                <label for="confirmDeletion">Sei sicuro?</label>
-                <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-                <button type="submit">Cancella Corso</button>
-            </form>
-        </section>
+        <c:if test="${corso.active}">
+            <section class="content">
+                <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
+                <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+            </section>
+
+            <section class="content">
+                <p>Cancellazione Corso</p>
+                <form id="cancellaCorsoForm" action="elimina" method="POST">
+                    <input type="hidden" name="idCorso" value="${corso.id}" />
+                    <label for="confirmDeletion">Sei sicuro?</label>
+                    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                    <button type="submit">Cancella Corso</button>
+                </form>
+            </section>
+        </c:if>
+
     </main>
 <%@include file="/static/include/aside.jsp"%>
 </div>
-
-
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

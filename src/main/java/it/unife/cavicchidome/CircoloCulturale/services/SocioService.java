@@ -118,6 +118,11 @@ public class SocioService {
     }
 
     @Transactional
+    public Optional<Socio> findSocioByIdAll(int id) {
+        return socioRepository.findByIdAll(id);
+    }
+
+    @Transactional
     public Socio newSocio(
             String name,
             String surname,

@@ -442,4 +442,9 @@ public class SedeService {
     public Optional<Sede> findActiveSedeWithMinId() {
         return sedeRepository.findActiveSedeWithMinId();
     }
+
+    @Transactional
+    public Optional<Sede> findSedeByIdSegretario(Integer idSegretario){
+        return sedeRepository.findSedeByIdSegretario(idSegretario);
+    }
 }

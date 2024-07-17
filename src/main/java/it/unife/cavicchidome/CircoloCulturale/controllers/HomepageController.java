@@ -45,6 +45,7 @@ public class HomepageController {
     public String contatti(HttpServletRequest request,
                            HttpServletResponse response,
                            Model model) {
+        socioService.setSocioFromCookie(request, response, model);
         model.addAttribute("sede", sedeService.findActiveSedeWithMinId().get());//TODO: e se non c'è?
 
         return "contatti";

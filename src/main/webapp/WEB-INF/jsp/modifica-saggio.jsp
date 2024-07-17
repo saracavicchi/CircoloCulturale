@@ -12,13 +12,7 @@
 <head>
     <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
-    <style>
-        .img-responsive {
-            width: 150px; /* Riduce la larghezza massima */
-            height: auto; /* Mantiene le proporzioni */
-            max-height: 300px; /* Riduce l'altezza massima per un riquadro più piccolo */
-        }
-    </style>
+
     <script>
         var errorDisplayed = false;
         document.addEventListener('DOMContentLoaded', function() {
@@ -26,11 +20,12 @@
             initModificaSaggioForm();
             // Disabilita gli elementi del form all'avvio
             toggleFormElements(false);
-
-            // Aggiungi un listener al checkbox per abilitare/disabilitare il form
-            document.getElementById('enableEdit').addEventListener('change', function() {
-                toggleFormElements(this.checked);
-            });
+            var saggioDeleted = '${saggio.deleted}';
+            if(!saggioDeleted) {
+                document.getElementById('enableEdit').addEventListener('change', function() {
+                    toggleFormElements(this.checked);
+                });
+            }
             //handleEliminaSaggioFormSubmission()
 
         });
@@ -306,18 +301,19 @@
 </head>
 <body>
 <%@ include file="/static/include/header.jsp" %>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
             <h1>Modifica le informazioni del saggio "${saggio.nome}"</h1>
         </section>
         <section class="content">
-            <div>
-                <img class="img-responsive" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
-            </div>
 
+            <img class="profile-image" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
+
+            <c:if test="${not saggio.deleted}">
             <label for="enableEdit">Modifica abilitata:</label>
             <input type="checkbox" id="enableEdit" name="enableEdit">
+            </c:if>
 
             <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="saggioId" value="${saggio.id}"/>
@@ -386,18 +382,20 @@
                 <button type="submit">Modifica Saggio</button>
             </form>
         </section>
-        <section class="content">
-            <p>Cancellazione saggio</p>
-            <form id="deletionForm" action="/saggio/elimina" method="POST">
-                <input type="hidden" name="saggioId" value="${saggio.id}" />
-                <label for="confirmDeletion">Sei sicuro?</label>
-                <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-                <button type="submit">Elimina saggio</button>
-            </form>
-        </section>
+        <c:if test="${not saggio.deleted}">
+            <section class="content">
+                <p>Cancellazione saggio</p>
+                <form id="deletionForm" action="/saggio/elimina" method="POST">
+                    <input type="hidden" name="saggioId" value="${saggio.id}" />
+                    <label for="confirmDeletion">Sei sicuro?</label>
+                    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                    <button type="submit">Elimina saggio</button>
+                </form>
+            </section>
+        </c:if>
     </main>
 <%@include file="/static/include/aside.jsp"%>
 </div>
-
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

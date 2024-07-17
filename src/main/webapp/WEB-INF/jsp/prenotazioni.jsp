@@ -24,18 +24,24 @@
             margin: 0 18px 16px 0;
             background: linear-gradient(to right,#fdfbfb,#ebedee);
         }
-        .filter{
+        /*.filter{
             margin-top: 53px;
         }
+
+         */
     </style>
+    <script>
+        function redirectToCreaPrenotazionePage() {
+            window.location.href = '/socio/prenotazioni/nuova';
+        }
+    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
-    <div id="main-content">
+    <div id="main-content" class="clearfix">
         <main class="clearfix midleft">
             <section class="title">
                 <h1>Prenotazioni</h1>
-                <p><a href="/socio/prenotazioni/nuova">Nuova prenotazione</a></p>
             </section>
             <section class="filter">
                 <form action="<%= (request.getAttribute("segretario") != null) ? "/segretario/prenotazioni" : "/socio/prenotazioni"%>" method="get">
@@ -62,6 +68,9 @@
                 </form>
 
             </section>
+            <section class="content">
+                <button type="button" onclick="redirectToCreaPrenotazionePage()">Crea Nuova Prenotazione</button>
+            </section>
             <section class="content clearfix">
                 <c:forEach items="${prenotazioni}" var="prenotazione">
                     <article>
@@ -74,5 +83,6 @@
         </main>
         <%@include file="/static/include/aside.jsp"%>
     </div>
+    <%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

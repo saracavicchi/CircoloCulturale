@@ -151,5 +151,6 @@
 
     <button type="submit" name="confirm" value="Conferma">Conferma</button>
 </form>
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

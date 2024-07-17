@@ -29,4 +29,7 @@ public interface SocioRepository extends JpaRepository<Socio, Integer> {
 
     @Query("SELECT s FROM Socio s WHERE s.deleted = false AND s.utente.deleted = false AND s.id = ?1")
     Optional<Socio> findById(Integer idSocio);
+
+    @Query("SELECT s FROM Socio s WHERE s.id = ?1")
+    Optional<Socio> findByIdAll(Integer idSocio);
 }

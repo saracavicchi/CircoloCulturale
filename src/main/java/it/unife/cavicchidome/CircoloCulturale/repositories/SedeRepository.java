@@ -56,4 +56,7 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
     @Query("SELECT s FROM Sede s WHERE s.active = true ORDER BY s.id ASC LIMIT 1")
     Optional<Sede> findActiveSedeWithMinId();
 
+    @Query("SELECT s FROM Sede s WHERE s.segretario.id = :idSegretario AND s.active = true AND s.segretario.active = true")
+    Optional<Sede> findSedeByIdSegretario(Integer idSegretario);
+
 }

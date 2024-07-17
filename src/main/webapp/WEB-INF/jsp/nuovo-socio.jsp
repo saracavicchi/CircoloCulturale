@@ -186,7 +186,7 @@
 </head>
 <body>
 <%@include file="/static/include/top-bar.jsp"%>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
             <h1>Modulo di registrazione</h1>
@@ -263,5 +263,6 @@
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

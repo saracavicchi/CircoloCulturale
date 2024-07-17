@@ -17,7 +17,7 @@
 </head>
 <body>
 <%@ include file="/static/include/header.jsp" %>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
             <h1>Corsi di ${socioHeader.utente.nome} ${socioHeader.utente.cognome}</h1>
@@ -33,5 +33,6 @@
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

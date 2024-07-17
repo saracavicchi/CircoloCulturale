@@ -14,15 +14,18 @@
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         // when submitting the form with checkbox deleted on,
+
+        function redirectToCreaSocioPage() {
+        window.location.href = '/segretario/nuovoSocio';
+        }
     </script>
 </head>
 <body>
-    <%@include file="/static/include/header.jsp"%>
-    <div id="main-content">
-        <main class="clearfix midleft">
+<%@include file="/static/include/header.jsp" %>
+<div id="main-content" class="clearfix">
+    <main class="clearfix midleft">
             <section class="title">
                 <h1>Soci del circolo</h1>
-                <p><a href="/segretario/nuovoSocio">Nuovo socio</a></p>
             </section>
             <section class="filter">
                 <form id="filterForm" name="filterForm" action="/segretario/soci" method="get">
@@ -39,6 +42,9 @@
                     <input type="submit" value="Filtra">
                 </form>
             </section>
+            <section class="content">
+                <button type="button" onclick="redirectToCreaSocioPage()">Crea Nuovo Socio</button>
+            </section>
             <section class="content clearfix">
                 <c:forEach items="${soci}" var="socio">
                     <article>
@@ -49,5 +55,6 @@
         </main>
         <%@include file="/static/include/aside.jsp"%>
     </div>
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

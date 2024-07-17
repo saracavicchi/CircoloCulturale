@@ -141,7 +141,7 @@ public class SaggioController {
     ) {
        try{
             if(saggioService.newSaggio(nome, data, numeroPartecipanti,descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, photo)){
-                return "redirect:/saggio/info";
+                return "redirect:/segretario/saggi";
             }
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/saggio/crea";
@@ -194,7 +194,7 @@ public class SaggioController {
     ) {
         try {
             if(saggioService.updateSaggio(saggioId, nome, data, numeroPartecipanti, descrizione, orarioInizio, orarioFine, stato, provincia, citta, via, numeroCivico, corsiIds, photo)){
-                return "redirect:/saggio/info";
+                return "redirect:/segretario/saggi";
             }
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/saggio/modifica?saggioId=" + saggioId;

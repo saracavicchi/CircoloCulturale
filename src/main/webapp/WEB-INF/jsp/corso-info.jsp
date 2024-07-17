@@ -40,7 +40,7 @@
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
-    <div id="main-content">
+    <div id="main-content" class="clearfix">
         <main class="fullsize">
             <section class="title">
                 <h1>Informazioni sul corso</h1>
@@ -86,5 +86,6 @@
             </section>
         </main>
     </div>
+    <%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

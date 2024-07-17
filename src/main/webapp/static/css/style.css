@@ -13,7 +13,14 @@
     clear: both;
 }
 
+html {
+    height: 100%;
+}
+
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     padding: 0;
     margin: 0;
     width: 100%;
@@ -32,7 +39,6 @@ input {
     border-radius: 5px;
     padding: 5px;
 }
-
 
 input[type="button"], input[type="submit"] {
     background: white;
@@ -150,12 +156,9 @@ input[type="button"]:hover, input[type="submit"]:hover {
 }
 
 #main-content {
-
     width: 900px;
     margin: 0 auto;
-
 }
-
 
 .fullsize {
     width: 100%;
@@ -171,7 +174,7 @@ input[type="button"]:hover, input[type="submit"]:hover {
     width: 200px;
 }
 
-main,aside>section {
+main, aside>section {
     width: 100%;
 }
 
@@ -189,7 +192,6 @@ section.title>h1 {
     align-content: center;
     margin: 0 0 0 10px;
 }
-
 
 section.content {
     width: calc(100% - 40px);
@@ -236,10 +238,25 @@ footer {
     color: #fff;
     padding-top: 16px;
     padding-bottom: 16px;
+    margin-bottom: 0;
     text-align: center;
     width: 100%;
+    margin-top: auto; /* Assicura che il footer sia spinto verso il basso */
 }
 
 footer p {
-    margin: 10px 0 5px;
+    margin: 10px 0 10px;
+}
+
+.profile-image {
+    width: 150px; /* Imposta la larghezza */
+    height: 150px; /* Imposta l'altezza */
+    border-radius: 50%; /* Rende l'immagine circolare */
+    object-fit: cover; /* Assicura che l'immagine copra completamente l'area senza perdere le proporzioni */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Aggiunge un'ombra leggera */
+    transition: transform 0.3s ease; /* Effetto di transizione all'hover */
+}
+
+.profile-image:hover {
+    transform: scale(1.05); /* Ingrandisce leggermente l'immagine all'hover */
 }

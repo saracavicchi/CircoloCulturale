@@ -33,23 +33,38 @@
         document.addEventListener('DOMContentLoaded', function () {
             initializeAddressFields();
             initProfileForm();
-            handleEliminaSocioFormSubmission();
-            enableEditCheckbox();
+            var socioDeleted = '${socio.deleted}';
+            if(socioDeleted == false){
+                handleEliminaSocioFormSubmission();
+                disableForm();
+            }else{
+                enableEditCheckbox();
+            }
+
             var urlParams = new URLSearchParams(window.location.search);
             var failed = urlParams.get('failed');
             if (failed === "true") {
                 scrollToErrorMsg();
             }
+
         });
 
-        function enableEditCheckbox() {
+        function disableForm() {
             var inputs = document.getElementById('profileForm').getElementsByTagName('input');
-            var submitButton = document.getElementById('profileForm').getElementsByTagName('button')[0];
+
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].setAttribute('disabled', 'true');
             }
-            submitButton.setAttribute('disabled', 'true');
 
+        }
+        function enableEditCheckbox(){
+            //var submitButton = document.getElementById('profileForm').getElementsByTagName('button')[0];
+            //submitButton.setAttribute('disabled', 'true');
+            var inputs = document.getElementById('profileForm').getElementsByTagName('input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].setAttribute('disabled', 'true');
+            }
             var enableEdit = document.getElementById('enableEdit');
             enableEdit.addEventListener('change', function () {
                 if (enableEdit.checked) {
@@ -61,10 +76,9 @@
                     for (var i = 0; i < inputs.length; i++) {
                         inputs[i].setAttribute('disabled', 'true');
                     }
-                    submitButton.setAttribute('disabled', 'true');
+                    //submitButton.setAttribute('disabled', 'true');
                 }
             });
-
         }
 
         function initializeAddressFields() {
@@ -214,7 +228,7 @@
 
             // Controlla se il numero di telefono contiene solo numeri
             var phoneRegex = /^[0-9]{10}$/;
-            if (phoneNumber && !phoneRegex.test(phoneNumber)) {
+            if (phoneNumber && phoneNumber!="" && phoneNumber!=null && !phoneRegex.test(phoneNumber)) {
                 errorMsg = "Il numero di telefono deve contenere solo 10 numeri.";
                 erroredField = "phoneNumber";
                 return false;
@@ -242,9 +256,7 @@
             var validation = validateForm();
 
             if (!validation) {
-                // Ottieni l'elemento h1
-                var h1Element = document.getElementsByTagName('h1')[0];
-                displayErrorMessages(h1Element);
+                displayErrorMessages();
             } else {  // Se la validazione ha esito positivo, invia il form
                 // Usa l'ID del form per inviarlo direttamente
                 document.getElementById('profileForm').submit();
@@ -252,7 +264,7 @@
         }
 
         function displayErrorMessages(Element) {
-
+            var formElement = document.getElementById('profileForm');
             errorDisplayed = true;
             // Controlla se il messaggio di errore esiste già
             var errorMessageElement = document.getElementById('error-message');
@@ -263,7 +275,7 @@
                 errorMessageElement = document.createElement('p');
                 errorMessageElement.id = 'error-message';
                 errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                Element.appendChild(errorMessageElement);
+                document.querySelector('.content').insertBefore(errorMessageElement, formElement);
             }
 
             // Se il messaggio di errore specifico non esiste, crealo
@@ -271,7 +283,7 @@
                 specificErrorElement = document.createElement('p');
                 specificErrorElement.id = 'specific-error';
                 specificErrorElement.textContent = errorMsg;
-                Element.appendChild(specificErrorElement);
+                document.querySelector('.content').insertBefore(specificErrorElement, formElement);
             }
 
             // Colora il bordo del campo o dei campi che hanno dato errore
@@ -316,14 +328,19 @@
 </head>
 <body>
 <%@ include file="/static/include/header.jsp" %>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
             <h1>Profilo di ${socio.utente.nome} ${socio.utente.cognome}</h1>
         </section>
         <section class="content">
-            <img src="${socio.urlFoto}" alt="Foto Profilo" class="profile-pic"/>
-            <label for="enableEdit">Abilita modifiche</label><input type="checkbox" id="enableEdit" name="enableEdit"/>
+            <img class="profile-image" src="${empty socio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
+
+            <c:if test="${not socio.deleted}">
+                <label for="enableEdit">Abilita modifiche</label>
+                <input type="checkbox" id="enableEdit" name="enableEdit"/>
+            </c:if>
+
             <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
 
@@ -377,35 +394,37 @@
                     <input type="file" id="photo" name="photo">
                 </fieldset>
 
-                <button type="submit">Aggiorna</button>
+                <input type="submit" value="Aggiorna">
             </form>
         </section>
-        <section class="content">
-            <form name="modificaPassword" action="modificaPassword" method="POST">
-                <input type="hidden" name="socio-id" value="${socio.id}"/>
-                <% if (request.getAttribute("socioHeader") != null && ((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
-                <label for="old-password">Vecchia password</label><input type="password" id="old-password" name="old-password" required/> <% } %>
-                <label for="new-password">Nuova password</label><input type="password" id="new-password" name="new-password" required/>
-                <button type="submit">Modifica Password</button>
-            </form>
+        <c:if test="${not socio.deleted}">
+            <section class="content">
+                <form name="modificaPassword" action="modificaPassword" method="POST">
+                    <input type="hidden" name="socio-id" value="${socio.id}"/>
+                    <% if (request.getAttribute("socioHeader") != null && ((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
+                    <label for="old-password">Vecchia password</label><input type="password" id="old-password" name="old-password" required/> <% } %>
+                    <label for="new-password">Nuova password</label><input type="password" id="new-password" name="new-password" required/>
+                    <button type="submit">Modifica Password</button>
+                </form>
 
-            <p>Disiscrizione dal Circolo Culturale</p>
-            <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
-                <input type="hidden" name="socio-id" value="${socio.id}"/>
-                <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
-                <label for="confirmUnsubscribe">Confermi la disiscrizione?</label>
-                <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
-                <button type="submit">Disiscriviti</button>
-                <% } else { %>
-                <label for="not-deleted">Attivo</label><input type="radio" id="not-deleted" name="delete" value="false" <c:if test="${socio.deleted == false}">checked</c:if>>
-                <label for="deleted">Inattivo</label><input type="radio" id="deleted" name="delete" value="true" <c:if test="${socio.deleted == true}">checked</c:if>>
-                <button type="submit">Conferma</button>
-                <% } %>
-            </form>
-        </section>
+                <p>Disiscrizione dal Circolo Culturale</p>
+                <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
+                    <input type="hidden" name="socio-id" value="${socio.id}"/>
+                    <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
+                    <label for="confirmUnsubscribe">Confermi la disiscrizione?</label>
+                    <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
+                    <button type="submit">Disiscriviti</button>
+                    <% } else { %>
+                    <label for="not-deleted">Attivo</label><input type="radio" id="not-deleted" name="delete" value="false" <c:if test="${socio.deleted == false}">checked</c:if>>
+                    <label for="deleted">Inattivo</label><input type="radio" id="deleted" name="delete" value="true" <c:if test="${socio.deleted == true}">checked</c:if>>
+                    <button type="submit">Conferma</button>
+                    <% } %>
+                </form>
+            </section>
+        </c:if>
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>
-
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

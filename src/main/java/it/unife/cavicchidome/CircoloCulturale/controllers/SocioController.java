@@ -1,12 +1,15 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.models.Segretario;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
 import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
+import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,11 +32,16 @@ public class SocioController {
     private final SocioService socioService;
     private final SaggioService saggioService;
     private final BigliettoService bigliettoService;
+    private final SedeService sedeService;
 
-    SocioController(SocioService socioService, SaggioService saggioService, BigliettoService bigliettoService) {
+    @Value("${file.socio.upload-dir}")
+    String uploadDir;
+
+    SocioController(SocioService socioService, SaggioService saggioService, BigliettoService bigliettoService, SedeService sedeService) {
         this.saggioService = saggioService;
         this.bigliettoService = bigliettoService;
         this.socioService = socioService;
+        this.sedeService = sedeService;
     }
 
 
@@ -52,9 +60,9 @@ public class SocioController {
         }
 
         Socio socio;
-        if (socioId.isPresent() && socioService.findSocioById(socioId.get()).isPresent()) {
+        if (socioId.isPresent() && socioService.findSocioByIdAll(socioId.get()).isPresent()) { //TODO: ATTENZIONE Cosi restituisce anche soci cancellati
             if (socioCookie.get().getSegretario() != null) {
-                socio = socioService.findSocioById(socioId.get()).get();
+                socio = socioService.findSocioByIdAll(socioId.get()).get();
             } else {
                 return "redirect:/";
             }
@@ -62,10 +70,8 @@ public class SocioController {
             socio = socioCookie.get();
         }
 
-        // Aggiunge i dati del socio e dell'utente al modello
-        if (socio.getUrlFoto() == null || socio.getUrlFoto().isEmpty()) {
-            socio.setUrlFoto("profilo.jpg");
-        }
+        model.addAttribute("uploadDir", uploadDir);
+        model.addAttribute("placeholderImage", "profilo.jpg");
         model.addAttribute("socio", socio);
 
         // Restituisce la vista socio-profile.jsp con i dati
@@ -259,6 +265,14 @@ public class SocioController {
             if (socioId.get().equals(socioCookie.get().getId())) {
                 socio = socioCookie.get();
                 redirectTo = "";
+                Segretario segretario = socioCookie.get().getSegretario();
+                if( segretario != null){
+                   if(sedeService.findSedeByIdSegretario(segretario.getId()).isPresent()){
+                          redirectAttributes.addAttribute("deleteFailed", "true");
+                          System.out.println("Non si può disiscrivere un segretario associato ad una sede");
+                          return "redirect:/socio/profile?socio-id=" + socioId.get(); //NON si può disiscrivere un segretario associato ad una sede
+                   }
+                }
             } else if (socioService.findSocioById(socioId.get()).isPresent()) {
                 if (socioCookie.get().getSegretario() != null) {
                     socio = socioService.findSocioById(socioId.get()).get();

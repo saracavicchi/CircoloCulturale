@@ -151,7 +151,7 @@
                 event.target.submit();
             } else {
                 errorDisplayed = true;
-                /
+
                 var formElement = document.getElementById('registrationForm');
 
                 // Controlla se il messaggio di errore esiste già
@@ -218,7 +218,7 @@
 </head>
 <body>
 <%@include file="/static/include/top-bar.jsp"%>
-<div id="main-content">
+<div id="main-content" class="clearfix">
     <main class="fullsize">
         <section class="title">
             <h1>Modulo di registrazione</h1>
@@ -295,5 +295,6 @@
         </section>
     </main>
 </div>
+<%@include file="/static/include/footer.jsp"%>
 </body>
 </html>

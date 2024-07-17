@@ -38,7 +38,7 @@
             </section>
             <section class="content">
 
-                <img class="image" src="http://localhost:8080/images/circoloCulturalePhotos/circolo.jpg" alt="immagine Circolo Culturale">
+                <img class="image" src="/images/circoloCulturalePhotos/circolo.jpg" alt="immagine Circolo Culturale">
                 <h1>Benvenuti al Circolo Culturale La Sinfonia</h1>
                 <p>
                     Il nostro circolo è un punto di incontro per appassionati di danza, musica e molto altro.
