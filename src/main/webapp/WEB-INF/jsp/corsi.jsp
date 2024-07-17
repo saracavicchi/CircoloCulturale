@@ -12,19 +12,6 @@
 <head>
     <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var docentiOverlap = "${param.docentiOverlap}";
-            if (docentiOverlap == 'true') {
-                warningDocentiOverlap();
-            }
-
-        });
-
-        function warningDocentiOverlap() {
-            alert("Attenzione: le informazioni sono state salvate, ma sono stati rilevati problemi di sovrapposizione oraria nell'orario dei docenti");
-        }
-    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>

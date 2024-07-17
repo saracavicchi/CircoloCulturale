@@ -50,17 +50,26 @@ public class CorsoController {
     }
 
     @GetMapping("/crea")
-    public String creaCorso(Model model, HttpServletRequest request, HttpServletResponse response) {
-        socioService.setSocioFromCookie(request, response, model);
-
-
+    public String creaCorso(
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
+            return "redirect:/";
+        }
 
         // Ottenere le sale dal servizio e aggiungerle al model
         List<Sala> sale = new ArrayList<>(salaService.findAllIfActive());
         Collections.sort(sale, new Comparator<Sala>() {
             @Override
             public int compare(Sala s1, Sala s2) {
-                return s1.getIdSede().getId().compareTo(s2.getIdSede().getId());
+                int sedeCompare = s1.getIdSede().getId().compareTo(s2.getIdSede().getId());
+                if (sedeCompare == 0) { // Stessa sedem confronta i numeri delle sale
+                    return Integer.compare(s1.getNumeroSala(), s2.getNumeroSala());
+                }
+                return sedeCompare;
             }
         });
         model.addAttribute("sale", sale);
@@ -92,27 +101,19 @@ public class CorsoController {
                             RedirectAttributes redirectAttributes
     ) {
 
-        // Validate course data first
-        boolean isValid = corsoService.validateCourseData(descrizione, genere, livello, categoria, idSala, docenti, stipendi, giorni, orarioInizio, orarioFine);
-        if (!isValid) {
-            // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
-            redirectAttributes.addAttribute("fail", "true");
-            return "redirect:/corso/crea"; // Adjust "errorView" to your actual error view name
-        }
-
-        // If validation passes, proceed to save course information
         boolean saveSuccess = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
         if (!saveSuccess) {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/crea";
         }
+        //controlla sovrapposizione oraria dei docenti
         boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
         System.out.println("checkDocentiSchedule: " + checkDocentiSchedule);
         if (!checkDocentiSchedule) {
             redirectAttributes.addAttribute("docentiOverlap", "true");
         }
 
-        return "redirect:/corso/info";
+        return "redirect:/segretario/corsi";
     }
 
     @GetMapping("/info")
@@ -186,7 +187,7 @@ public class CorsoController {
             HttpServletResponse response
     ) {
         Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()){
             return "redirect:/";
         }
         // Recupera le informazioni del corso tramite il suo ID
@@ -195,13 +196,13 @@ public class CorsoController {
             // TODO:Gestisci il caso in cui il corso non viene trovato (es. reindirizzamento a una pagina di errore)
             return "redirect:/";
         }
-        // Aggiungi il corso al modello per poterlo visualizzare nella pagina JSP
+
         model.addAttribute("corso", corso.get());
 
         model.addAttribute("uploadDir", uploadDir);
         model.addAttribute("placeholderImage", "profilo.jpg");
 
-        return "modifica-corso"; // Nome della JSP da visualizzare
+        return "modifica-corso";
     }
 
     @PostMapping("/modificaBase")
@@ -217,13 +218,12 @@ public class CorsoController {
         // Validate course data first
         boolean isValid = corsoService.updateBasicCourseInfo(idCorso, descrizione, genere, livello, categoria, photo);
         if (!isValid) {
-            // Handle validation failure (e.g., log the error, return "errorView", throw an exception)
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/modificaBase?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
         redirectAttributes.addAttribute("successMessage", "Corso aggiornato con successo.");
 
-        return "redirect:/segretario/corsi"; //pagina visualizzazione corsi
+        return "redirect:/segretario/corsi"; //pagina visualizzazione corsi del segretario
 
     }
 
@@ -235,14 +235,14 @@ public class CorsoController {
             HttpServletResponse response
     ) {
         Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
             return "redirect:/";
         }
 
-        Optional<Corso> corsoOpt = corsoService.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoService.findById(idCorso); //solo corsi active
         if (!corsoOpt.isPresent()) {
             // Gestisci il caso in cui il corso non viene trovato
-            return "redirect:/paginaErrore";
+            return "redirect:/";
         }
         Corso corso = corsoOpt.get();
 
@@ -255,13 +255,13 @@ public class CorsoController {
         model.addAttribute("docentiCorso", docentiCorso);
 
         // Ottieni e aggiungi l'elenco di tutti i docenti disponibili al modello
-        List<Docente> tuttiIDocenti = docenteService.findAll();
+        List<Docente> tuttiIDocenti = docenteService.findAll(); //solo docenti active
         model.addAttribute("tuttiIDocenti", tuttiIDocenti);
 
-        List<Object[]> sociInfo = socioService.findSociNotDocentiAndNotSegretariByIdCorso(idCorso);
+        List<Object[]> sociInfo = socioService.findSociNotDocentiAndNotSegretariByIdCorso(idCorso); //solo active
         model.addAttribute("sociInfo", sociInfo);
 
-        return "modifica-docenti-corso"; // Nome della JSP da visualizzare
+        return "modifica-docenti-corso";
     }
 
     @PostMapping("/modificaDocenti")
@@ -279,12 +279,11 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
-        boolean docentiOverlap = corsoService.checkDocentiScheduleOverlap(idCorso, docentiCf.get());
+        boolean docentiOverlap = corsoService.checkDocentiScheduleOverlap(idCorso, docentiCf.get()); //false se c'è sovrapposizione
         if(!docentiOverlap){
             System.out.println(docentiOverlap);
             redirectAttributes.addAttribute("docentiOverlap", "true");
         }
-
 
         redirectAttributes.addAttribute("successMessage", "Docenti aggiornati con successo.");
         return "redirect:/segretario/corsi";
@@ -300,13 +299,12 @@ public class CorsoController {
             HttpServletResponse response
     ) {
         Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
             return "redirect:/";
         }
 
-        Optional<Corso> corsoOpt = corsoService.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoService.findById(idCorso); //solo active
         if (!corsoOpt.isPresent()) {
-            // Gestisci il caso in cui il corso non viene trovato
             return "redirect:/";
         }
         Corso corso = corsoOpt.get();
@@ -323,12 +321,16 @@ public class CorsoController {
         Collections.sort(sale, new Comparator<Sala>() {
             @Override
             public int compare(Sala s1, Sala s2) {
-                return s1.getIdSede().getId().compareTo(s2.getIdSede().getId());
+                int sedeCompare = s1.getIdSede().getId().compareTo(s2.getIdSede().getId());
+                if (sedeCompare == 0) { //stessa sede, confronto numeri sale
+                    return Integer.compare(s1.getNumeroSala(), s2.getNumeroSala());
+                }
+                return sedeCompare;
             }
         });
         model.addAttribute("sale", sale);
-        // Restituisci il nome della JSP da visualizzare
-        return "modifica-calendario-corso"; // Nome della JSP da visualizzare
+
+        return "modifica-calendario-corso";
     }
 
     @PostMapping("/modificaCalendario")
@@ -347,12 +349,11 @@ public class CorsoController {
             return "redirect:/corso/modificaCalendario?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
 
-        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(idCorso, giorni, orariInizio, orariFine);
-        //System.out.println(checkDocentiSchedule);
+        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(idCorso, giorni, orariInizio, orariFine); //false se c'è sovrapposizione
+        System.out.println(checkDocentiSchedule);
         if (!checkDocentiSchedule) {
             redirectAttributes.addAttribute("docentiOverlap", "true");
         }
-
 
         redirectAttributes.addAttribute("successMessage", "Calendario aggiornato con successo.");
         return "redirect:/segretario/corsi";
@@ -370,6 +371,6 @@ public class CorsoController {
         }
 
         redirectAttributes.addAttribute("successMessage", "Corso eliminato con successo.");
-        return "redirect:/corso/modificaBase?idCorso=" + idCorso; //TODO: vedere come gestire meglio
+        return "redirect:/segretario/corsi";
     }
 }

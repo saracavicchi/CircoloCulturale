@@ -24,7 +24,7 @@ public interface SocioRepository extends JpaRepository<Socio, Integer> {
     @Query("select distinct substring(s.utente.cognome, 1, 1) from Socio s order by substring(s.utente.cognome, 1, 1)")
     List<Character> findDistinctInitials();
 
-    @Query("SELECT u.cf, u.nome, u.cognome, u.id FROM Socio s JOIN s.utente u WHERE s.deleted=false AND s.utente.deleted=false AND NOT EXISTS (SELECT 1 FROM Segretario seg WHERE seg.socio.id = s.id) AND NOT EXISTS (SELECT d FROM Docente d JOIN d.corsi c WHERE d.socio.id = s.id AND c.id = ?1)")
+    @Query("SELECT u.cf, u.nome, u.cognome, u.id FROM Socio s JOIN s.utente u WHERE s.deleted=false AND s.utente.deleted=false AND NOT EXISTS (SELECT 1 FROM Segretario seg WHERE seg.socio.id = s.id AND seg.active=true) AND NOT EXISTS (SELECT d FROM Docente d JOIN d.corsi c WHERE d.socio.id = s.id AND c.id = ?1 AND d.active = true)")
     List<Object[]> findSociNotDocentiAndNotSegretariByIdCorso(Integer idCorso);
 
     @Query("SELECT s FROM Socio s WHERE s.deleted = false AND s.utente.deleted = false AND s.id = ?1")

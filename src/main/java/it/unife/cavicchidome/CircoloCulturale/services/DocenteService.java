@@ -31,7 +31,7 @@ public class DocenteService {
 
     @Transactional(readOnly = true)
     public List<Docente> findAll() {
-        return docenteRepository.findAll();
+        return docenteRepository.findAllActive();
     }
 
     @Transactional(readOnly = true)

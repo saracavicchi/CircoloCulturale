@@ -157,10 +157,13 @@ public class CorsoService {
             List<Integer> giorni,
             List<LocalTime> orarioInizio,
             List<LocalTime> orarioFine,
-            MultipartFile photo) {
+            MultipartFile photo
+    ) {
+
+       if(!validateCourseData(descrizione, genere, livello, categoria, idSala, docentiCf, stipendi, giorni, orarioInizio, orarioFine))
+            return false;
 
         boolean reactivated = false;
-
 
         Optional<Corso> corsoIdentical = corsoRepository.findByCategoriaAndGenereAndLivelloAll(categoria, genere, livello);
         if(corsoIdentical.isPresent() ) {

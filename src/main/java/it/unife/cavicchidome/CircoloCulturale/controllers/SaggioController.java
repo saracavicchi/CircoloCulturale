@@ -9,6 +9,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
 import it.unife.cavicchidome.CircoloCulturale.services.UtenteService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class SaggioController {
     @Value("${file.saggio.upload-dir}")
     String uploadDir;
 
+    @Autowired
     SaggioController(SaggioService saggioService, SocioService socioService, UtenteService utenteService, BigliettoService bigliettoService, CorsoService corsoService, CorsoRepository corsoRepository) {
         this.saggioService = saggioService;
         this.socioService = socioService;
@@ -49,7 +51,7 @@ public class SaggioController {
     @GetMapping("/info")
     public String viewSaggi(@RequestParam(name = "id") Optional<Integer> saggioId,
                             @RequestParam(name = "data") Optional<LocalDate> date,
-                            @RequestParam(name = "deleted") Optional<Boolean> deleted,
+                            @RequestParam(name = "deleted") Optional<Boolean> deleted, //TODO: perche deleted?
                             Model model,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -57,7 +59,7 @@ public class SaggioController {
         socioService.setSocioFromCookie(request, response, model);
 
         if (saggioId.isPresent()) {
-            Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());
+            Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get()); //TODO: mettere findSaggioByIdNotDeleted ?????
             if (saggio.isPresent()) {
                 model.addAttribute("saggio", saggio.get());
                 model.addAttribute("availableTickets", saggioService.getAvailableTickets(saggio.get()));
@@ -76,7 +78,7 @@ public class SaggioController {
 
         socioService.setSocioFromCookie(request, response, model);
         if (saggioId.isPresent()) {
-            Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());
+            Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get());  //TODO: mettere findSaggioByIdNotDeleted ?????
             if (saggio.isPresent()) {
                 model.addAttribute("saggio", saggio.get());
                 model.addAttribute("availableTickets", saggioService.getAvailableTickets(saggio.get()));
@@ -117,7 +119,7 @@ public class SaggioController {
     @GetMapping("/crea")
     public String viewCreateSaggio(Model model, HttpServletRequest request, HttpServletResponse response) {
         socioService.setSocioFromCookie(request, response, model);
-        if(corsoService.aggiungiCorsiBaseRuolo(request, response, model)){
+        if(corsoService.aggiungiCorsiBaseRuolo(request, response, model)){ //TODO: cosi puo creare saggio anche docente ma per ora abbiamo detto di no
             return "creazione-saggio";
         }
         return "redirect:/saggio/info"; //TODO: aggiungere messaggio di errore
@@ -161,11 +163,11 @@ public class SaggioController {
     @GetMapping("/modifica")
     public String viewModificaSaggio(@RequestParam("saggioId") Integer saggioId, Model model, HttpServletRequest request, HttpServletResponse response) {
         Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null  || !segretario.get().getSegretario().getActive()) { //cosi solo segretario puo accedere a pagina
             return "redirect:/";
         }
-        Optional<Saggio> saggio = saggioService.findSaggioById(saggioId);
-        if (saggio.isPresent() && corsoService.aggiungiCorsiBaseRuolo(request, response, model)) {
+        Optional<Saggio> saggio = saggioService.findSaggioById(saggioId); //Okay anche saggi cancellati perche segretario li può visualizzare
+        if (saggio.isPresent() && corsoService.aggiungiCorsiBaseRuolo(request, response, model)) { //TODO: cosi puo modificare saggio anche docente ma per ora abbiamo detto di no
             model.addAttribute("saggio", saggio.get());
             model.addAttribute("uploadDir", uploadDir);
             model.addAttribute("placeholderImage", "profilo.jpg");
@@ -216,10 +218,10 @@ public class SaggioController {
             saggioService.deleteSaggio(saggioId);
         } catch (Exception e) {
             redirectAttributes.addAttribute("fail", "true"); //TODO: aggiungere messaggio di errore
-            return "redirect:/saggio/info";
+            return "redirect:/saggio/modifica?saggioId=" + saggioId;
         }
 
-        return "redirect:/saggio/info";
+        return "redirect:/segretario/saggi";
     }
 
 
