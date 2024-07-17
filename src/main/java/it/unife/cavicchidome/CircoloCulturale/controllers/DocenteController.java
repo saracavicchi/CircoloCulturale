@@ -5,6 +5,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ public class DocenteController {
     private final SocioService socioService;
     private final CorsoService corsoService;
 
+    @Autowired
     public DocenteController(SocioService socioService, CorsoService corsoService) {
         this.socioService = socioService;
         this.corsoService = corsoService;
@@ -30,7 +32,7 @@ public class DocenteController {
                                       HttpServletResponse response) {
 
         Optional<Socio> docente = socioService.setSocioFromCookie(request, response, model);
-        if (docente.isPresent() && docente.get().getDocente() == null) {
+        if (docente.isPresent() && (docente.get().getDocente() == null || !docente.get().getDocente().getActive())) {
             return "redirect:/";
         }
 

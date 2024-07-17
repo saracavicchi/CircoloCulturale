@@ -39,7 +39,7 @@ public class PrenotazioneSalaService {
     }
 
     @Transactional
-    public List<PrenotazioneSala> getPrenotazioneBySocio(Integer idSocio, Optional<LocalDate> date) {
+    public List<PrenotazioneSala> getPrenotazioneBySocio(Integer idSocio, Optional<LocalDate> date) { //solo prenotazioni e soci active
         return prenotazioneSalaRepository.findBySocio(idSocio, date.orElse(LocalDate.now()));
     }
 
@@ -53,7 +53,7 @@ public class PrenotazioneSalaService {
     }
 
     @Transactional
-    public Optional<PrenotazioneSala> getPrenotazioneById(Integer idSocio, Integer idPrenotazione) {
+    public Optional<PrenotazioneSala> getPrenotazioneById(Integer idSocio, Integer idPrenotazione) {//TODO: Serve controllo su prenotazioni/soci attivi? Attenzione è anche usato dal segretario che vede anche cancellate
         Optional<PrenotazioneSala> prenotazione = prenotazioneSalaRepository.findById(idPrenotazione);
         Optional<Socio> socio = socioService.findSocioById(idSocio);
         if (prenotazione.isPresent() && socio.isPresent()) {

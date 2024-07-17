@@ -12,6 +12,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ public class PrenotazioneController {
     private final PrenotazioneSalaRepository prenotazioneSalaRepository;
     private final SalaRepository salaRepository;
 
+    @Autowired
     public PrenotazioneController(SocioService socioService, PrenotazioneSalaService prenotazioneSalaService, SedeService sedeService, SalaService salaService, CalendarioCorsoRepository calendarioCorsoRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, SalaRepository salaRepository) {
         this.socioService = socioService;
         this.prenotazioneSalaService = prenotazioneSalaService;
@@ -57,7 +59,7 @@ public class PrenotazioneController {
         }
 
         if (prenotazioneId.isPresent()) {
-            Optional<PrenotazioneSala> prenotazione = prenotazioneSalaService.getPrenotazioneById(socioCookie.get().getId(), prenotazioneId.get());
+            Optional<PrenotazioneSala> prenotazione = prenotazioneSalaService.getPrenotazioneById(socioCookie.get().getId(), prenotazioneId.get());//TODO: Serve controllo su prenotazioni/soci attivi?
             if (prenotazione.isPresent()) {
                 model.addAttribute("prenotazione", prenotazione.get());
                 return "prenotazione-info";
@@ -140,7 +142,7 @@ public class PrenotazioneController {
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
         Optional<Socio> socioCookie = socioService.setSocioFromCookie(request, response, model);
-        if (socioCookie.isEmpty() || socioCookie.get().getSegretario() == null) {
+        if (socioCookie.isEmpty() || socioCookie.get().getSegretario() == null || !socioCookie.get().getSegretario().getActive()) {
             return "redirect:/";
         }
 
@@ -154,8 +156,8 @@ public class PrenotazioneController {
             }
         } else {
             model.addAttribute("segretario", true);
-            model.addAttribute("sedi", salaRepository.findDistinctSedi());
-            model.addAttribute("sale", salaRepository.findAllPrenotabili());
+            model.addAttribute("sedi", salaService.findDistinctSedi());
+            model.addAttribute("sale", salaService.findAllPrenotabili());
             List<PrenotazioneSala> prenotazioni = prenotazioneSalaService.getPrenotazioneBySalaAfterDataDeleted(salaId, showAfter, deleted);
             model.addAttribute("prenotazioni", prenotazioni);
             return "prenotazioni";

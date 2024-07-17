@@ -66,6 +66,6 @@ public class TesseraService {
     }
 
     public Optional<Tessera> findTesseraById(String tesseraId) {
-        return tesseraRepository.findById(tesseraId);
+        return tesseraRepository.findByIdSocioActive(tesseraId);
     }
 }

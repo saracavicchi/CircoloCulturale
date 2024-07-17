@@ -1,10 +1,12 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.SalaService;
 import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/sede/sala")
 class SalaController {
@@ -20,6 +24,7 @@ class SalaController {
     private final SedeService sedeService;
     private final SocioService socioService;
 
+    @Autowired
     public SalaController(SalaService salaService, SedeService sedeService, SocioService socioService) {
         this.salaService = salaService;
         this.sedeService = sedeService;
@@ -28,7 +33,10 @@ class SalaController {
 
     @GetMapping("/crea")
     public String creaSala(@RequestParam(name = "idSede") Integer idSede, Model model, HttpServletRequest request, HttpServletResponse response) {
-        socioService.setSocioFromCookie(request, response, model);
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
+            return "redirect:/";
+        }
         return "creazione-sala";
     }
 
@@ -59,8 +67,11 @@ class SalaController {
 
     @GetMapping("/modifica")
     public String modificaSala(@RequestParam(name = "idSede") Integer idSede, Model model, HttpServletRequest request, HttpServletResponse response) {
-        socioService.setSocioFromCookie(request, response, model);
-        model.addAttribute("sale", salaService.findAllBySedeId(idSede));
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
+            return "redirect:/";
+        }
+        model.addAttribute("sale", salaService.findAllBySedeId(idSede)); //solo active
 
         return "modifica-sale";
     }
@@ -75,7 +86,7 @@ class SalaController {
     ){
         try{
             if(salaService.updateSala(idSala, numeroSala, descrizione, prenotabile))
-                return "redirect:/sede/info?idSede=" + idSede;
+                return "redirect:/segretario/sedi";
             else{
                 redirectAttributes.addAttribute("failed", "true");
                 return "redirect:/sede/sala/modifica?idSede=" + idSede;
@@ -96,7 +107,7 @@ class SalaController {
     ){
         try{
             if(salaService.deleteSala(idSala))
-                return "redirect:/sede/info?idSede=" + idSede;
+                return "redirect:/segretario/sedi";
             else{
                 redirectAttributes.addAttribute("failed", "true");
                 return "redirect:/sede/sala/modifica?idSede=" + idSede;

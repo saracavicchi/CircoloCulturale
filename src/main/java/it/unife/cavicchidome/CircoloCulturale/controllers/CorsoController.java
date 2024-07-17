@@ -4,6 +4,7 @@ import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,7 @@ public class CorsoController {
     @Value("${file.corso.upload-dir}")
     private String uploadDir;
 
+    @Autowired
     public CorsoController(
             CorsoService corsoService,
             SalaService salaService,

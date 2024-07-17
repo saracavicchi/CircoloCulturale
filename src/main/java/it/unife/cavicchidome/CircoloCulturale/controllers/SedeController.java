@@ -1,6 +1,7 @@
 package it.unife.cavicchidome.CircoloCulturale.controllers;
 
 import it.unife.cavicchidome.CircoloCulturale.models.Sede;
+import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +56,10 @@ public class SedeController {
 
     @GetMapping("/crea")
     public String creaSede(Model model, HttpServletRequest request, HttpServletResponse response) {
-        socioService.setSocioFromCookie(request, response, model);
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
+            return "redirect:/";
+        }
         model.addAttribute("sociInfo", socioService.findSociPossibiliSegretari());
         return "creazione-sede";
     }
@@ -80,7 +84,7 @@ public class SedeController {
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/crea";
             }
-            return "redirect:/sede/info";
+            return "redirect:/segretario/sedi";
         } catch (Exception e) {
             String message = e.getMessage();
             System.out.println(message);
@@ -94,10 +98,13 @@ public class SedeController {
     }
 
     @GetMapping("/modifica")
-    public String modificaSede(@RequestParam(name = "idSede") Integer idSede, Model model, HttpServletRequest request, HttpServletResponse response) {
-        socioService.setSocioFromCookie(request, response, model);
+    public String modificaSede(@RequestParam(name = "idSede") Integer idSede,
+                               Model model,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
+        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
         Optional<Sede> sedeOpt = sedeService.findSedeByIdActive(idSede);
-        if(sedeOpt.isEmpty() || !sedeOpt.isPresent()){
+        if(sedeOpt.isEmpty() || segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
             return "redirect:/sede/info";
         }
         model.addAttribute("sociInfo", socioService.findSociPossibiliSegretari());
@@ -138,7 +145,7 @@ public class SedeController {
     ){
         try{
             if(sedeService.deleteSede(idSede))
-                return "redirect:/sede/info";
+                return "redirect:/segretario/sedi";
             else{
                 redirectAttributes.addAttribute("failed", "true");
                 return "redirect:/sede/modifica?idSede=" + idSede;

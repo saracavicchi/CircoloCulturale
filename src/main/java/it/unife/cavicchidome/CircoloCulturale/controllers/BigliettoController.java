@@ -7,6 +7,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ public class BigliettoController {
     private final SaggioService saggioService;
     private final SocioService socioService;
 
+    @Autowired
     public BigliettoController(BigliettoService bigliettoService, SaggioService saggioService, SocioService socioService) {
         this.bigliettoService = bigliettoService;
         this.saggioService = saggioService;
@@ -40,13 +42,13 @@ public class BigliettoController {
         socioService.setSocioFromCookie(request, response, model);
 
         if (bigliettoId.isPresent()) {
-            Optional<Biglietto> biglietto = bigliettoService.findBigliettoById(bigliettoId.get());
+            Optional<Biglietto> biglietto = bigliettoService.findBigliettoById(bigliettoId.get()); //TODO: vengono mostrati i biglietti cancellati
             if (biglietto.isPresent()) {
                 model.addAttribute("biglietto", biglietto.get());
                 return "biglietto-info";
             }
         }
-        model.addAttribute("biglietti", bigliettoService.findAllBiglietti());
+        model.addAttribute("biglietti", bigliettoService.findAllBiglietti()); //TODO: vengono mostrati i biglietti cancellati
         return "biglietti";
     }
 
@@ -56,12 +58,12 @@ public class BigliettoController {
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
         Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
             return "redirect:/";
         }
 
         if (bigliettoId != null) {
-            Optional<Biglietto> biglietto = bigliettoService.findBigliettoById(bigliettoId);
+            Optional<Biglietto> biglietto = bigliettoService.findBigliettoById(bigliettoId); //okay che vengano mostrati i biglietti cancellati
             if (biglietto.isPresent()) {
                 model.addAttribute("biglietto", biglietto.get());
                 return "biglietto-info-segretario";
@@ -80,7 +82,7 @@ public class BigliettoController {
                                 HttpServletResponse response,
                                 RedirectAttributes redirectAttributes) {
         Optional<Socio> segretario = socioService.getSocioFromCookie(request, response);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
             return "redirect:/";
         }
 

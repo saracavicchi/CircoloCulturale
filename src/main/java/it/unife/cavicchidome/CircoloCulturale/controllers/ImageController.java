@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 @RestController
 public class ImageController {
 
-    //private final Path uploadDir = Paths.get(System.getProperty("user.dir"), "src", "main", "resources", "static", "images", "saggioPhotos");
 
     @GetMapping("/images/saggioPhotos/{photo:.+}")
     public ResponseEntity<Resource> serveFileSaggio(@PathVariable String photo) {

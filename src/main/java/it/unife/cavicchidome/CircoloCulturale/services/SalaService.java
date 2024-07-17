@@ -198,5 +198,8 @@ public class SalaService {
         return salaRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Sede> findDistinctSedi() { return salaRepository.findDistinctSedi(); }
+
 
 }

@@ -7,6 +7,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.SedeService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -22,6 +23,7 @@ public class HomepageController {
     SedeService sedeService;
     SaggioService saggioService;
 
+    @Autowired
     HomepageController(SocioService socioService,
                        SedeService sedeService,
                        SaggioService saggioService) {
@@ -46,7 +48,11 @@ public class HomepageController {
                            HttpServletResponse response,
                            Model model) {
         socioService.setSocioFromCookie(request, response, model);
-        model.addAttribute("sede", sedeService.findActiveSedeWithMinId().get());//TODO: e se non c'è?
+        Optional<Sede> sedePrincipale = sedeService.findActiveSedeWithMinId();
+        if(!sedePrincipale.isPresent()) {
+            return "redirect:/";
+        }
+        model.addAttribute("sede", sedePrincipale.get());
 
         return "contatti";
     }

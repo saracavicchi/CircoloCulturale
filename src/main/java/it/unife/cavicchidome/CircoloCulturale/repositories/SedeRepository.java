@@ -23,11 +23,11 @@ public interface SedeRepository extends JpaRepository<Sede, Integer> {
             "AND (SELECT a.orarioChiusura FROM s.orarioSede a WHERE a.id.giornoSettimana = :dow)")
     Optional<Sede> findAvailableSede(LocalDate date, LocalTime startTime, LocalTime endTime, Weekday dow);*/
 
-    @Query("SELECT s FROM Sede s WHERE s.id = :idSede AND NOT EXISTS (SELECT d FROM s.giornoChiusura d WHERE d = :date) AND EXISTS (SELECT o FROM s.orarioSede o WHERE o.id.giornoSettimana = :dow)")
-    Optional<Sede> findAvailableSedeDate(Integer idSede, LocalDate date, Weekday dow); //TODO: Aggiungere active?
+    @Query("SELECT s FROM Sede s WHERE s.id = :idSede AND s.active = true AND NOT EXISTS (SELECT d FROM s.giornoChiusura d WHERE d = :date) AND EXISTS (SELECT o FROM s.orarioSede o WHERE o.id.giornoSettimana = :dow)")
+    Optional<Sede> findAvailableSedeDate(Integer idSede, LocalDate date, Weekday dow); //TODO: ho aggiunto ACTIVE, vedere se va bene
 
-    @Query("SELECT o FROM Sede s JOIN s.orarioSede o WHERE s.id = :idSede AND o.id.giornoSettimana = :dow")
-    OrarioSede findOrarioSede(Integer idSede, Weekday dow); //TODO: Aggiungere active?
+    @Query("SELECT o FROM Sede s JOIN s.orarioSede o WHERE s.id = :idSede AND o.id.giornoSettimana = :dow AND s.active = true")
+    OrarioSede findOrarioSede(Integer idSede, Weekday dow); //TODO: ho aggiunto ACTIVE, vedere se va bene
 
     @Query("SELECT s FROM Sede s WHERE s.nome = :nome")
     Optional<Sede> findSedeByNomeAll(String nome);

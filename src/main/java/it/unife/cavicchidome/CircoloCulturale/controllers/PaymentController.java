@@ -6,6 +6,7 @@ import it.unife.cavicchidome.CircoloCulturale.services.BigliettoService;
 import it.unife.cavicchidome.CircoloCulturale.services.TesseraService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class PaymentController {
     private final BigliettoService bigliettoService;
     private final TesseraService tesseraService;
 
+    @Autowired
     public PaymentController(BigliettoService bigliettoService, TesseraService tesseraService) {
         this.bigliettoService = bigliettoService;
         this.tesseraService = tesseraService;
@@ -34,7 +36,7 @@ public class PaymentController {
                               RedirectAttributes redirectAttributes,
                               Model model) {
         if (bigliettoId.isPresent()) {
-            Optional<Biglietto> biglietto = bigliettoService.findBigliettoById(bigliettoId.get());
+            Optional<Biglietto> biglietto = bigliettoService.findBigliettoById(bigliettoId.get()); //TODO: vengono mostrati i biglietti cancellati
             if (biglietto.isPresent()) {
                 model.addAttribute("biglietto", biglietto.get());
                 return "payment";
