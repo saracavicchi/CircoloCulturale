@@ -235,6 +235,8 @@
             %>
             <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-image"/>
 
+            <c:if test="${not corso.active}"><p>Corso non attivo</p></c:if>
+
             <c:if test="${corso.active}">
                 <label for="enableEdit">Modifica abilitata:</label>
                 <input type="checkbox" id="enableEdit" name="enableEdit">
@@ -266,11 +268,13 @@
                 <button type="submit">Salva Modifiche</button>
             </form>
         </section>
-        <c:if test="${corso.active}">
-            <section class="content">
-                <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
-                <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
-            </section>
+        <c:if test="${socioHeader.segretario ne null}">
+            <c:if test="${corso.active}">
+                <section class="content">
+                    <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
+                    <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+                </section>
+            </c:if>
 
             <section class="content">
                 <h1>Cancellazione Corso</h1>
@@ -282,9 +286,8 @@
                 </form>
             </section>
         </c:if>
-
     </main>
-<%@include file="/static/include/aside.jsp"%>
+    <%@include file="/static/include/aside.jsp"%>
 </div>
 <%@include file="/static/include/footer.jsp"%>
 </body>
