@@ -104,6 +104,22 @@ input[type="submit"]:hover {
     margin: 0;
 }
 
+#accountInfo a {
+    color: #333; /* Cambia il colore del testo */
+    font-size: 16px; /* Aumenta la dimensione del testo */
+    font-family: 'Arial', sans-serif; /* Cambia il tipo di font */
+    text-decoration: none; /* Rimuove il sottolineato */
+    font-weight: bold; /* Rende il testo in grassetto */
+    transition: color 0.3s ease; /* Effetto di transizione per l'hover */
+    border-radius: 5px;
+    border: 1px solid var(--background);
+    padding: 5px;
+}
+
+#accountInfo a:hover {
+    color: var(--background); /* Cambia il colore al passaggio del mouse */
+}
+
 #banner {
     width: 900px;
     margin: 10px auto;
@@ -278,15 +294,6 @@ form {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.formSubmit {
-    width: 80%;
-    max-width: 600px;
-    margin: 20px auto;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
 
 
 fieldset {
@@ -371,4 +378,42 @@ button[type="submit"]:hover {
     border: none;
     box-shadow: none;
 }
+
+
+ aside .content button {
+     background-color: var(--background);
+     color: #333333;
+     border: 2px solid var(--border);
+     padding: 6px 14px;
+     font-size: 16px;
+     cursor: pointer;
+     border-radius: 8px;
+     transition: background-color 0.3s, color 0.3s;
+ }
+
+aside .content button:hover {
+    background-color: var(--foreground);
+    color: var(--background);
+
+}
+
+
+aside .content ul {
+    list-style-type: none; /* Removes bullet points */
+    padding: 0; /* Removes default padding */
+}
+
+aside .content li {
+    margin-bottom: 8px; /* Adds space between list items */
+}
+
+a{
+    color:#a3271f;
+    text-decoration:none;
+    transition: color 0.3s ease;
+}
+a:hover{
+    color: var(--border);
+}
+
 

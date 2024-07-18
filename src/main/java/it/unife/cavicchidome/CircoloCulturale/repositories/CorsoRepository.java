@@ -31,7 +31,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
     @Query("SELECT c FROM Corso c WHERE c.active=true AND c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello")
     Optional<Corso> findByCategoriaAndGenereAndLivello(@Param("categoria") String categoria, @Param("genere") String genere, @Param("livello") String livello);
 
-    @Query("SELECT c FROM Corso c WHERE c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello")
+    @Query("SELECT c FROM Corso c WHERE c.categoria = :categoria AND c.genere = :genere AND c.livello = :livello ORDER BY c.id LIMIT 1")
     Optional<Corso> findByCategoriaAndGenereAndLivelloAll(@Param("categoria") String categoria, @Param("genere") String genere, @Param("livello") String livello);
 
     @Query("SELECT c FROM Corso c WHERE c.id = :idCorso AND c.active = true")
@@ -57,6 +57,9 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
 
     @Query("SELECT c FROM Corso c WHERE c.idSala.idSede.id = :idSede AND c.active = true AND c.idSala.active = true AND c.idSala.idSede.active = true")
     List<Corso> findBySedeId(Integer idSede);
+
+    @Query("SELECT c FROM Corso c JOIN c.docenti d WHERE d.id = :docenteId AND c.active = true AND d.active = true AND c.id != :idCorso")
+    List<Corso> findAltriCorsiInsegnatiByDocenteId(Integer docenteId, Integer idCorso);
 }
 
 

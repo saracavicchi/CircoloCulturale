@@ -1,23 +1,20 @@
 <%@page import="it.unife.cavicchidome.CircoloCulturale.models.Socio"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-</head>
 <aside class="smallright">
+    <% if (request.getAttribute("socioHeader") != null) { %>
     <section class="title">
-        <!-- TODO: sistemare encoding UTF-8 -->
         <h1>Menù socio</h1>
     </section>
     <section class="content">
         <ul>
-            <li><a href="/socio/profile">Profilo</a></li>
-            <!-- <li><a href="/socio/saggi">Saggi</a></li> -->
-            <li><a href="/socio/corsi">Corsi</a></li>
-            <li><a href="/socio/prenotazioni">Prenotazioni</a></li>
-            <li><a href="/socio/biglietti">Biglietti</a></li>
+            <li><button onclick="window.location.href='/socio/profile';">Profilo</button></li>
+            <li><button onclick="window.location.href='/socio/corsi';">Corsi</button></li>
+            <li><button onclick="window.location.href='/socio/prenotazioni';">Prenotazioni</button></li>
+            <li><button onclick="window.location.href='/socio/biglietti';">Biglietti</button></li>
         </ul>
     </section>
+<% } %>
 <% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDocente() != null) { %>
     <section class="title">
         <h1>Menù docente</h1>
@@ -35,12 +32,12 @@
     </section>
     <section class="content">
         <ul>
-            <li><a href="/segretario/soci">Soci</a></li>
-            <li><a href="/segretario/saggi">Saggi</a></li>
-            <li><a href="/segretario/corsi">Corsi</a></li>
-            <li><a href="/segretario/prenotazioni">Prenotazioni</a></li>
-            <li><a href="/segretario/biglietti">Biglietti</a></li>
-            <li><a href="/segretario/sedi">Sedi</a></li>
+            <li><button onclick="location.href='/segretario/soci';">Soci</button></li>
+            <li><button onclick="location.href='/segretario/saggi';">Saggi</button></li>
+            <li><button onclick="location.href='/segretario/corsi';">Corsi</button></li>
+            <li><button onclick="location.href='/segretario/prenotazioni';">Prenotazioni</button></li>
+            <li><button onclick="location.href='/segretario/biglietti';">Biglietti</button></li>
+            <li><button onclick="location.href='/segretario/sedi';">Sedi</button></li>
         </ul>
     </section>
 <% } %>

@@ -362,23 +362,24 @@
                     <label for="numeroCivico">Numero Civico:</label>
                     <input type="text" id="numeroCivico" name="numeroCivico" placeholder="Numero civico" required>
                 </fieldset>
-
-                <fieldset>
-                    <legend>Corsi Associati</legend>
-                    <label for="corsi">Seleziona Corsi:</label>
-                    <select id="corsi" name="corsi" multiple>
-                        <c:forEach items="${corsi}" var="corso">
-                            <c:choose>
-                                <c:when test="${saggio.corsi.contains(corso)}">
-                                    <option value="${corso.id}" selected>${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
-                                </c:when>
-                                <c:otherwise>
-                                    <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:forEach>
-                    </select>
-                </fieldset>
+                <c:if test="${not saggio.deleted}">
+                    <fieldset>
+                        <legend>Corsi Associati</legend>
+                        <label for="corsi">Seleziona Corsi:</label>
+                        <select id="corsi" name="corsi" multiple>
+                            <c:forEach items="${corsi}" var="corso">
+                                <c:choose>
+                                    <c:when test="${saggio.corsi.contains(corso)}">
+                                        <option value="${corso.id}" selected>${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <option value="${corso.id}">${corso.categoria}, ${corso.genere}, ${corso.livello}</option>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:forEach>
+                        </select>
+                    </fieldset>
+                </c:if>
                 <button type="submit">Modifica Saggio</button>
             </form>
         </section>
@@ -393,6 +394,7 @@
                 </form>
             </section>
         </c:if>
+
     </main>
 <%@include file="/static/include/aside.jsp"%>
 </div>

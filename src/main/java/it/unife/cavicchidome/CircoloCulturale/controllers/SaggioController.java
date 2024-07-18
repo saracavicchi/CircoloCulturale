@@ -95,7 +95,7 @@ public class SaggioController {
                                @RequestParam Optional<String> cf,
                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Optional<LocalDate> dob,
                                @RequestParam Optional<String> birthplace,
-                               @RequestParam Optional<String> country,
+                               @RequestParam Optional<String> state,
                                @RequestParam Optional<String> province,
                                @RequestParam Optional<String> city,
                                @RequestParam Optional<String> street,
@@ -105,11 +105,13 @@ public class SaggioController {
                                RedirectAttributes redirectAttributes) {
 
         try {
-            Biglietto biglietto = bigliettoService.newBiglietto(socioId, name, surname, cf, dob, birthplace, country, province, city, street, houseNumber, quantity, saggioId);
+            System.out.println(name+" "+surname+" "+cf+" "+dob+" "+birthplace+" "+state+" "+province+" "+city+" "+street+" "+houseNumber+" "+quantity+" "+saggioId);
+            Biglietto biglietto = bigliettoService.newBiglietto(socioId, name, surname, cf, dob, birthplace, state, province, city, street, houseNumber, quantity, saggioId);
             redirectAttributes.addAttribute("biglietto-id", biglietto.getId());
             redirectAttributes.addAttribute("redirect", "/biglietto/info?id=" + biglietto.getId());
             return "redirect:/payment";
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addAttribute("failed", "true");
             return "redirect:/saggio/iscrizione?id=" + saggioId;
         }
@@ -223,7 +225,6 @@ public class SaggioController {
 
         return "redirect:/segretario/saggi";
     }
-
 
 
 }

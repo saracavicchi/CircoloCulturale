@@ -11,4 +11,7 @@ public interface TesseraRepository extends JpaRepository<Tessera, String> {
 
     @Query("SELECT t FROM Tessera t WHERE t.idSocio.id = :id AND t.idSocio.deleted = false")
     Optional<Tessera> findByIdSocioActive(String id);
+
+    @Query("SELECT t FROM Tessera t WHERE t.id = :id AND t.idSocio.deleted = false")
+    Optional<Tessera> findByTesseraId(String id);
 }

@@ -241,7 +241,6 @@
                     <button type="button" onclick="document.getElementById('cancellaSalaForm_${sala.id}').submit();">Cancella Sala</button>
                 </form>
             </fieldset>
-            <hr/>
         </c:forEach>
         </section>
         <section class="content">

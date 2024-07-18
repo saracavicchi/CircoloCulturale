@@ -38,7 +38,6 @@ public class BigliettoController {
                            Model model,
                            HttpServletRequest request,
                            HttpServletResponse response) {
-
         socioService.setSocioFromCookie(request, response, model);
 
         if (bigliettoId.isPresent()) {
@@ -51,6 +50,7 @@ public class BigliettoController {
         model.addAttribute("biglietti", bigliettoService.findAllBiglietti()); //TODO: vengono mostrati i biglietti cancellati
         return "biglietti";
     }
+
 
     @GetMapping("/modifica")
     public String viewEditBiglietto(@RequestParam("bigliettoId") Integer bigliettoId,

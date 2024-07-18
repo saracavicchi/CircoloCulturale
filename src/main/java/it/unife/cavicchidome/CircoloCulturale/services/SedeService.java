@@ -9,10 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class SedeService {
@@ -24,8 +21,17 @@ public class SedeService {
     private final CorsoRepository corsoRepository;
     private final SegretarioRepository segretarioRepository;
     private final SocioRepository socioRepository;
+    private final DocenteRepository docenteRepository;
+    private final CorsoService corsoService;
 
-    SedeService(SedeRepository sedeRepository, SalaRepository salaRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, OrarioSedeRepository orarioSedeRepository, CorsoRepository corsoRepository, SegretarioRepository segretarioRepository, SocioRepository socioRepository) {
+    SedeService(SedeRepository sedeRepository,
+                SalaRepository salaRepository,
+                PrenotazioneSalaRepository prenotazioneSalaRepository,
+                OrarioSedeRepository orarioSedeRepository,
+                CorsoRepository corsoRepository,
+                SegretarioRepository segretarioRepository,
+                DocenteRepository docenteRepository,
+                SocioRepository socioRepository, CorsoService corsoService) {
         this.sedeRepository = sedeRepository;
         this.salaRepository = salaRepository;
         this.prenotazioneSalaRepository = prenotazioneSalaRepository;
@@ -33,6 +39,8 @@ public class SedeService {
         this.corsoRepository = corsoRepository;
         this.segretarioRepository = segretarioRepository;
         this.socioRepository = socioRepository;
+        this.docenteRepository = docenteRepository;
+        this.corsoService = corsoService;
     }
 
     @Transactional
@@ -293,9 +301,8 @@ public class SedeService {
                 for(LocalDate date : deletedChiusura){
                     sede.getGiornoChiusura().remove(date);
                 }
-
-
             }
+
             Segretario segretario;
             if(idSegretario != 0) {//significa che è stato selezionato un nuovo segretario
                 Optional<Socio> socioOpt = socioRepository.findById(idSegretario); //solo soci active
@@ -370,24 +377,10 @@ public class SedeService {
             if (!sedeOpt.isPresent()) {
                 return false;
             }
-            Sede sede = sedeOpt.get();
-            List<Sala> sale = salaRepository.findAllActiveBySedeId(idSede);
-            if(!sale.isEmpty()){
-                for(Sala sala : sale){
-                    sala.setActive(false);
-                    salaRepository.save(sala);
-                }
-            }
             List<Corso> corsi = corsoRepository.findBySedeId(idSede); //tutto active
             if(!corsi.isEmpty()){
                 for(Corso corso : corsi){
-                    Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
-                    for(CalendarioCorso calendarioCorso : calendarioCorsoSet){
-                        calendarioCorso.setActive(false);
-                    }
-                    corso.setCalendarioCorso(null);
-                    corso.setActive(false);
-                    corsoRepository.save(corso);
+                    corsoService.deleteCourse(corso.getId());
                 }
             }
             List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySedeId(idSede); //Solo active
@@ -395,6 +388,14 @@ public class SedeService {
                 for (PrenotazioneSala prenotazione : prenotazioni) {
                     prenotazione.setDeleted(true);
                     prenotazioneSalaRepository.save(prenotazione);
+                }
+            }
+            Sede sede = sedeOpt.get();
+            List<Sala> sale = salaRepository.findAllActiveBySedeId(idSede);
+            if(!sale.isEmpty()){
+                for(Sala sala : sale){
+                    sala.setActive(false);
+                    salaRepository.save(sala);
                 }
             }
 

@@ -102,17 +102,20 @@ public class CorsoController {
                             Model model,
                             RedirectAttributes redirectAttributes
     ) {
-
-        boolean saveSuccess = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
-        if (!saveSuccess) {
+        Corso corso;
+        try{
+            //controlla sovrapposizione oraria dei docenti
+            boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
+            corso = corsoService.saveCourseInformation(descrizione, genere, livello, categoria, idSala, docenti,stipendi, giorni, orarioInizio, orarioFine, foto);
+            System.out.println("checkDocentiSchedule: " + checkDocentiSchedule);
+            if (!checkDocentiSchedule) {
+                redirectAttributes.addAttribute("docentiOverlap", "true");
+            }
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/crea";
-        }
-        //controlla sovrapposizione oraria dei docenti
-        boolean checkDocentiSchedule = corsoService.checkDocentiScheduleOverlap(docenti, giorni, orarioInizio, orarioFine);
-        System.out.println("checkDocentiSchedule: " + checkDocentiSchedule);
-        if (!checkDocentiSchedule) {
-            redirectAttributes.addAttribute("docentiOverlap", "true");
         }
 
         return "redirect:/segretario/corsi";
@@ -270,9 +273,9 @@ public class CorsoController {
     public String updateDocenti(
             @RequestParam("idCorso") Integer idCorso,
             @RequestParam("docentiDaEliminare") Optional<List<Integer>> deletedDocentiId,
-            @RequestParam("stipendiAttuali") List<Integer> stipendiAttuali,
+            @RequestParam("stipendiAttuali") Optional<List<Integer>> stipendiAttuali,
             @RequestParam("nuoviDocenti") Optional<List<String>> docentiCf,
-            @RequestParam("stipendi") Optional<List<Integer>> stipendi,
+            @RequestParam("stipendi") Optional<List<Integer>>    stipendi,
             RedirectAttributes redirectAttributes
     ) {
         boolean updateSuccess = corsoService.updateDocenti(idCorso, deletedDocentiId, docentiCf, stipendiAttuali, stipendi);
@@ -281,10 +284,12 @@ public class CorsoController {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/modificaDocenti?idCorso=" + idCorso ; //TODO: vedere come gestire meglio
         }
-        boolean docentiOverlap = corsoService.checkDocentiScheduleOverlap(idCorso, docentiCf.get()); //false se c'è sovrapposizione
-        if(!docentiOverlap){
-            System.out.println(docentiOverlap);
-            redirectAttributes.addAttribute("docentiOverlap", "true");
+        if(!docentiCf.isEmpty()){
+            boolean docentiOverlap = corsoService.checkDocentiScheduleOverlap(idCorso, docentiCf.get()); //false se c'è sovrapposizione
+            if(!docentiOverlap){
+                System.out.println(docentiOverlap);
+                redirectAttributes.addAttribute("docentiOverlap", "true");
+            }
         }
 
         redirectAttributes.addAttribute("successMessage", "Docenti aggiornati con successo.");

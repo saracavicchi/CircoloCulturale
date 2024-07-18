@@ -23,7 +23,7 @@ public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
     @Query("SELECT s FROM Saggio s WHERE s.nome = ?1 AND s.deleted = false")
     public Optional<Saggio> getSaggioByName(String nome);
 
-    @Query("SELECT s FROM Saggio s WHERE s.nome = ?1")
+    @Query("SELECT s FROM Saggio s WHERE s.nome = ?1 ORDER BY s.id ASC LIMIT 1")
     public Optional<Saggio> getSaggioByNameEvenIfDeleted(String nome);
 
     @Query("SELECT s FROM Saggio s WHERE s.deleted = false")
@@ -43,4 +43,5 @@ public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
 
     @Query("SELECT s FROM Saggio s JOIN s.biglietti b WHERE b.idUtente.id = :socioId AND s.deleted = false")
     public  List<Saggio> findSaggiSocio(Integer socioId);
+
 }

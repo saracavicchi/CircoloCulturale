@@ -334,7 +334,7 @@
             <h1>Profilo di ${socio.utente.nome} ${socio.utente.cognome}</h1>
         </section>
         <section class="content">
-            <img class="profile-image" src="${empty socio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
+            <img class="profile-image" src="${empty socio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(socio.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
 
             <c:if test="${not socio.deleted}">
                 <label for="enableEdit">Abilita modifiche</label>

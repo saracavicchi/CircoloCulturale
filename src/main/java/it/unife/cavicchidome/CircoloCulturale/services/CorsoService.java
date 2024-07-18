@@ -26,14 +26,13 @@ public class CorsoService {
 
     private final UtenteRepository utenteRepository;
     private final OrarioSedeService orarioSedeService;
-    private final SalaService salaService;
     private final CorsoRepository corsoRepository;
     private final SalaRepository salaRepository;
     private final SocioRepository socioRepository;
     private final DocenteRepository docenteRepository;
     private final CalendarioCorsoRepository calendarioCorsoRepository;
-    private final SedeService sedeService;
     private final SocioService socioService;
+    private final SedeRepository sedeRepository;
 
     @Value("${file.corso.upload-dir}")
     String uploadCorsoDir;
@@ -47,8 +46,7 @@ public class CorsoService {
             DocenteRepository docenteRepository,
             CalendarioCorsoRepository calendarioCorsoRepository,
             OrarioSedeService orarioSedeService,
-            SalaService salaService,
-            SedeService sedeService,
+            SedeRepository sedeRepository,
             SocioService socioService
     ) {
         this.corsoRepository = corsoRepository;
@@ -58,9 +56,8 @@ public class CorsoService {
         this.docenteRepository = docenteRepository;
         this.calendarioCorsoRepository = calendarioCorsoRepository;
         this.orarioSedeService = orarioSedeService;
-        this.salaService = salaService;
-        this.sedeService = sedeService;
         this.socioService = socioService;
+        this.sedeRepository = sedeRepository;
     }
 
     public boolean validateBasicInfo(String descrizione, String genere, String livello, String categoria) {
@@ -110,7 +107,7 @@ public class CorsoService {
                 return false;
             }
             */
-            if(sedeService.outsideOpeningHours(idSala, Weekday.fromDayNumber(giorno), inizio, fine)){ //TODO: verificare se funziona uguale
+            if(outsideOpeningHours(idSala, Weekday.fromDayNumber(giorno), inizio, fine)){ //TODO: verificare se funziona uguale
                 return false;
             }
         }
@@ -146,7 +143,7 @@ public class CorsoService {
     }
 
     @Transactional
-    public boolean saveCourseInformation(
+    public Corso saveCourseInformation(
             String descrizione,
             String genere,
             String livello,
@@ -158,17 +155,17 @@ public class CorsoService {
             List<LocalTime> orarioInizio,
             List<LocalTime> orarioFine,
             MultipartFile photo
-    ) {
+    ) throws IllegalArgumentException {
 
        if(!validateCourseData(descrizione, genere, livello, categoria, idSala, docentiCf, stipendi, giorni, orarioInizio, orarioFine))
-            return false;
+            throw new IllegalArgumentException("Invalid course data");
 
         boolean reactivated = false;
 
         Optional<Corso> corsoIdentical = corsoRepository.findByCategoriaAndGenereAndLivelloAll(categoria, genere, livello);
         if(corsoIdentical.isPresent() ) {
             if(corsoIdentical.get().getActive() == true)
-                return false; //Corso Attivo già esistente
+                throw new IllegalArgumentException("Course already exists"); //Corso Attivo già esistente
             else {
                 corsoIdentical.get().setActive(true);
                 reactivated = true;
@@ -179,29 +176,29 @@ public class CorsoService {
 
         Sala sala = salaRepository.findByIdActive(idSala).orElse(null);
         if (sala == null) {
-            return false; // Sala does not exist
+            throw new IllegalArgumentException("Sala not found");
         }
         Set<Docente> docenti = new HashSet<>();
         for (int i = 0; i < docentiCf.size(); i++) {
             String cf = docentiCf.get(i);
-            // Step 3: Find User by CF
+
             Optional<Utente> utenteOpt = utenteRepository.findByCfNotDeleted(cf);
             if (!utenteOpt.isPresent()) {
-                return false; // Utente does not exist
+                throw new IllegalArgumentException("utente not found");
             }
             Utente utente = utenteOpt.get();
 
-            // Check if Utente is a Socio
+
             Optional<Socio> socioOpt = socioRepository.findById(utente.getId()); //solo soci attivi
             if (!socioOpt.isPresent()) {
-                return false; // Socio does not exist
+                throw new IllegalArgumentException("Socio not found");
             }
             Socio socio = socioOpt.get();
 
-            // Check if Socio is not a Docente
+
             if (socio.getDocente() == null) {
-                // Socio is not a Docente, proceed to save Docente information
                 Docente docente = new Docente();
+                docente.setActive(true);
                 docente.setSocio(socio);
                 docente.setStipendio(BigDecimal.valueOf(stipendi.get(i)));
                 docenteRepository.save(docente);
@@ -210,6 +207,7 @@ public class CorsoService {
             else{ //aggiorna stipendio solo se superiore al precedente
                 if (BigDecimal.valueOf(stipendi.get(i)).compareTo(socio.getDocente().getStipendio()) > 0){
                     socio.getDocente().setStipendio(BigDecimal.valueOf(stipendi.get(i)));
+                    socio.getDocente().setActive(true);
                     docenteRepository.save(socio.getDocente());
                 }
                 docenti.add(socio.getDocente());
@@ -218,12 +216,11 @@ public class CorsoService {
         }
 
         if(checkScheduleOverlap(Optional.empty(), giorni, orarioInizio, orarioFine, idSala) == false){
-            return false;
+            throw new IllegalArgumentException("Schedule overlap");
         }
 
 
         Corso corso;
-        // Save Course Information
         if(!reactivated){
             corso = new Corso();
             corso.setGenere(genere);
@@ -247,36 +244,14 @@ public class CorsoService {
             String filename = saveCorsoPicture(photo, categoria, corso.getId()); //TODO: controllare che funzioni alla creazione di un corso
             corso.setUrlFoto(filename);
         }
-        //corsoRepository.save(corso);
-
-        /*for (Integer giorno: giorni) {
-            CalendarioCorso calendarioCorso = new CalendarioCorso();
-            CalendarioCorsoId calendarioCorsoId = new CalendarioCorsoId();
-            calendarioCorsoId.setIdCorso(corso.getId()); // Assuming getId() method exists in Corso
-            try{
-                Weekday weekday = Weekday.fromDayNumber(giorno);
-                calendarioCorsoId.setGiornoSettimana(weekday);
-                System.out.println(weekday);
-            }catch (IllegalArgumentException e){
-                return false;
-            }
-
-            calendarioCorso.setId(calendarioCorsoId);
-            calendarioCorso.setIdCorso(corso); // Set the Corso object
-            calendarioCorso.setOrarioInizio(orarioInizio.get(giorno-1));
-            calendarioCorso.setOrarioFine(orarioFine.get(giorno-1));
-            calendarioCorso.setActive(true);
-            calendarioCorsoRepository.save(calendarioCorso);
-        }*/
 
         Set<CalendarioCorso> nuovoCalendarioCorso = new HashSet<>();
         for (Integer giorno: giorni) {
             Weekday weekday;
             try{
                 weekday = Weekday.fromDayNumber(giorno);
-                //System.out.println(weekday);
             }catch (IllegalArgumentException e){
-                return false;
+                throw new IllegalArgumentException("Giorno non valido");
             }
 
             if(reactivated) {
@@ -330,9 +305,8 @@ public class CorsoService {
         }
 
         corso.setCalendarioCorso(nuovoCalendarioCorso);
-        corsoRepository.save(corso);
+        return corsoRepository.save(corso);
 
-        return true;
     }
 
 
@@ -531,7 +505,7 @@ public class CorsoService {
 
 
     //Per la creazione di un corso
-    //Se c'è sovrapposizione returna falso
+    //Se c'è sovrapposizione restituisce false
     @Transactional
     public boolean checkDocentiScheduleOverlap(
             List<String> docentiCf,
@@ -659,6 +633,17 @@ public class CorsoService {
             System.out.println(exc.getMessage());
             exc.printStackTrace();
             return null;
+        }
+    }
+
+    @Transactional
+    public boolean outsideOpeningHours(Integer idSala, Weekday dow, LocalTime startTime, LocalTime endTime) {
+        Sede sede = sedeRepository.getReferenceById(salaRepository.getReferenceById(idSala).getIdSede().getId());
+        OrarioSede orarioSede = sedeRepository.findOrarioSede(sede.getId(), dow);
+        if (startTime.isBefore(orarioSede.getOrarioApertura()) || endTime.isAfter(orarioSede.getOrarioChiusura())) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -802,7 +787,9 @@ public class CorsoService {
             return false; // Course not found
         }
         Corso corso = corsoOpt.get();
-
+        if(validateCalendarioAndSala(giorni, orarioInizio, orarioFine, idSala) == false){
+            return false;
+        }
 
         if (checkScheduleOverlap(corsoOpt, giorni, orarioInizio, orarioFine, idSala) == false) {
             return false;
@@ -895,10 +882,10 @@ public class CorsoService {
             Integer idCorso,
             Optional<List<Integer>> deletedDocentiId,
             Optional<List<String>> docentiCf,
-            List<Integer> stipendiAttuali,
+            Optional<List<Integer>> stipendiAttuali,
             Optional<List<Integer>> stipendi
     ) {
-        Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
+        Optional<Corso> corsoOpt = corsoRepository.findByIdActive(idCorso);
         if (!corsoOpt.isPresent()) {
             return false; // Corso non trovato
         }
@@ -906,63 +893,68 @@ public class CorsoService {
 
         Set<Docente> docenti = new HashSet<>();
 
-        if (stipendiAttuali.size() != corso.getDocenti().size() || !validateStipendi(stipendiAttuali)) {
-            return false;
-        }
-        Collections.sort(stipendiAttuali);
-        List<Docente> docentiList = new ArrayList<>(corso.getDocenti());
-        Collections.sort(docentiList, Comparator.comparingInt(Docente::getId)); //ordino docenti in base a id crescente
-        for (int i = 0; i < docentiList.size(); i++) {
-            Integer stipendio = stipendiAttuali.get(i);
-            Docente docente = docentiList.get(i);
-            boolean eliminato = false;
-            if (deletedDocentiId.isPresent()) {
-                for (Integer id : deletedDocentiId.get()) {
-                    if (docente.getId() == id) {
-                        eliminato = true;
-                        break;
+        if(stipendiAttuali.isPresent()) {
+            List<Integer> stipendiAttualiList = stipendiAttuali.get();
+            if (stipendiAttualiList.size() != corso.getDocenti().size() || !validateStipendi(stipendiAttualiList)) {
+                return false;
+            }
+
+            Collections.sort(stipendiAttualiList);
+            List<Docente> docentiList = new ArrayList<>(corso.getDocenti());
+            Collections.sort(docentiList, Comparator.comparingInt(Docente::getId)); //ordino docenti in base a id crescente
+            for (int i = 0; i < docentiList.size(); i++) {
+                Integer stipendio = stipendiAttualiList.get(i);
+                Docente docente = docentiList.get(i);
+                boolean eliminato = false;
+                if (!deletedDocentiId.isEmpty()) {
+                    for (Integer id : deletedDocentiId.get()) {
+                        if (docente.getId() == id) {
+                            eliminato = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if (!eliminato) {
-                if (BigDecimal.valueOf(stipendio).compareTo(docente.getStipendio()) > 0) {
-                    docente.setStipendio(BigDecimal.valueOf(stipendio));
-                    docenteRepository.save(docente);
+                if (!eliminato) {
+                    if (BigDecimal.valueOf(stipendio).compareTo(docente.getStipendio()) > 0) {
+                        docente.setStipendio(BigDecimal.valueOf(stipendio));
+                        docenteRepository.save(docente);
+                    }
+                    docenti.add(docente);
                 }
-                docenti.add(docente);
-            }
 
+            }
         }
 
-        if (docentiCf.isPresent() && stipendi.isPresent()) {
+        if (!docentiCf.isEmpty() && !stipendi.isEmpty()) {
             if (!validateDocentiAndStipendi(docentiCf.get(), stipendi.get())) {
                 return false;
             }
-            List<String> cfList = docentiCf.get();
-            List<Integer> stipendiList = stipendi.get();
 
-            for (int i = 0; i < cfList.size(); i++) {
-                String cf = cfList.get(i);
+            List<String> docentiCfList = docentiCf.get();
+            List<Integer> stipendiList = stipendi.get();
+            for (int i = 0; i < docentiCfList.size(); i++) {
+                String cf = docentiCfList.get(i);
                 // Step 3: Find User by CF
-                Optional<Utente> utenteOpt = utenteRepository.findByCf(cf);
+                Optional<Utente> utenteOpt = utenteRepository.findByCfNotDeleted(cf);
                 if (!utenteOpt.isPresent()) {
                     return false; // Utente does not exist
                 }
                 Utente utente = utenteOpt.get();
 
-                // Step 4: Check if Utente is a Socio
-                Optional<Socio> socioOpt = socioRepository.findById(utente.getId());
+                //Controlla se utente è socio
+                Optional<Socio> socioOpt = socioRepository.findById(utente.getId()); //non soci cancellati
                 if (!socioOpt.isPresent()) {
                     return false; // Socio does not exist
                 }
                 Socio socio = socioOpt.get();
 
-                // Step 5: Check if Socio is not a Docente
+                //Check if Socio is not a Docente
                 if (socio.getDocente() == null) {
                     // Socio is not a Docente, proceed to save Docente information
                     Docente docente = new Docente();
                     docente.setSocio(socio);
                     docente.setStipendio(BigDecimal.valueOf(stipendiList.get(i)));
+                    docente.setActive(true);
                     docenteRepository.save(docente);
                     docenti.add(docente);
                 } else {
@@ -971,7 +963,7 @@ public class CorsoService {
                         docente.setStipendio(BigDecimal.valueOf(stipendiList.get(i)));
                         docenteRepository.save(docente);
                     }
-
+                    socio.getDocente().setActive(true);
                     docenti.add(socio.getDocente());
                 }
             }
@@ -980,10 +972,10 @@ public class CorsoService {
         // Salvataggio delle modifiche al corso
         corsoRepository.save(corso);
         corso.setDocenti(docenti);
-        if (deletedDocentiId.isPresent()) {
+        if (!deletedDocentiId.isEmpty()) {
             for (Integer docenteId : deletedDocentiId.get()) {
-                List<Corso> corsiInsegnati = corsoRepository.findCorsiByDocenteId(corso.getId());
-                if (!corsiInsegnati.isEmpty()) {
+                List<Corso> corsiInsegnati = corsoRepository.findAltriCorsiInsegnatiByDocenteId(docenteId, idCorso);
+                if (corsiInsegnati.isEmpty()) {
                     Docente docente = docenteRepository.findById(docenteId).orElseThrow(() -> new IllegalStateException("Docente not found"));
                     docente.setActive(false);
                     docenteRepository.save(docente);
@@ -1002,7 +994,17 @@ public class CorsoService {
         }
         Corso corso = corsoOpt.get();
         corso.setActive(false);
+        corsoRepository.save(corso);
+        List<Docente> docenti = new ArrayList<>(corso.getDocenti());
+        for (Docente docente : docenti) {
+            List<Corso> corsiInsegnati = corsoRepository.findAltriCorsiInsegnatiByDocenteId(docente.getId(), idCorso);
+            if (corsiInsegnati.isEmpty()) {
+                docente.setActive(false);
+                docenteRepository.save(docente);
+            }
+        }
         corso.setDocenti(null);
+        corso.setSoci(null);
         List<CalendarioCorso> calendarioCorso = calendarioCorsoRepository.findByCorsoId(idCorso);
         for (CalendarioCorso calendario : calendarioCorso) {
             calendario.setActive(false);

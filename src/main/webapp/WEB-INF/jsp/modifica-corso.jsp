@@ -257,10 +257,26 @@
 
                 <fieldset>
                     <legend>Categoria:</legend>
-                    <input type="radio" id="danza" name="categoria" value="Danza" required>
-                    <label for="danza">Danza</label>
-                    <input type="radio" id="musica" name="categoria" value="Musica" required>
-                    <label for="musica">Musica</label>
+                    <c:choose>
+                        <c:when test="${corso.categoria == 'Danza'}">
+                            <input type="radio" id="danza" name="categoria" value="Danza" required checked>
+                            <label for="danza">Danza</label>
+                            <input type="radio" id="musica" name="categoria" value="Musica" required>
+                            <label for="musica">Musica</label>
+                        </c:when>
+                        <c:when test="${corso.categoria == 'Musica'}">
+                            <input type="radio" id="danza" name="categoria" value="Danza" required>
+                            <label for="danza">Danza</label>
+                            <input type="radio" id="musica" name="categoria" value="Musica" required checked>
+                            <label for="musica">Musica</label>
+                        </c:when>
+                        <c:otherwise>
+                            <input type="radio" id="danza" name="categoria" value="Danza" required>
+                            <label for="danza">Danza</label>
+                            <input type="radio" id="musica" name="categoria" value="Musica" required>
+                            <label for="musica">Musica</label>
+                        </c:otherwise>
+                    </c:choose>
                 </fieldset>
 
                 <button type="submit">Salva Modifiche</button>

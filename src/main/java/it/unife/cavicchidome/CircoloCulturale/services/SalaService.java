@@ -2,10 +2,7 @@ package it.unife.cavicchidome.CircoloCulturale.services;
 
 import it.unife.cavicchidome.CircoloCulturale.exceptions.EntityAlreadyPresentException;
 import it.unife.cavicchidome.CircoloCulturale.models.*;
-import it.unife.cavicchidome.CircoloCulturale.repositories.CorsoRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SalaRepository;
-import it.unife.cavicchidome.CircoloCulturale.repositories.SedeRepository;
+import it.unife.cavicchidome.CircoloCulturale.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +17,16 @@ public class SalaService {
     private final SedeRepository sedeRepository;
     private final PrenotazioneSalaRepository prenotazioneSalaRepository;
     private final CorsoRepository corsoRepository;
+    private final CorsoService corsoService;
+    private final SocioRepository socioRepository;
 
-    public SalaService(SalaRepository salaRepository, SedeRepository sedeRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, CorsoRepository corsoRepository) {
+    public SalaService(SalaRepository salaRepository, SedeRepository sedeRepository, PrenotazioneSalaRepository prenotazioneSalaRepository, CorsoRepository corsoRepository, CorsoService corsoService, SocioRepository socioRepository) {
         this.salaRepository = salaRepository;
         this.sedeRepository = sedeRepository;
         this.prenotazioneSalaRepository = prenotazioneSalaRepository;
         this.corsoRepository = corsoRepository;
+        this.corsoService = corsoService;
+        this.socioRepository = socioRepository;
     }
 
     @Transactional(readOnly = true)
@@ -74,7 +75,6 @@ public class SalaService {
             return false;
         }
 
-        // Find the Sede by idSede
         Optional<Sede> sedeOptional = sedeRepository.findById(idSede);
         if (!sedeOptional.isPresent()) {
             throw new IllegalArgumentException("Sede with the provided ID does not exist.");
@@ -95,8 +95,11 @@ public class SalaService {
 
         newSala.setNumeroSala(Integer.parseInt(numeroSala));
         newSala.setCapienza(capienza);
-        if(descrizione != null && !descrizione.isEmpty())
+        if(descrizione != null && !descrizione.isEmpty()) {
             newSala.setDescrizione(descrizione);
+        }else{
+            newSala.setDescrizione(null);
+        }
         newSala.setPrenotabile(prenotabile);
         newSala.setActive(true);
         newSala.setIdSede(sedeOptional.get());
@@ -165,13 +168,7 @@ public class SalaService {
             List<Corso> corsi = corsoRepository.findBySalaId(idSala);
             if(!corsi.isEmpty()){
                 for(Corso corso : corsi){
-                    Set<CalendarioCorso> calendarioCorsoSet = corso.getCalendarioCorso();
-                    for(CalendarioCorso calendarioCorso : calendarioCorsoSet){
-                        calendarioCorso.setActive(false);
-                    }
-                    corso.setCalendarioCorso(null);
-                    corso.setActive(false);
-                    corsoRepository.save(corso);
+                    corsoService.deleteCourse(corso.getId());
                 }
             }
             List<PrenotazioneSala> prenotazioni = prenotazioneSalaRepository.findBySala(idSala); //solo prenotazioni e sale attive

@@ -27,6 +27,35 @@
             margin-left: 18px;
             height: 260px;
         }
+
+
+        aside .content ul {
+            list-style-type: none; /* Rimuove i pallini */
+            padding: 0;
+            margin: 0; /* Rimuove margini di default */
+        }
+
+        aside .content li{
+            margin-bottom: 15px; /* Aumenta lo spazio tra gli elementi della lista */
+        }
+
+        aside .content li a{
+            color: #333; /* Colore del testo dei link */
+            text-decoration: none; /* Rimuove il sottolineato dei link */
+            font-weight: bold; /* Rende il testo dei link in grassetto */
+        }
+
+        aside .content a:hover {
+            color: #a3271f; /* Cambia il colore al passaggio del mouse */
+            text-decoration: underline; /* Aggiunge un sottolineato al passaggio del mouse */
+        }
+
+        aside .content a{
+            color: var(--border); /* Colore del testo dei link */
+            text-decoration: none; /* Rimuove il sottolineato dei link */
+            font-weight: bold; /* Rende il testo dei link in grassetto */
+        }
+
     </style>
 </head>
 <body>

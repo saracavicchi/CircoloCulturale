@@ -397,7 +397,7 @@
     </fieldset>
     <fieldset>
         <legend>Segretario e Amministrazione</legend>
-        Segretario: <select name="segretari" onchange="gestisciStipendioSegretario()">
+        <select name="segretari" onchange="gestisciStipendioSegretario()">
         <c:forEach items="${sociInfo}" var="socioS" varStatus="status">
             <option value="${socioS[3]}" ${status.index == 0 ? 'selected' : ''}>${socioS[1]} ${socioS[2]} (${socioS[0]})</option>
         </c:forEach>

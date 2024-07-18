@@ -41,7 +41,7 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content" class="clearfix">
-        <main class="fullsize">
+        <main class="midleft">
             <section class="title">
                 <h1>Informazioni sul corso</h1>
             </section>
@@ -66,7 +66,7 @@
                 <% if (request.getParameter("isDocente") == null ) { %>
                     <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
                         if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
-                            <form class="formSubmit" action="/corso/iscrizione" method="post">
+                            <form class="logInOut" action="/corso/iscrizione" method="post">
                                 <input type="hidden" name="socio-id" value="${socioHeader.id}">
                                 <input type="hidden" name="corso-id" value="${corso.id}">
                                 <input type="submit" value="Iscriviti">
@@ -76,7 +76,7 @@
                             <button disabled>Iscriviti</button>
                     <% }} %>
                     <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && (Boolean)request.getAttribute("isEnrolled")) { %>
-                    <form class="formSubmit" action="/corso/disiscrizione" method="post">
+                    <form class="logInOut" action="/corso/disiscrizione" method="post">
                         <input type="hidden" name="socio-id" value="${socioHeader.id}">
                         <input type="hidden" name="corso-id" value="${corso.id}">
                         <input type="submit" value="Disiscriviti">
@@ -85,6 +85,7 @@
                 <% } %>
             </section>
         </main>
+        <%@include file="/static/include/aside.jsp"%>
     </div>
     <%@include file="/static/include/footer.jsp"%>
 </body>

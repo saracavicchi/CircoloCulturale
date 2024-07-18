@@ -106,7 +106,7 @@ public class SocioController {
 
         model.addAttribute("biglietti", bigliettoService.findBigliettiSocio(socio.get().getId()));
         model.addAttribute("saggi", saggioService.findSaggiSocio(socio.get().getId()));
-        return "socio-biglietti";
+        return "biglietti";
     }
 
 

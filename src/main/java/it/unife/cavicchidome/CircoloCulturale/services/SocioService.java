@@ -348,6 +348,7 @@ public class SocioService {
     public void deleteSocioAndUser(Integer socioId, Optional<Boolean> delete){
         Socio deleteSocio = socioRepository.getReferenceById(socioId);
         deleteSocio.setDeleted(delete.orElse(true));
+        deleteSocio.setCorsi(null);
         deleteSocio.getUtente().setDeleted(delete.orElse(true));
         socioRepository.save(deleteSocio);
         utenteRepository.save(deleteSocio.getUtente());

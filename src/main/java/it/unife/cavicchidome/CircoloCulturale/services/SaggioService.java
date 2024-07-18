@@ -85,8 +85,8 @@ public class SaggioService {
             String numeroCivico,
             List<Integer> corsiIds
     ) {
-        String nomeIndirizzoPattern = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
-        String descrizionePattern = "^(?=.*\\p{L})[\\p{L}\\p{P}\\s\\-()]+$";
+        String nomeIndirizzoPattern =  "^(?=.*\\p{L})[\\p{L}\\s\\-']+$";
+        String descrizionePattern = "^(?=.*\\p{L})[\\p{L}\\p{P}\\s\\-()']+?$";
 
 
         if (nome == null || nome.trim().isEmpty() || !nome.matches(nomeIndirizzoPattern) || nome.length() > 30) {
@@ -161,7 +161,7 @@ public class SaggioService {
             throw new RuntimeException("Data già presente");
         }
         Saggio saggio;
-        Optional<Saggio> saggioOpt = saggioRepository.getSaggioByNameEvenIfDeleted(nome);
+        Optional<Saggio> saggioOpt = saggioRepository.getSaggioByNameEvenIfDeleted(nome); //prima occorrenza
         if (saggioOpt.isPresent()) {
             if(saggioOpt.get().getDeleted()){
                 saggio = saggioOpt.get();
@@ -181,12 +181,19 @@ public class SaggioService {
         saggio.setMaxPartecipanti(numeroPartecipanti);
         if(!descrizione.isEmpty()) {
             saggio.setDescrizione(descrizione);
+        }else{
+            saggio.setDescrizione(null);
         }
         if(orarioInizio.isPresent()) {
             saggio.setOrarioInizio(orarioInizio.get());
+        }else{
+            saggio.setOrarioInizio(null);
         }
         if(orarioFine.isPresent()) {
             saggio.setOrarioFine(orarioFine.get());
+        }
+        else{
+            saggio.setOrarioFine(null);
         }
 
         saggio.setIndirizzo(stato, provincia, citta, via, numeroCivico);
@@ -335,7 +342,7 @@ public class SaggioService {
         }
 
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String filenameConSpazi = nome + idSaggio + extension;
+        String filenameConSpazi = nome.split(" ")[0] + idSaggio + extension;
         String filename = filenameConSpazi.replace(" ", "");
 
         try {

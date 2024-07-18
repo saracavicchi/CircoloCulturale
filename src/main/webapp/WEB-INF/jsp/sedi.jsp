@@ -29,7 +29,7 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content" class="clearfix">
-        <main class="full">
+        <main class="midleft">
             <section class="title">
                 <h1>Le nostre sedi</h1>
             </section>

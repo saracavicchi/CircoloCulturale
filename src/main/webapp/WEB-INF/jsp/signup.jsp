@@ -29,9 +29,10 @@
         var errorDisplayed =false;
         window.onload = function() {
             // Aggiungi un listener per l'evento 'submit' al form
-            document.getElementById('registrationForm').addEventListener('submit', submitForm);
+            var formElement = document.getElementById('registrationForm');
+            formElement.addEventListener('submit', submitForm);
             // Ottieni tutti gli elementi input del form
-            var inputs = document.getElementById('registrationForm').getElementsByTagName('input');
+            var inputs = formElement.getElementsByTagName('input');
 
             // Aggiungi un listener per l'evento 'input' a ogni elemento input
             for (var i = 0; i < inputs.length; i++) {
@@ -43,17 +44,17 @@
             var cancelled = urlParams.get('cancelled');
             var error = urlParams.get('error');
             if (success) {
-                var successElement = document.createElement('h2');
+                var successElement = document.createElement('p');
                 successElement.textContent = "Registrazione avvenuta con successo!";
                 successElement.style.color = 'green';
                 successElement.style.textAlign = 'center';
-                document.getElementsByTagName('h1')[0].appendChild(successElement);
+                document.querySelector('.content').insertBefore(successElement, formElement);
             } else if (cancelled || error) {
-                var cancelledElement = document.createElement('h2');
-                cancelledElement.textContent = "Pagamento fallito, rivolgersi alla segreteria con l'identificativo Tessera mandato per email";
+                var cancelledElement = document.createElement('p');
+                cancelledElement.textContent = "Pagamento online rifiutato, rivolgersi alla segreteria con l'identificativo Tessera mandato per email";
                 cancelledElement.style.color = 'red';
                 cancelledElement.style.textAlign = 'center';
-                document.getElementsByTagName('h1')[0].appendChild(cancelledElement);
+                document.querySelector('.content').insertBefore(cancelledElement, formElement);
             }
         }
 
@@ -148,6 +149,7 @@
 
             // Se la validazione ha esito positivo, invia il form
             if (validation) {
+                alert("Attenzione, nel caso si siano acquistati biglietti per saggi, verranno mantenute le informazioni personali già registrate. Se si desidera modificarle, è possibile farlo dal proprio profilo personale")
                 event.target.submit();
             } else {
                 errorDisplayed = true;

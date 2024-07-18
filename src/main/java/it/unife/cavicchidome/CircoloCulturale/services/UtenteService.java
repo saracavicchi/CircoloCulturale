@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -74,7 +75,7 @@ public class UtenteService {
         }
 
         // Controlla che nome, cognome, luogo di nascita, stato, provincia, città e via siano formati solo da caratteri e non numeri
-        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
+        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-']+$";
         if (!name.matches(regex) || !surname.matches(regex) || !birthplace.matches(regex) || !country.matches(regex) || !province.matches(regex) || !city.matches(regex) || !street.matches(regex)) {
             throw new ValidationException("Campi non validi");
         }
@@ -132,7 +133,7 @@ public class UtenteService {
                             String houseNumber) throws ValidationException, EntityAlreadyPresentException {
         Optional<Utente> alreadyPresent = utenteRepository.findByCf(cf);
         if (alreadyPresent.isPresent()) {
-            throw new EntityAlreadyPresentException(alreadyPresent);
+            throw new EntityAlreadyPresentException(alreadyPresent.get());
         }
 
         Utente utente = validateAndParseUtente(name, surname, cf, dob, birthplace, country, province, city, street, houseNumber);
@@ -150,4 +151,6 @@ public class UtenteService {
     public Optional<Utente> findByCf(String cf) {
         return utenteRepository.findByCf(cf);
     }
+
+
 }

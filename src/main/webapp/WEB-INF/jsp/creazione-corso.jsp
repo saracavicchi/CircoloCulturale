@@ -12,14 +12,19 @@
 <head>
     <title>Crea Corso</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <style>
+        .block{
+            display: block;
+            margin-top: 15px;
+        }
+    </style>
     <script>
         var errorDisplayed = false;
 
         document.addEventListener('DOMContentLoaded', function() {
 
             initCreaCorsoForm();
-            updateDocentiSelection();
-
+            gestisciStipendiDocenti();
 
         });
 
@@ -253,24 +258,6 @@
 
 
 
-        function updateDocentiSelection() {
-            mostraDocentiSelezionati();
-            gestisciStipendiDocenti();
-        }
-
-        function mostraDocentiSelezionati() {
-            var selectDocenti = document.getElementsByName('docenti')[0];
-            var selectedDocentiContainer = document.getElementById('selectedDocentiContainer');
-            selectedDocentiContainer.innerHTML = ''; // Pulisce la lista corrente
-
-            Array.from(selectDocenti.selectedOptions).forEach(function(option) {
-                console.log("Opzione selezionata: ", option.text, " Valore: ", option.value);
-                var docenteElement = document.createElement('div');
-                docenteElement.textContent = option.text;
-                selectedDocentiContainer.appendChild(docenteElement);
-            });
-        }
-
         function gestisciStipendiDocenti() {
             var selectDocenti = document.getElementsByName('docenti')[0];
             var docentiStipendiContainer = document.getElementById('docentiStipendiContainer');
@@ -333,16 +320,16 @@
                     <legend>Informazioni del Corso</legend>
                     <label for="descrizione">Descrizione:</label>
                     <textarea id="descrizione" name="descrizione" placeholder="descrizione (facoltativa)">${corso.descrizione}</textarea>
-                    <label>Genere: <input type="text" id="genere" name="genere" required placeholder="genere"></label><br>
-                    <label>Livello: <input type="text" id="livello" name="livello" required placeholder="livello"></label><br>
+                    <label>Genere: <input type="text" id="genere" name="genere" required placeholder="genere"></label>
+                    <label>Livello: <input type="text" id="livello" name="livello" required placeholder="livello"></label>
                 </fieldset>
 
                 <fieldset>
                     <legend>Categoria e Sala</legend>
                     Categoria:
-                    <label><input type="radio" id="danza" name="categoria" value="Danza" required>Danza</label><br>
-                    <label><input type="radio" id="musica" name="categoria" value="Musica" required>Musica</label><br>
-                    <label>Sala:
+                    <label><input type="radio" id="danza" name="categoria" value="Danza" required>Danza</label>
+                    <label><input type="radio" id="musica" name="categoria" value="Musica" required>Musica</label>
+                    <label class="block">Sala:
                         <select name="idSala" required>
                             <c:set var="currentSedeId" value="" />
                             <c:forEach items="${sale}" var="sala">
@@ -362,15 +349,12 @@
                                 </c:if>
                             </c:forEach>
                         </select>
-                    </label><br>
+                    </label>
                 </fieldset>
 
                 <fieldset>
                     <legend>Docenti</legend>
-                    <p>Docenti selezionati:</p>
-                    <div id="selectedDocentiContainer"></div>
-                    Docenti:
-                    <select name="docenti" multiple onchange="updateDocentiSelection()">
+                    <select name="docenti" multiple onchange="gestisciStipendiDocenti()">
                         <c:forEach items="${sociInfo}" var="socioD">
                             <option value="${socioD[0]}">${socioD[1]} ${socioD[2]} (${socioD[0]})</option>
                         </c:forEach>
@@ -383,10 +367,10 @@
                     <c:forEach items="${giorniSettimana}" var="giorno">
                         <div>
                             <script>document.write(mapDayNumberToWeekday(${giorno}) + ':');</script>
-                            <input type="checkbox" name="giorni" value="${giorno}" onchange="toggleTimeInputs(this, '${giorno}');"><br>
+                            <input type="checkbox" name="giorni" value="${giorno}" onchange="toggleTimeInputs(this, '${giorno}');">
                             <div id="orario${giorno}" style="display:none;">
-                                Orario Inizio: <input type="time" name="orariInizio"><br>
-                                Orario Fine: <input type="time" name="orariFine"><br>
+                                Orario Inizio: <input type="time" name="orariInizio">
+                                Orario Fine: <input type="time" name="orariFine">
                             </div>
                         </div>
                     </c:forEach>
@@ -395,7 +379,7 @@
                 <fielset>
                     <legend>Foto del corso:</legend>
                     <label for="photo">Seleziona una foto per il corso:</label>
-                    <input type="file" id="photo" name="photo" enctype="multipart/form-data"><br>
+                    <input type="file" id="photo" name="photo" enctype="multipart/form-data">
                 </fielset>
                 <input type="submit" value="Crea Corso">
             </form>
