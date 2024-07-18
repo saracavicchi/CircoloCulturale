@@ -26,6 +26,7 @@
                 ${sede.segretario.socio.utente.nome} ${sede.segretario.socio.utente.cognome}
             </section>
         </main>
+        <%@include file="/static/include/aside.jsp"%>
     </div>
     <%@include file="/static/include/footer.jsp"%>
 </body>

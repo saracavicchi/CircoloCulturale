@@ -397,6 +397,8 @@
                 <input type="submit" value="Aggiorna">
             </form>
         </section>
+        <!-- TODO: cambia gestione inattivo e attivo -->
+        <!-- TODO: aggiungere possibilita` di confermare o meno tessera -->
         <c:if test="${not socio.deleted}">
             <section class="content">
                 <form name="modificaPassword" action="modificaPassword" method="POST">

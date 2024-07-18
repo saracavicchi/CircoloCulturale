@@ -7,7 +7,7 @@
 --%>
 
 
-<footer class="clearfix">
+<footer>
     <p>&copy; 2024 Circolo Culturale La Sinfonia. All rights reserved.</p>
 </footer>
 
