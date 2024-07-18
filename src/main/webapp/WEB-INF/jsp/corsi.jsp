@@ -16,7 +16,7 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content" class="clearfix">
-        <main class="midleft">
+        <main class="midleft clearfix">
             <section class="title">
                 <h1>I nostri corsi</h1>
             </section>

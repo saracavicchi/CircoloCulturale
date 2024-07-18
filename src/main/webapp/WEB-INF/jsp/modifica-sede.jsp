@@ -12,6 +12,13 @@
 <head>
     <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <style>
+        .center {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+    </style>
     <script>
         function redirectToEditSalePage() {
             var idSede = '${sede.id}';
@@ -393,18 +400,22 @@
         </form>
         </section>
         <section class="content">
-            <button type="button" onclick="redirectToEditSalePage()">Modifica Sale</button>
-            <button type="button" onclick="redirectToAddSalaPage()">Aggiungi Sala</button>
+            <div class="center">
+                <button type="button" onclick="redirectToEditSalePage()">Modifica Sale</button>
+                <button type="button" onclick="redirectToAddSalaPage()">Aggiungi Sala</button>
+            </div>
         </section>
 
         <section class="content">
-            <p>Cancellazione Sede</p>
-            <form id="cancellaSedeForm" action="/sede/elimina" method="POST">
-                <input type="hidden" name="idSede" value="${sede.id}" />
-                <label for="confirmDeletion">Sei sicuro?</label>
-                <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-                <button type="submit">Cancella Sede</button>
-            </form>
+            <div class="custom-fieldset">
+                <h1 class="custom-legend">Cancellazione Sede</h1>
+                <form id="cancellaSedeForm" action="/sede/elimina" method="POST">
+                    <input type="hidden" name="idSede" value="${sede.id}" />
+                    <label for="confirmDeletion">Sei sicuro?</label>
+                    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                    <button type="submit">Cancella Sede</button>
+                </form>
+            </div>
         </section>
     </main>
     <%@include file="/static/include/aside.jsp"%>

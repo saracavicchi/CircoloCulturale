@@ -385,13 +385,15 @@
         </section>
         <c:if test="${not saggio.deleted}">
             <section class="content">
-                <p>Cancellazione saggio</p>
-                <form id="deletionForm" action="/saggio/elimina" method="POST">
-                    <input type="hidden" name="saggioId" value="${saggio.id}" />
-                    <label for="confirmDeletion">Sei sicuro?</label>
-                    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-                    <button type="submit">Elimina saggio</button>
-                </form>
+                <div class="custom-fieldset">
+                    <h1 class="custom-legend">Cancellazione saggio</h1>
+                    <form id="deletionForm" action="/saggio/elimina" method="POST">
+                        <input type="hidden" name="saggioId" value="${saggio.id}" />
+                        <label for="confirmDeletion">Sei sicuro?</label>
+                        <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                        <button type="submit">Elimina saggio</button>
+                    </form>
+                </div>
             </section>
         </c:if>
 

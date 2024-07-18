@@ -204,10 +204,10 @@
         </script>
         <%} %>
         <c:forEach items="${sale}" var="sala">
-            <fieldset>
-                <legend>Modifica Sala ${sala.numeroSala}</legend>
+            <div class="custom-fieldset">
+                <h1 class="custom-legend">Modifica Sala ${sala.numeroSala}</h1>
 
-                <label for="enableEdit_${sala.id}">Modifica abilitata:</label>
+                <label style="color:var(--border)" for="enableEdit_${sala.id}">Modifica abilitata:</label>
                 <input type="checkbox" id="enableEdit_${sala.id}" name="enableEdit">
 
                 <form id="modificaSaleForm_${sala.id}" name="modificaSaleForm" action="/sede/sala/modifica" method="post">
@@ -230,9 +230,9 @@
 
                     <button type="submit">Salva Modifiche per la sala ${sala.numeroSala}</button>
                 </form>
-            </fieldset>
-            <fieldset>
-                <legend>Cancellazione Sala</legend>
+            </div>
+            <div class="custom-fieldset">
+                <h1 class="custom-legend">Cancellazione Sala</h1>
                 <form id="cancellaSalaForm_${sala.id}" action="/sede/sala/elimina" method="POST">
                     <input type="hidden" name="idSala" value="${sala.id}" />
                     <input type="hidden" name="idSede" value="${sala.idSede.id}" />
@@ -240,7 +240,7 @@
                     <input type="checkbox" id="confirmDeletion_${sala.id}" name="confirmDeletion" required>
                     <button type="button" onclick="document.getElementById('cancellaSalaForm_${sala.id}').submit();">Cancella Sala</button>
                 </form>
-            </fieldset>
+            </div>
         </c:forEach>
         </section>
         <section class="content">

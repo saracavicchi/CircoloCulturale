@@ -410,19 +410,21 @@
                 </form>
             </section>
             <section class="content">
-                <h1>Disiscrizione dal Circolo Culturale</h1>
-                <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
-                    <input type="hidden" name="socio-id" value="${socio.id}"/>
-                    <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
-                    <label for="confirmUnsubscribe">Confermi la disiscrizione?</label>
-                    <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
-                    <button type="submit">Disiscriviti</button>
-                    <% } else { %>
-                    <label for="not-deleted">Attivo</label><input type="radio" id="not-deleted" name="delete" value="false" <c:if test="${socio.deleted == false}">checked</c:if>>
-                    <label for="deleted">Inattivo</label><input type="radio" id="deleted" name="delete" value="true" <c:if test="${socio.deleted == true}">checked</c:if>>
-                    <button type="submit">Conferma</button>
-                    <% } %>
-                </form>
+                <div class="custom-fieldset">
+                    <h1 class="custom-legend">Disiscrizione dal Circolo Culturale</h1>
+                    <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
+                        <input type="hidden" name="socio-id" value="${socio.id}"/>
+                        <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
+                        <label for="confirmUnsubscribe">Confermi la disiscrizione?</label>
+                        <input type="checkbox" id="confirmUnsubscribe" name="confirmUnsubscribe" required>
+                        <button type="submit">Disiscriviti</button>
+                        <% } else { %>
+                        <label for="not-deleted">Attivo</label><input type="radio" id="not-deleted" name="delete" value="false" <c:if test="${socio.deleted == false}">checked</c:if>>
+                        <label for="deleted">Inattivo</label><input type="radio" id="deleted" name="delete" value="true" <c:if test="${socio.deleted == true}">checked</c:if>>
+                        <button type="submit">Conferma</button>
+                        <% } %>
+                    </form>
+                </div>
             </section>
         </c:if>
     </main>

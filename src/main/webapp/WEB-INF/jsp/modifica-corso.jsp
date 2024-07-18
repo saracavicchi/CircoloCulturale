@@ -12,6 +12,13 @@
 <head>
     <title>Modifica Corso</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <style>
+        .center {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+    </style>
     <script>
         function redirectToEditDocentiPage() {
             var courseId = '${corso.id}';
@@ -284,18 +291,22 @@
         </section>
         <c:if test="${corso.active}">
             <section class="content">
-                <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
-                <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+                <div class="center">
+                    <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
+                    <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+                </div>
             </section>
 
             <section class="content">
-                <h1>Cancellazione Corso</h1>
-                <form id="cancellaCorsoForm" action="elimina" method="POST">
-                    <input type="hidden" name="idCorso" value="${corso.id}" />
-                    <label for="confirmDeletion">Sei sicuro?</label>
-                    <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-                    <button type="submit">Cancella Corso</button>
-                </form>
+                <div class="custom-fieldset">
+                    <h1 class="custom-legend">Cancellazione Corso</h1>
+                    <form id="cancellaCorsoForm" action="elimina" method="POST">
+                        <input type="hidden" name="idCorso" value="${corso.id}" />
+                        <label for="confirmDeletion">Sei sicuro?</label>
+                        <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                        <button type="submit">Cancella Corso</button>
+                    </form>
+                </div>
             </section>
         </c:if>
 

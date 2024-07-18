@@ -317,6 +317,25 @@ label{
     color: white;
 }
 
+.custom-fieldset {
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 10px;
+    margin-left: 42px;
+    width: 85%;
+    background: white; /* Opzionale, a seconda del tuo design */
+}
+
+.custom-legend {
+    padding: 0 10px;
+    color: var(--foreground);
+    font-weight: bold;
+}
+.custom-fieldset form{
+    border: 1px solid var(--border);
+}
+
 form label {
     color: var(--foreground);
 }
@@ -381,7 +400,7 @@ input[type="radio"] {
 aside .content button:hover {
     background-color: var(--foreground);
     color: var(--background);
-    padding: 5px 13px;
+    padding: 6px 14px;
 }
 
 
