@@ -7,9 +7,7 @@
                 <li><a href="/">home</a></li>
                 <li><a href="/sede/info">sedi</a></li>
                 <li><a href="/saggio/info">saggi</a></li>
-                <% if (request.getAttribute("socioHeader") != null) { %>
                 <li><a href="/corso/info">corsi</a></li>
-                <% } %>
                 <li><a href="/contatti">contatti</a></li>
             </ul>
         </nav>

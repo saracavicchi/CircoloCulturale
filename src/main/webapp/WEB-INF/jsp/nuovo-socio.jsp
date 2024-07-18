@@ -249,8 +249,9 @@
                     <input type="password" id="password" name="password" maxlength="50" required placeholder="Password">
 
                     <label for="phoneNumber">Numero di telefono:</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10" placeholder="Numero di Telefono">
+                    <input type="tel" id="phoneNumber" name="phoneNumber" maxlength="10" placeholder="Numero di Telefono">
 
+                    <label for="photo">Foto Profilo:</label>
                     <input type="file" id="photo" name="photo">
 
                     <label for="price">Prezzo</label>

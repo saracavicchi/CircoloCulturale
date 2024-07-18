@@ -22,12 +22,12 @@
         <p>
             <a href="/socio/profile">${socioHeader.utente.nome} ${socioHeader.utente.cognome}</a>
         </p>
-        <form action="/logout" method="POST">
+        <form class="logInOut" action="/logout" method="POST">
             <input type="submit" value="Esci">
             <input type="hidden" id="redirectField" name="redirectTo" value="">
         </form>
         <% } else { %>
-        <form action="/login" method="POST">
+        <form class="logInOut" action="/login" method="POST">
             <input name="cf" type="text" placeholder="Codice fiscale">
             <input name="password" type="password" placeholder="Password">
             <input type="submit" value="accedi">

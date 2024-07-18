@@ -28,7 +28,7 @@ body {
     font-family: "Arial", "Helvetica", sans-serif;
 }
 
-body>* {
+body > * {
     padding: 0;
     margin: 0;
     width: 100%;
@@ -40,7 +40,8 @@ input {
     padding: 5px;
 }
 
-input[type="button"], input[type="submit"] {
+input[type="button"],
+input[type="submit"] {
     background: white;
     font-weight: bold;
     font-variant: small-caps;
@@ -49,7 +50,8 @@ input[type="button"], input[type="submit"] {
     padding: 5px;
 }
 
-input[type="button"]:hover, input[type="submit"]:hover {
+input[type="button"]:hover,
+input[type="submit"]:hover {
     background: var(--foreground);
     font-weight: bold;
     font-variant: small-caps;
@@ -71,29 +73,29 @@ input[type="button"]:hover, input[type="submit"]:hover {
     margin: auto 0 auto auto;
 }
 
-#accountInfo>form {
+#accountInfo > form {
     display: inline-block;
     width: max-content;
     height: 100%;
     align-content: center;
-    padding: 0 10px 0 10px
+    padding: 0 10px 0 10px;
 }
 
-#accountInfo>form>input[type="text"],
-#accountInfo>form>input[type="password"] {
+#accountInfo > form > input[type="text"],
+#accountInfo > form > input[type="password"] {
     height: max-content;
     width: 150px;
     margin: auto 5px;
 }
 
-#accountInfo>form>input[type="button"],
-#accountInfo>form>input[type="submit"] {
+#accountInfo > form > input[type="button"],
+#accountInfo > form > input[type="submit"] {
     height: 70%;
     padding: 0 5px 0 5px;
     width: max-content;
 }
 
-#accountInfo>p {
+#accountInfo > p {
     display: inline-block;
     width: max-content;
     height: 100%;
@@ -107,25 +109,25 @@ input[type="button"]:hover, input[type="submit"]:hover {
     margin: 10px auto;
 }
 
-#banner>img {
+#banner > img {
     display: block;
     width: 100%;
     height: 140px;
 }
 
-#banner>nav {
+#banner > nav {
     height: 35px;
     background: var(--foreground);
 }
 
-#banner>nav>ul {
+#banner > nav > ul {
     height: 100%;
     margin: 0;
     padding: 0 5px;
     align-content: center;
 }
 
-#banner>nav>ul>li {
+#banner > nav > ul > li {
     display: inline-block;
     list-style-type: none;
     border: 2px solid var(--border);
@@ -136,7 +138,7 @@ input[type="button"]:hover, input[type="submit"]:hover {
     padding: 3px 7px;
 }
 
-#banner>nav>ul>li:hover {
+#banner > nav > ul > li:hover {
     display: inline-block;
     list-style-type: none;
     border: 2px solid var(--border);
@@ -146,7 +148,7 @@ input[type="button"]:hover, input[type="submit"]:hover {
     padding: 3px 7px;
 }
 
-#banner>nav>ul>li>a {
+#banner > nav > ul > li > a {
     display: block;
     width: 100%;
     text-align: center;
@@ -174,7 +176,8 @@ input[type="button"]:hover, input[type="submit"]:hover {
     width: 200px;
 }
 
-main, aside>section {
+main,
+aside > section {
     width: 100%;
 }
 
@@ -183,7 +186,7 @@ section.title {
     background: var(--foreground);
 }
 
-section.title>h1 {
+section.title > h1 {
     color: white;
     height: 100%;
     width: max-content;
@@ -199,7 +202,7 @@ section.content {
     background: var(--content-bg);
 }
 
-section.content>article {
+section.content > article {
     float: left;
     width: 250px;
     border-width: 1px;
@@ -208,7 +211,7 @@ section.content>article {
     border-color: var(--foreground);
     padding: 10px 8px 10px 20px;
     margin: 0 18px 16px 0;
-    background: linear-gradient(to right,#fdfbfb,#ebedee);
+    background: linear-gradient(to right, #fdfbfb, #ebedee);
 }
 
 section.content input[type="button"],
@@ -224,7 +227,7 @@ section.content button {
 
 section.content input[type="button"]:hover,
 section.content input[type="submit"]:hover,
-section.content button:hover{
+section.content button:hover {
     background: var(--foreground);
     font-weight: bold;
     font-variant: small-caps;
@@ -255,8 +258,117 @@ footer p {
     object-fit: cover; /* Assicura che l'immagine copra completamente l'area senza perdere le proporzioni */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Aggiunge un'ombra leggera */
     transition: transform 0.3s ease; /* Effetto di transizione all'hover */
+    margin-left: 42px;
 }
 
 .profile-image:hover {
     transform: scale(1.05); /* Ingrandisce leggermente l'immagine all'hover */
 }
+
+/* Stili aggiuntivi per migliorare la visualizzazione del form*/
+form {
+    /*display: flex;
+    flex-direction: column; */
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.formSubmit {
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+fieldset {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    padding: 0 10px;
+    color: var(--foreground);
+    font-weight: bold;
+}
+label{
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
+form label {
+    color: var(--foreground);
+}
+
+/* Stile per le label dei checkbox */
+input[type="checkbox"] + label {
+    display: inline-block;
+}
+input[type="radio"] + label {
+    display: inline-block;
+}
+
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="file"],
+input[type="tel"],
+select,
+textarea {
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    height: 100px;
+}
+input[type="radio"] {
+    display: inline-block;
+    margin-right: 10px; /* Aggiunge un po' di spazio tra i radio button */
+}
+
+/*
+button[type="submit"] {
+    background: var(--foreground);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: var(--border);
+}*/
+
+.logInOut {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+

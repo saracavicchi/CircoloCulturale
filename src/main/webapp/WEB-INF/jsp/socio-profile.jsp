@@ -263,7 +263,7 @@
             }
         }
 
-        function displayErrorMessages(Element) {
+        function displayErrorMessages() {
             var formElement = document.getElementById('profileForm');
             errorDisplayed = true;
             // Controlla se il messaggio di errore esiste già
@@ -356,7 +356,7 @@
                     <input type="email" id="email" name="email" value="${socio.email}" placeholder="Email"/>
 
                     <label for="phoneNumber">Numero di Telefono:</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" value="${socio.telefono}"
+                    <input type="tel" id="phoneNumber" name="phoneNumber" value="${socio.telefono}"
                            placeholder="Numero di Telefono"/>
 
                     <label for="cf">Codice Fiscale:</label>
@@ -406,8 +406,9 @@
                     <label for="new-password">Nuova password</label><input type="password" id="new-password" name="new-password" required/>
                     <button type="submit">Modifica Password</button>
                 </form>
-
-                <p>Disiscrizione dal Circolo Culturale</p>
+            </section>
+            <section class="content">
+                <h1>Disiscrizione dal Circolo Culturale</h1>
                 <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
                     <input type="hidden" name="socio-id" value="${socio.id}"/>
                     <% if (((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
