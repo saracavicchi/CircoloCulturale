@@ -21,7 +21,7 @@
     </section>
     <section class="content">
         <ul>
-            <li><a href="/docente/corsi">Lezioni</a></li>
+            <li><button onclick="window.location.href='/docente/corsi';">Corsi Insegnati</button></li>
             <!--<li><a href="/docente/lezioni/aggiungi">Aggiungi Lezione</a></li> -->
         </ul>
     </section>

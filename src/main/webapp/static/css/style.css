@@ -132,7 +132,7 @@ input[type="submit"]:hover {
 }
 
 #banner > nav {
-    height: 35px;
+    height: 55px;
     background: var(--foreground);
 }
 
@@ -151,7 +151,8 @@ input[type="submit"]:hover {
     border-radius: 5px;
     background: white;
     margin: 0 5px;
-    padding: 3px 7px;
+    padding: 5px 9px;
+
 }
 
 #banner > nav > ul > li:hover {
@@ -161,12 +162,14 @@ input[type="submit"]:hover {
     border-radius: 5px;
     background: var(--content-bg);
     margin: 0 5px;
-    padding: 3px 7px;
+    padding: 7px 11px;
 }
 
 #banner > nav > ul > li > a {
     display: block;
     width: 100%;
+    font-size: 16px;
+    font-weight: bold;
     text-align: center;
     color: black;
     font-variant: small-caps;
@@ -355,22 +358,6 @@ input[type="radio"] {
     margin-right: 10px; /* Aggiunge un po' di spazio tra i radio button */
 }
 
-/*
-button[type="submit"] {
-    background: var(--foreground);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-button[type="submit"]:hover {
-    background: var(--border);
-}*/
-
 .logInOut {
     margin: 0;
     padding: 0;
@@ -394,7 +381,7 @@ button[type="submit"]:hover {
 aside .content button:hover {
     background-color: var(--foreground);
     color: var(--background);
-
+    padding: 5px 13px;
 }
 
 

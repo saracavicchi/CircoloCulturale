@@ -61,6 +61,8 @@ public class SaggioController {
         if (saggioId.isPresent()) {
             Optional<Saggio> saggio = saggioService.findSaggioById(saggioId.get()); //TODO: mettere findSaggioByIdNotDeleted ?????
             if (saggio.isPresent()) {
+                model.addAttribute("uploadDir", uploadDir);
+                model.addAttribute("placeholderImage", "profilo.jpg");
                 model.addAttribute("saggio", saggio.get());
                 model.addAttribute("availableTickets", saggioService.getAvailableTickets(saggio.get()));
                 return "saggio-info";

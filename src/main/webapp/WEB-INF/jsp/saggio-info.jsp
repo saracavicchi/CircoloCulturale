@@ -32,6 +32,7 @@
             </section>
             <section class="content">
                 <h1>${saggio.nome}</h1>
+                <img class="profile-image" src="${empty saggio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto saggio"/>
                 <h2>${saggio.data} dalle ${saggio.orarioInizio} alle ${saggio.orarioFine}</h2>
                 <h3>Saggio dei corsi di:</h3>
                 <ul>

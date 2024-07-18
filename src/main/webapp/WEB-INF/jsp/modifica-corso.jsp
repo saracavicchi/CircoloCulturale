@@ -233,7 +233,7 @@
             <%
                 }
             %>
-            <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo" class="profile-image"/>
+            <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo Corso" class="profile-image"/>
 
             <c:if test="${corso.active}">
                 <label for="enableEdit">Modifica abilitata:</label>

@@ -138,6 +138,8 @@ public class CorsoController {
             if (corso.isPresent()) {
                 model.addAttribute("corso", corso.get());
                 model.addAttribute("availability", corsoService.isAvailable(corso.get()));
+                model.addAttribute("uploadDir", uploadDir);
+                model.addAttribute("placeholderImage", "profilo.jpg");
                 if (socio.isPresent()) {
                     model.addAttribute("isEnrolled", corsoService.isEnrolled(corso.get(), socio.get()));
                 }

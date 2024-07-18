@@ -12,6 +12,11 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <style>
+        .block {
+            display: block;
+        }
+    </style>
     <script>
         function addMessages() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -47,10 +52,11 @@
             </section>
             <section class="content">
                 <h1>${corso.genere} ${corso.categoria} ${corso.livello}</h1>
+                <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo Corso" class="profile-image"/>
                 ${corso.descrizione}
-                <strong>Sede:</strong> <a href="/sede/info?id=${corso.idSala.idSede.id}">${corso.idSala.idSede.nome}</a>
-                <strong>Sala: ${corso.idSala.numeroSala}</strong>
-                <strong>Calendario:</strong>
+                <strong class="block">Sede:</strong> <a href="/sede/info?id=${corso.idSala.idSede.id}">${corso.idSala.idSede.nome}</a>
+                <strong class="block">Sala: ${corso.idSala.numeroSala}</strong>
+                <strong class="block">Calendario:</strong>
                 <ul>
                     <c:forEach items="${corso.calendarioCorso}" var="giornoSettimana">
                         <c:set var="giornoIt" value="${giornoSettimana.giornoSettimana == 'monday' ? 'Lunedì' : giornoSettimana.giornoSettimana == 'tuesday' ? 'Martedì' : giornoSettimana.giornoSettimana == 'wednesday' ? 'Mercoledì' : giornoSettimana.giornoSettimana == 'thursday' ? 'Giovedì' : 'Venerdì'}"/>
