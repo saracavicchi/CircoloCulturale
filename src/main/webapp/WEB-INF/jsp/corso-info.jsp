@@ -15,6 +15,14 @@
     <style>
         .block {
             display: block;
+            margin-bottom: 10px;
+        }
+        .inline{
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        ul {
+            margin-top: 0px;
         }
     </style>
     <script>
@@ -53,8 +61,8 @@
             <section class="content">
                 <h1>${corso.genere} ${corso.categoria} ${corso.livello}</h1>
                 <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo Corso" class="profile-image"/>
-                ${corso.descrizione}
-                <strong class="block">Sede:</strong> <a href="/sede/info?id=${corso.idSala.idSede.id}">${corso.idSala.idSede.nome}</a>
+                <p class="block">${corso.descrizione}</p>
+                <strong class="inline">Sede:</strong> <a class="inline" href="/sede/info?id=${corso.idSala.idSede.id}">${corso.idSala.idSede.nome}</a>
                 <strong class="block">Sala: ${corso.idSala.numeroSala}</strong>
                 <strong class="block">Calendario:</strong>
                 <ul>
