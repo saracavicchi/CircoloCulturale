@@ -48,7 +48,7 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${corsi}" var="corso">
-                    <article>
+                    <article <c:if test="${corso.active == false}">class="deleted"</c:if>>
                         <h1><a href="/corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
                         <h2>${corso.descrizione}</h2>
                     </article>

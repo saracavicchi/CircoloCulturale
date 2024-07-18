@@ -73,7 +73,7 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${prenotazioni}" var="prenotazione">
-                    <article>
+                    <article <c:if test="${prenotazione.deleted == true}">class="deleted"</c:if>>
                         <h1><a href="<%= (request.getAttribute("segretario") != null) ? "/segretario/prenotazioni" : "/socio/prenotazioni"%>?id=${prenotazione.id}">#${prenotazione.id}</a></h1>
                         <h2>${prenotazione.descrizione}</h2>
                         <p>${prenotazione.data} - dalle ${prenotazione.orarioInizio} alle ${prenotazione.orarioFine}</p>

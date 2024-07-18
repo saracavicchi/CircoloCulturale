@@ -662,7 +662,22 @@ public class CorsoService {
         }
     }
 
-
+    @Transactional
+    public List<Corso> filterCorsiDocente(Optional<String> category,
+                                          Optional<String> genre,
+                                          Optional<String> level,
+                                          Integer docenteId) {
+            List<Corso> corsi = filterCorsi(category, genre, level, Optional.empty());
+            List<Corso> docenteFilteredCorsi = new ArrayList<Corso>();
+            for (Corso c : corsi) {
+                for (Docente d : c.getDocenti()) {
+                    if (d.getId().equals(docenteId)) {
+                        docenteFilteredCorsi.add(c);
+                    }
+                }
+            }
+            return docenteFilteredCorsi;
+    }
 
     @Transactional
     public List<Corso> filterCorsi(Optional<String> category,

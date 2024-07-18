@@ -52,7 +52,7 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${saggi}" var="saggio">
-                    <article>
+                    <article <c:if test="${saggio.deleted == true}">class="deleted"</c:if>>
                         <h1><a href="/saggio/modifica?saggioId=${saggio.id}">${saggio.nome}</a></h1>
                         <h2>${saggio.descrizione}</h2>
                         <p>${saggio.data} - ${saggio.orarioInizio}

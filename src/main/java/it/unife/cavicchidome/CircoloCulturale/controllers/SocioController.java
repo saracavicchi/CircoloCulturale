@@ -273,9 +273,9 @@ public class SocioController {
                           return "redirect:/socio/profile?socio-id=" + socioId.get(); //NON si può disiscrivere un segretario associato ad una sede
                    }
                 }
-            } else if (socioService.findSocioById(socioId.get()).isPresent()) {
+            } else if (socioService.findSocioByIdAll(socioId.get()).isPresent()) {
                 if (socioCookie.get().getSegretario() != null) {
-                    socio = socioService.findSocioById(socioId.get()).get();
+                    socio = socioService.findSocioByIdAll(socioId.get()).get();
                     redirectTo = "?socio-id=" + socioId.get();
                 } else {
                     return "redirect:/";

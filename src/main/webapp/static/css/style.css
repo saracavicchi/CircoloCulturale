@@ -3,6 +3,7 @@
     --background: #FFDEAE;
     --content-bg: #FFC874;
     --border: #c26b29;
+    --deleted: #a1a1a1;
 }
 
 .clearfix:after {
@@ -202,6 +203,7 @@ section.content {
     background: var(--content-bg);
 }
 
+
 section.content > article {
     float: left;
     width: 250px;
@@ -212,6 +214,28 @@ section.content > article {
     padding: 10px 8px 10px 20px;
     margin: 0 18px 16px 0;
     background: linear-gradient(to right, #fdfbfb, #ebedee);
+}
+
+section.content > article.deleted {
+    background: var(--deleted);
+}
+
+article > p.badge {
+    display: inline-block;
+    color: white;
+    font-weight: bold;
+    font-variant: small-caps;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0;
+}
+
+article > p.badge#docentebadge {
+    background: #ff0d0d;
+}
+
+article > p.badge#segretariobadge {
+    background: #4aa500;
 }
 
 section.content input[type="button"],

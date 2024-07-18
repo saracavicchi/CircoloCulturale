@@ -1,4 +1,4 @@
-<%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Biglietto" %>
+    <%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Biglietto" %>
 <%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Tessera" %><%--
   Created by IntelliJ IDEA.
   User: lucadomeneghetti

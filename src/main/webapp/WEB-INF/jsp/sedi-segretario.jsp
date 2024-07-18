@@ -43,7 +43,7 @@
         </section>
         <section class="content clearfix">
             <c:forEach items="${sedi}" var="sede">
-                <article>
+                <article <c:if test="${sede.active == false}">class="deleted"</c:if>>
                     <h1><a href="/sede/modifica?idSede=${sede.id}">${sede.nome}</a></h1>
                     <h2>${sede.indirizzo}</h2>
                 </article>

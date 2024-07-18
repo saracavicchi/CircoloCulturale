@@ -397,6 +397,25 @@
                 <input type="submit" value="Aggiorna">
             </form>
         </section>
+
+        <c:if test="${socio.docente ne null and socioHeader.segretario ne null}">
+        <section class="content">
+            <h2>Corsi insegnati</h2>
+            <ul>
+                <c:forEach items="${socio.docente.corsi}" var="corso">
+                    <li><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.genere} ${corso.categoria} ${corso.livello}</a></li>
+                </c:forEach>
+            </ul>
+        </section>
+        </c:if>
+
+        <c:if test="${socio.segretario ne null and socioHeader.segretario ne null}">
+        <section class="content">
+            <h2>Sede amministrata</h2>
+            <a href="/sede/modifica?idSede=${socio.segretario.sedeAmministrata.id}">${socio.segretario.sedeAmministrata.nome}</a>
+        </section>
+        </c:if>
+
         <!-- TODO: cambia gestione inattivo e attivo -->
         <!-- TODO: aggiungere possibilita` di confermare o meno tessera -->
         <c:if test="${not socio.deleted}">
@@ -409,6 +428,7 @@
                     <button type="submit">Modifica Password</button>
                 </form>
             </section>
+        </c:if>
             <section class="content">
                 <h1>Disiscrizione dal Circolo Culturale</h1>
                 <form name="deleteForm" id="deleteForm" action="elimina" method="POST">
@@ -424,7 +444,6 @@
                     <% } %>
                 </form>
             </section>
-        </c:if>
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>
