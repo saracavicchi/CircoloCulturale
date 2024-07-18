@@ -28,7 +28,7 @@
     <div id="main-content" class="clearfix">
         <main class="fullsize">
             <section class="title">
-                <h1>Informazioni sulla sede</h1>
+                <h1>Informazioni sul saggio</h1>
             </section>
             <section class="content">
                 <h1>${saggio.nome}</h1>

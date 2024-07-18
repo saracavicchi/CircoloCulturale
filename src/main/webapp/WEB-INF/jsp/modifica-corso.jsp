@@ -30,7 +30,9 @@
 
             toggleFormElements(false); // Disabilita gli elementi del form all'avvio
             var corsoActive = '${corso.active}';
-            if(corsoActive == true) {
+            console.log(corsoActive);
+            if(corsoActive === "true") {
+                console.log("ciao");
                 document.getElementById('enableEdit').addEventListener('change', function () {
                     toggleFormElements(this.checked);
                 });
@@ -244,20 +246,22 @@
                 <label for="photo">Seleziona una nuova foto per il corso:</label>
                 <input type="file" id="photo" name="photo">
 
-                <label>Descrizione:</label>
+                <label for="descrizione">Descrizione:</label>
                 <textarea id="descrizione" name="descrizione" placeholder="Descrizione del corso">${corso.descrizione}</textarea>
 
-                <label>Genere:</label>
+                <label for="genere">Genere:</label>
                 <input type="text" id="genere" name="genere" value="${corso.genere}" required/>
 
-                <label>Livello:</label>
+                <label for="livello">Livello:</label>
                 <input type="text" id="livello" name="livello" value="${corso.livello}" required/>
 
-                <label>Categoria:</label>
-                <input type="radio" id="danza" name="categoria" value="Danza" <c:if test="${corso.categoria == 'Danza'}">checked</c:if> required>
-                <label for="danza">Danza</label><br>
-                <input type="radio" id="musica" name="categoria" value="Musica" <c:if test="${corso.categoria == 'Musica'}">checked</c:if> required>
-                <label for="musica">Musica</label><br>
+                <fieldset>
+                    <legend>Categoria:</legend>
+                    <input type="radio" id="danza" name="categoria" value="Danza" required>
+                    <label for="danza">Danza</label>
+                    <input type="radio" id="musica" name="categoria" value="Musica" required>
+                    <label for="musica">Musica</label>
+                </fieldset>
 
                 <button type="submit">Salva Modifiche</button>
             </form>
@@ -269,7 +273,7 @@
             </section>
 
             <section class="content">
-                <p>Cancellazione Corso</p>
+                <h1>Cancellazione Corso</h1>
                 <form id="cancellaCorsoForm" action="elimina" method="POST">
                     <input type="hidden" name="idCorso" value="${corso.id}" />
                     <label for="confirmDeletion">Sei sicuro?</label>

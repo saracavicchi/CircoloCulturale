@@ -281,12 +281,12 @@
                     <input type="password" id="password" name="password" maxlength="50" required>
 
                     <label for="phoneNumber">Numero di telefono:</label>
-                    <input type="text" id="phoneNumber" name="phoneNumber" maxlength="10">
+                    <input type="tel" id="phoneNumber" name="phoneNumber" maxlength="10">
                 </fieldset>
 
                 <fieldset>
                     <legend>Altri Dettagli</legend>
-                    <label for="photo">Foto:</label>
+                    <label for="photo">Foto Profilo:</label>
                     <input type="file" id="photo" name="photo">
                 </fieldset>
 

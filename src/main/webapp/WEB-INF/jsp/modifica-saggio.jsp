@@ -21,7 +21,7 @@
             // Disabilita gli elementi del form all'avvio
             toggleFormElements(false);
             var saggioDeleted = '${saggio.deleted}';
-            if(!saggioDeleted) {
+            if(saggioDeleted === "false") {
                 document.getElementById('enableEdit').addEventListener('change', function() {
                     toggleFormElements(this.checked);
                 });

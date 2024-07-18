@@ -12,6 +12,17 @@
 <head>
     <title>Circolo Culturale</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <style>
+        .docente-info {
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .inline {
+            display: inline-block;
+            margin: auto;
+        }
+    </style>
     <script>
         var errorDisplayed = false;
         var errorMsg = "";
@@ -237,12 +248,15 @@
                     <c:forEach var="docente" items="${docentiCorso}">
                     <div>
                         <input type="checkbox" id="docentiDaEliminare" name="docentiDaEliminare" value="${docente.id}" />
-                        <span>${docente.socio.utente.nome} ${docente.socio.utente.cognome} (${docente.socio.utente.cf}): </span>
-                        <input type="number" name="stipendiAttuali" value="${docente.stipendio}" title="Per favore inserire un importo corretto senza cifre decimali" required/>
+                        <span class="docente-info">${docente.socio.utente.nome} ${docente.socio.utente.cognome} (${docente.socio.utente.cf}) </span>
+                        <label class="inline" for="stipendio_${docente.id}">Stipendio di ${docente.socio.utente.nome} ${docente.socio.utente.cognome}</label>
+                        <input class="inline" type="number" id="stipendio_${docente.id}" name="stipendiAttuali" value="${docente.stipendio}" title="Per favore inserire un importo corretto senza cifre decimali" required/>
                     </div>
                     </c:forEach>
-                    <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
                 </fieldset>
+
+                <p>Attenzione, gli stipendi dei docenti verranno aggiornati solamente nel caso l'importo risulti superiore a quello attualmente percepito</p>
+
                 <fieldset>
                     <legend>Aggiungi Nuovi Docenti</legend>
                     <select name="nuoviDocenti" multiple="multiple" onchange="gestisciStipendiDocenti()">
