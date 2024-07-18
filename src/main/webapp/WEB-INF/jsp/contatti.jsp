@@ -35,7 +35,7 @@
 <body>
 <%@include file="/static/include/header.jsp"%>
 <div id="main-content" class="clearfix">
-    <main class="midleft clearfix">
+    <main class="fullsize clearfix">
         <section class="title">
             <h1>Contattaci</h1>
         </section>

@@ -42,6 +42,7 @@
                 </c:forEach>
             </section>
         </main>
+        <%@include file="/static/include/aside.jsp"%>
     </div>
     <%@include file="/static/include/footer.jsp"%>
 </body>
