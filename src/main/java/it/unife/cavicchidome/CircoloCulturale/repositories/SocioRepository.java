@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SocioRepository extends JpaRepository<Socio, Integer> {
-    @Query("select s from Socio s where s.utente.cf = ?1 and s.password = ?2 and s.deleted = false and s.tessera.statoPagamento = 'c'")
+    @Query("select s from Socio s where s.utente.cf = ?1 and s.password = ?2 and s.deleted = false")
     Optional<Socio> authenticateSocio(String cf, String password);
 
     @Query("SELECT u.cf, u.nome, u.cognome, u.id FROM Socio s JOIN s.utente u WHERE s.deleted=false AND s.utente.deleted=false AND NOT EXISTS (SELECT 1 FROM Segretario seg WHERE seg.socio.id = s.id AND seg.active = true)")

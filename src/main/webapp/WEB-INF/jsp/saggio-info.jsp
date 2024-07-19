@@ -13,6 +13,17 @@
     <title>Circolo La Sinfonia</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const authFailed = urlParams.get('authFailed');
+        if(authFailed === 'true'){
+            alert('Autenticazione fallita.');
+        }
+
+        const pending = urlParams.get('pending');
+        if(pending === 'true'){
+            alert('La tessera non è stata ancora confermata. Si prega di rivolgersi ad una delle nostre segreterie.');
+        }
+
         function saggioEnrollButtonAction () {
             let enrollButton = document.getElementById("saggioEnrollButton")
             enrollButton.addEventListener("click", function () {

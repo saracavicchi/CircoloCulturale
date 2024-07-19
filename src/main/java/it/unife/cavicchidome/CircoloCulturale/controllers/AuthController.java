@@ -73,6 +73,12 @@ public class AuthController {
         if (socioId.isPresent()) {
             Cookie socioCookie = new Cookie("socio-id", "" + socioId.get());
             response.addCookie(socioCookie);
+            Optional<Socio> socio = socioRepository.findById(socioId.get());
+            if (socio.isPresent()) {
+                if(socio.get().getTessera().getStatoPagamento() == 'p') {
+                    redirectAttributes.addAttribute("pending", "true");
+                }
+            }
             return "redirect:" + redirectTo;
         } else {
             redirectAttributes.addAttribute("authFailed", "true");

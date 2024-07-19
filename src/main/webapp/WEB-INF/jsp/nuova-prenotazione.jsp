@@ -100,9 +100,9 @@
                 <input type="date" name="data" id="data" value="<%= (request.getParameter("data") != null) ? request.getParameter("data") : java.time.LocalDate.now()%>" required>
                 <input type="submit" value="Invio">
             </form>
-            <% if (request.getAttribute("prenotabile") != null && request.getAttribute("prenotabile").equals(true)) {%>
-            <% if (request.getAttribute("corsi") != null && !((List<?>) (request.getAttribute("corsi"))).isEmpty() &&
-            request.getAttribute("prenotazioni") != null && !((List<?>)(request.getAttribute("prenotazioni"))).isEmpty()) { %>
+            <% if (request.getAttribute("prenotabile") != null && Boolean.TRUE.equals(request.getAttribute("prenotabile"))) {%>
+            <% if ((request.getAttribute("corsi") != null && !((List<?>) (request.getAttribute("corsi"))).isEmpty()) ||
+                    (request.getAttribute("prenotazioni") != null && !((List<?>)(request.getAttribute("prenotazioni"))).isEmpty())) { %>
             <p>Nella sala ${sala.numeroSala} in data ${date} sono presenti le seguenti prenotazioni:</p>
             <% if (!((List<?>) request.getAttribute("corsi")).isEmpty()) {%>
             <h3>Corsi</h3>
