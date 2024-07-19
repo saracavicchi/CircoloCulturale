@@ -193,12 +193,12 @@ public class CorsoController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()){
+        Optional<Socio> socio = socioService.setSocioFromCookie(request, response, model);
+        if (!(socio.isPresent() && (socio.get().getSegretario() != null || socio.get().getDocente() != null))){
             return "redirect:/";
         }
         // Recupera le informazioni del corso tramite il suo ID
-        Optional<Corso> corso = corsoService.findByIdAll(idCorso); //anche cancellati per visualizzazione segretario
+        Optional<Corso> corso = corsoService.findByIdAll(idCorso); //anche cancellati per visualizzazione socio
         if (!corso.isPresent()) {
             // TODO:Gestisci il caso in cui il corso non viene trovato (es. reindirizzamento a una pagina di errore)
             return "redirect:/";

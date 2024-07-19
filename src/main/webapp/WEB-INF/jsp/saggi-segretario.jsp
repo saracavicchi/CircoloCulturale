@@ -51,8 +51,9 @@
                 <button type="button" onclick="redirectToCreaSaggioPage()">Crea Nuovo Saggio</button>
             </section>
             <section class="content clearfix">
+                <c:if test="${saggi.size() < 1}"><p id="emptyset">Nessun saggio da mostrare</p></c:if>
                 <c:forEach items="${saggi}" var="saggio">
-                    <article>
+                    <article <c:if test="${saggio.deleted == true}">class="deleted"</c:if>>
                         <h1><a href="/saggio/modifica?saggioId=${saggio.id}">${saggio.nome}</a></h1>
                         <h2>${saggio.descrizione}</h2>
                         <p>${saggio.data} - ${saggio.orarioInizio}

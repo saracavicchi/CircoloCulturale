@@ -273,9 +273,9 @@ public class SocioController {
                           return "redirect:/socio/profile?socio-id=" + socioId.get(); //NON si può disiscrivere un segretario associato ad una sede
                    }
                 }
-            } else if (socioService.findSocioById(socioId.get()).isPresent()) {
+            } else if (socioService.findSocioByIdAll(socioId.get()).isPresent()) {
                 if (socioCookie.get().getSegretario() != null) {
-                    socio = socioService.findSocioById(socioId.get()).get();
+                    socio = socioService.findSocioByIdAll(socioId.get()).get();
                     redirectTo = "?socio-id=" + socioId.get();
                 } else {
                     return "redirect:/";
@@ -293,6 +293,29 @@ public class SocioController {
 
         redirectAttributes.addAttribute("deleteSuccess", "true");
         return "redirect:/socio/profile" + redirectTo;
+    }
+
+    @PostMapping("/tessera")
+    public String confirmTessera(@RequestParam(name = "socio-id") Integer socioId,
+                                 @RequestParam(name = "confermato") Boolean confirmed,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 RedirectAttributes redirectAttributes) {
+        Optional<Socio> socioCookie = socioService.getSocioFromCookie(request, response);
+
+        if (socioCookie.isEmpty() || socioCookie.get().getSegretario() == null) {
+            return "redirect:/";
+        }
+
+        try {
+            socioService.confirmTessera(socioId, confirmed);
+            redirectAttributes.addAttribute("tesseraSuccess", "true");
+            return "redirect:/socio/profile?socio-id=" + socioId;
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addAttribute("tesseraFailed", "true");
+            return "redirect:/socio/profile?socio-id=" + socioId;
+        }
     }
 
     @PostMapping("/deletePhoto")

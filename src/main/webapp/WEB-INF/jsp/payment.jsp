@@ -1,4 +1,4 @@
-<%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Biglietto" %>
+    <%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Biglietto" %>
 <%@ page import="it.unife.cavicchidome.CircoloCulturale.models.Tessera" %><%--
   Created by IntelliJ IDEA.
   User: lucadomeneghetti
@@ -142,7 +142,7 @@
                 <input type="month" id="expirationDate" name="expirationDate" required>
                 <label for="cvv">CVV</label>
                 <input type="text" id="cvv" name="cvv" required>
-                <input type="button" id="cancel" value="Cancella">
+                <input type="button" id="cancel" value="Paga in sede">
                 <input type="submit" value="Paga">
             </form>
         </section>

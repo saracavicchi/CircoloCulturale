@@ -224,7 +224,7 @@
     </script>
 </head>
 <body>
-<<%@ include file="/static/include/header.jsp" %>
+<%@ include file="/static/include/header.jsp" %>
 <div id="main-content" class="clearfix">
     <main class="midleft">
         <section class="title">
