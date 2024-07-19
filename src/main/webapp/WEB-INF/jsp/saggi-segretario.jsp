@@ -12,19 +12,6 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
-    <style>
-        section.content article {
-            float: left;
-            width: 250px;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 10px;
-            border-color: #a3271f;
-            padding: 10px 8px 10px 20px;
-            margin: 0 18px 16px 0;
-            background: linear-gradient(to right,#fdfbfb,#ebedee);
-        }
-    </style>
     <script>
         function redirectToCreaSaggioPage() {
             window.location.href = '/saggio/crea';

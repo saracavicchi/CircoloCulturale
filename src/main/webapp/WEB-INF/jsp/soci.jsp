@@ -29,6 +29,7 @@
             </section>
             <section class="filter">
                 <form id="filterForm" name="filterForm" action="/segretario/soci" method="get">
+                    <label>Filtra per iniziale</label>
                     <ul style="display: flex; list-style-type: none">
                         <c:forEach items="${initials}" var="initial">
                             <li>
