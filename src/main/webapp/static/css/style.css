@@ -358,7 +358,26 @@ label{
 }
 .custom-fieldset form{
     border: 1px solid var(--border);
+    padding-left: 45px;
+    padding-right: 35px;
 }
+
+.custom-fieldset a{
+    display: inline-block; /* Rende l'elemento a simile a un bottone */
+    margin-left: 17px;
+    margin-bottom: 20px;
+    background: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 370px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+    text-align: center; /* Centra il testo all'interno dell'elemento a */
+    width: auto; /* Imposta la larghezza automaticamente in base al contenuto */
+}
+
 
 form label {
     color: var(--foreground);

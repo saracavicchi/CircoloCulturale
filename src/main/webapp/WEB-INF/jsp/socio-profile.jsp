@@ -433,21 +433,25 @@
             </form>
         </section>
 
-        <c:if test="${socio.docente ne null and socioHeader.segretario ne null}">
+        <c:if test="${socio.docente ne null and socio.segretario.active == true and socioHeader.segretario ne null}">
         <section class="content">
-            <h2>Corsi insegnati</h2>
-            <ul>
-                <c:forEach items="${socio.docente.corsi}" var="corso">
-                    <li><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.genere} ${corso.categoria} ${corso.livello}</a></li>
-                </c:forEach>
-            </ul>
+            <div class="custom-fieldset">
+                <h1 class="custom-legend">Corsi insegnati</h1>
+                <ul>
+                    <c:forEach items="${socio.docente.corsi}" var="corso">
+                        <li><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.genere} ${corso.categoria} ${corso.livello}</a></li>
+                    </c:forEach>
+                </ul>
+            </div>
         </section>
         </c:if>
 
-        <c:if test="${socio.segretario ne null and socioHeader.segretario ne null}">
+        <c:if test="${socio.segretario ne null and socio.segretario.active == true and socioHeader.segretario ne null}">
         <section class="content">
-            <h2>Sede amministrata</h2>
+            <div class="custom-fieldset">
+                <h1 class="custom-legend">Sede amministrata</h1>
             <a href="/sede/modifica?idSede=${socio.segretario.sedeAmministrata.id}">${socio.segretario.sedeAmministrata.nome}</a>
+            </div>
         </section>
         </c:if>
 

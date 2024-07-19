@@ -48,8 +48,8 @@
             <section class="content clearfix">
                 <c:forEach items="${soci}" var="socio">
                     <article <c:if test="${socio.deleted == true}">class="deleted"</c:if>>
-                        <c:if test="${socio.docente ne null}"><p id="docentebadge" class="badge">docente</p></c:if>
-                        <c:if test="${socio.segretario ne null}"><p id="segretariobadge" class="badge">segretario</p></c:if>
+                        <c:if test="${socio.docente ne null and socio.docente.active == true}"><p id="docentebadge" class="badge">docente</p></c:if>
+                        <c:if test="${socio.segretario ne null and socio.segretario.active == true}"><p id="segretariobadge" class="badge">segretario</p></c:if>
                         <h1><a href="/socio/profile?socio-id=${socio.id}">${socio.utente.cognome} ${socio.utente.nome}</a></h1>
                         <p>${socio.utente.cf}</p>
                     </article>
