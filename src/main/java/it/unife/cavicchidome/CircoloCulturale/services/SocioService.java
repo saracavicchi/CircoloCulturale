@@ -376,6 +376,7 @@ public class SocioService {
         }
         deleteSocio.setCorsi(null);
         if(deleteSocio.getDocente() != null){
+            deleteSocio.getDocente().setStipendio(BigDecimal.ZERO);
             deleteSocio.getDocente().setActive(false);
             deleteSocio.getDocente().setCorsi(null);
             docenteRepository.save(deleteSocio.getDocente());

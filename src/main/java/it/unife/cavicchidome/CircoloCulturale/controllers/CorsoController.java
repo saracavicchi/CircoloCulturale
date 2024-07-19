@@ -126,7 +126,6 @@ public class CorsoController {
                             @RequestParam(name = "categoria") Optional<String> courseCategory,
                             @RequestParam(name = "genere") Optional<String> courseGenre,
                             @RequestParam(name = "livello") Optional<String> courseLevel,
-                            @RequestParam(name = "isDocente") Optional<String> isDocente,
                             Model model,
                             HttpServletRequest request,
                             HttpServletResponse response) {
@@ -141,6 +140,16 @@ public class CorsoController {
                 model.addAttribute("uploadDir", uploadDir);
                 model.addAttribute("placeholderImage", "profilo.jpg");
                 if (socio.isPresent()) {
+                    boolean isDocenteDelCorso = false;
+                    if (socio.isPresent() && socio.get().getDocente() != null && socio.get().getDocente().getActive()) {
+                        isDocenteDelCorso = socio.get().getDocente().getCorsi().stream()
+                                .anyMatch(c -> c.getId().equals(corsoId.get()) && c.getActive() && c.getDocenti().stream()
+                                        .anyMatch(d -> d.getActive()));
+                        if(isDocenteDelCorso){
+                            model.addAttribute("isDocente", true);
+                        }
+                    }
+
                     model.addAttribute("isEnrolled", corsoService.isEnrolled(corso.get(), socio.get()));
                 }
                 return "corso-info";

@@ -439,7 +439,9 @@
                 <h1 class="custom-legend">Corsi insegnati</h1>
                 <ul>
                     <c:forEach items="${socio.docente.corsi}" var="corso">
-                        <li><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.genere} ${corso.categoria} ${corso.livello}</a></li>
+                        <c:if test="${corso.active == true}">
+                            <li><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.genere} ${corso.categoria} ${corso.livello}</a></li>
+                        </c:if>
                     </c:forEach>
                 </ul>
             </div>

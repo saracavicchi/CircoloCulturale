@@ -69,6 +69,7 @@ public class AuthController {
             HttpServletResponse response
     ) {
         Optional<Integer> socioId = socioService.authenticate(cf, password);
+        System.out.println("socioId: " + socioId);
         if (socioId.isPresent()) {
             Cookie socioCookie = new Cookie("socio-id", "" + socioId.get());
             response.addCookie(socioCookie);
@@ -106,7 +107,7 @@ public class AuthController {
     }
 
 
-    //TODO: Optional e dto
+
     @PostMapping("/signup")
     public String register(
             @RequestParam String name,

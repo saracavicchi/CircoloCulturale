@@ -77,7 +77,7 @@
                         <li>${docente.socio.utente.nome} ${docente.socio.utente.cognome}</li>
                     </c:forEach>
                 </ul>
-                <% if (request.getParameter("isDocente") == null ) { %>
+                <% if (request.getAttribute("isDocente") == null ) { %>
                     <% if (request.getAttribute("socioHeader") != null && request.getAttribute("isEnrolled") != null && !(Boolean)request.getAttribute("isEnrolled")) {
                         if (request.getAttribute("availability") != null && (Boolean)request.getAttribute("availability")) { %>
                             <form class="logInOut" action="/corso/iscrizione" method="post">

@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <aside class="smallright">
-    <% if (request.getAttribute("socioHeader") != null) { %>
+    <% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDeleted() ==false) { %>
     <section class="title">
         <h1>Menù socio</h1>
     </section>
@@ -15,7 +15,7 @@
         </ul>
     </section>
 <% } %>
-<% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDocente() != null) { %>
+<% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDocente() != null && ((Socio) request.getAttribute("socioHeader")).getDocente().getActive() == true) { %>
     <section style="margin-top: 10px" class="title">
         <h1>Menù docente</h1>
     </section>
@@ -27,7 +27,7 @@
         </ul>
     </section>
 <% } %>
-<% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getSegretario() != null) { %>
+<% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getSegretario() != null && ((Socio) request.getAttribute("socioHeader")).getSegretario().getActive() == true) { %>
     <section style="margin-top: 10px" class="title">
         <h1>Menù segretario</h1>
     </section>

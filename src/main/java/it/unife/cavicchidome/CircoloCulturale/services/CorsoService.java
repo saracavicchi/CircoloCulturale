@@ -998,6 +998,7 @@ public class CorsoService {
                 if (corsiInsegnati.isEmpty()) {
                     Docente docente = docenteRepository.findById(docenteId).orElseThrow(() -> new IllegalStateException("Docente not found"));
                     docente.setActive(false);
+                    docente.setStipendio(BigDecimal.ZERO);
                     docenteRepository.save(docente);
                 }
             }
@@ -1019,6 +1020,7 @@ public class CorsoService {
         for (Docente docente : docenti) {
             List<Corso> corsiInsegnati = corsoRepository.findAltriCorsiInsegnatiByDocenteId(docente.getId(), idCorso);
             if (corsiInsegnati.isEmpty()) {
+                docente.setStipendio(BigDecimal.ZERO);
                 docente.setActive(false);
                 docenteRepository.save(docente);
             }
