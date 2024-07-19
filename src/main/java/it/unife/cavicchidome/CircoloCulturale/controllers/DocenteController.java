@@ -44,9 +44,9 @@ public class DocenteController {
             return "redirect:/";
         }
 
-        model.addAttribute("categorie", corsoService.getCategorie());
-        model.addAttribute("generi", corsoService.getGeneri());
-        model.addAttribute("livelli", corsoService.getLivelli());
+        model.addAttribute("categorie", corsoService.getCategorieActive());
+        model.addAttribute("generi", corsoService.getGeneriActive());
+        model.addAttribute("livelli", corsoService.getLivelliActive());
         model.addAttribute("corsi", corsoService.filterCorsiDocente(courseCategory, courseGenre, courseLevel, docente.get().getId()));
         return "corsi-docente";
     }

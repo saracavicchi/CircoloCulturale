@@ -221,6 +221,7 @@ public class SaggioController {
         try{
             saggioService.deleteSaggio(saggioId);
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addAttribute("fail", "true"); //TODO: aggiungere messaggio di errore
             return "redirect:/saggio/modifica?saggioId=" + saggioId;
         }

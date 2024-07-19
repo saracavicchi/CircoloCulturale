@@ -156,9 +156,9 @@ public class CorsoController {
             }
         }
 
-        model.addAttribute("categorie", corsoService.getCategorie());
-        model.addAttribute("generi", corsoService.getGeneri());
-        model.addAttribute("livelli", corsoService.getLivelli());
+        model.addAttribute("categorie", corsoService.getCategorieActive());
+        model.addAttribute("generi", corsoService.getGeneriActive());
+        model.addAttribute("livelli", corsoService.getLivelliActive());
         model.addAttribute("corsi", corsoService.filterCorsi(courseCategory, courseGenre, courseLevel, Optional.empty()));
         return "corsi";
     }
@@ -381,12 +381,14 @@ public class CorsoController {
     public String eliminaCorso(
             @RequestParam("idCorso") Integer idCorso,
             RedirectAttributes redirectAttributes) {
+
         boolean deleteSuccess = corsoService.deleteCourse(idCorso);
 
         if (!deleteSuccess) {
             redirectAttributes.addAttribute("fail", "true");
             return "redirect:/corso/modificaBase?idCorso=" + idCorso;
         }
+
 
         redirectAttributes.addAttribute("successMessage", "Corso eliminato con successo.");
         return "redirect:/segretario/corsi";

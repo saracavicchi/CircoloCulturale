@@ -734,6 +734,20 @@ public class CorsoService {
     public List<String> getLivelli() {
         return corsoRepository.findDistinctLivello();
     }
+    @Transactional
+    public List<String> getCategorieActive() {
+        return corsoRepository.findDistinctCategoriaActive();
+    }
+
+    @Transactional
+    public List<String> getGeneriActive() {
+        return corsoRepository.findDistinctGenereActive();
+    }
+
+    @Transactional
+    public List<String> getLivelliActive() {
+        return corsoRepository.findDistinctLivelloActive();
+    }
 
     @Transactional
     public Optional<Corso> findCorsoById(Integer idCorso) {
@@ -1008,12 +1022,18 @@ public class CorsoService {
     }
 
     @Transactional
-    public boolean deleteCourse(Integer idCorso) {
+    public boolean deleteCourse(Integer idCorso){
         Optional<Corso> corsoOpt = corsoRepository.findById(idCorso);
         if (!corsoOpt.isPresent()) {
             return false; // Corso non trovato
         }
         Corso corso = corsoOpt.get();
+        try{
+            deletePhoto(idCorso);
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
         corso.setActive(false);
         corsoRepository.save(corso);
         List<Docente> docenti = new ArrayList<>(corso.getDocenti());

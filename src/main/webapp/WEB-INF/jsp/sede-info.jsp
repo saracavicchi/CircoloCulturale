@@ -37,12 +37,12 @@
                 <p><strong>Indirizzo: </strong>${sede.indirizzo}<p>
                 <p><strong>Ristoro: </strong><c:if test="${sede.ristoro eq true}">Si</c:if><c:if test="${sede.ristoro eq false}">No</c:if></p>
                 <p><strong>Segretario amministratore:</strong>${sede.segretario.socio.utente.nome} ${sede.segretario.socio.utente.cognome}</p>
-                <h2>Orari di apertura</h2>
+                <h2>Orari di apertura-chiusura</h2>
                 <ul>
                 <c:forEach items="${sede.orarioSede}" var="orario" varStatus="status">
                 <c:set var="giornoIt" value="${status.index == 0 ? 'Lunedì' : status.index == 1 ? 'Martedì' : status.index == 2 ? 'Mercoledì' : status.index == 3 ? 'Giovedì' : status.index == 4 ? 'Venerdì' : status.index == 5 ? 'Sabato' : 'Domenica'}"/>
                 <li>
-                    (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioApertura}"/> - <c:out value="${orario.orarioChiusura}"/>
+                    <c:out value="${giornoIt}"/>: <c:out value="${orario.orarioApertura}"/> - <c:out value="${orario.orarioChiusura}"/>
                 </li>
                 </c:forEach>
                     </ul>
