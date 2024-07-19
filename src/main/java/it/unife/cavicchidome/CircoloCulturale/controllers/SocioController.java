@@ -276,6 +276,11 @@ public class SocioController {
             } else if (socioService.findSocioByIdAll(socioId.get()).isPresent()) {
                 if (socioCookie.get().getSegretario() != null) {
                     socio = socioService.findSocioByIdAll(socioId.get()).get();
+                    if(!socio.getDeleted() && sedeService.findSedeByIdSegretario(socio.getId()).isPresent()){
+                        redirectAttributes.addAttribute("deleteFailed", "true");
+                        System.out.println("Non si può disiscrivere un segretario associato ad una sede");
+                        return "redirect:/socio/profile?socio-id=" + socioId.get(); //NON si può disiscrivere un segretario associato ad una sede
+                    }
                     redirectTo = "?socio-id=" + socioId.get();
                 } else {
                     return "redirect:/";

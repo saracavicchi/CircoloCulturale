@@ -12,6 +12,11 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <style>
+        section.content > article {
+            height: 250px;
+        }
+    </style>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>

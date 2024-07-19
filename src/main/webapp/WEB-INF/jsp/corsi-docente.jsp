@@ -51,6 +51,7 @@
                     <article>
                         <h1><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
                         <h2>${corso.descrizione}</h2>
+                        <p>${corso.categoria} - ${corso.genere} - ${corso.livello}</p>
                     </article>
                 </c:forEach>
             </section>

@@ -305,7 +305,7 @@
                 <button type="submit">Salva Modifiche</button>
             </form>
         </section>
-        <c:if test="${socioHeader.segretario ne null}">
+        <c:if test="${socioHeader.segretario ne null and socioHeader.segretario.active==true}">
         <c:if test="${corso.active}">
             <section class="content">
                 <div class="center">

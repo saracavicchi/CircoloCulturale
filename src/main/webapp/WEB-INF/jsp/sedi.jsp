@@ -12,7 +12,7 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
-    <style>
+    <!--<style>
         section.content article {
             float: left;
             width: 250px;
@@ -24,7 +24,7 @@
             margin: 0 18px 16px 0;
             background: linear-gradient(to right,#fdfbfb,#ebedee);
         }
-    </style>
+    </style>-->
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>

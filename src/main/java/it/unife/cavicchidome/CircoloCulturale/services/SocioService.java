@@ -5,6 +5,7 @@ import it.unife.cavicchidome.CircoloCulturale.exceptions.ValidationException;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.models.Tessera;
 import it.unife.cavicchidome.CircoloCulturale.models.Utente;
+import it.unife.cavicchidome.CircoloCulturale.repositories.DocenteRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,15 +43,17 @@ public class SocioService {
     private final TesseraService tesseraService;
     private final SocioRepository socioRepository;
     private final UtenteRepository utenteRepository;
+    private final DocenteRepository docenteRepository;
 
     @Value("${file.socio.upload-dir}")
     String uploadDir;
 
-    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository) {
+    SocioService(SocioRepository socioRepository, UtenteService utenteService, TesseraService tesseraService, UtenteRepository utenteRepository, DocenteRepository docenteRepository) {
         this.socioRepository = socioRepository;
         this.utenteService = utenteService;
         this.tesseraService = tesseraService;
         this.utenteRepository = utenteRepository;
+        this.docenteRepository = docenteRepository;
     }
 
     @Transactional
@@ -153,20 +156,33 @@ public class SocioService {
         } catch (EntityAlreadyPresentException exc) {
             utente = exc.getEntity();
         }
+        Socio socio;
+        if (utente.getSocio() != null ) {
+            if(!utente.getSocio().getDeleted()){
+                throw new EntityAlreadyPresentException(utente.getSocio());
+            }else{
+                socio = utente.getSocio();
+                socio.setUtente(utente);
+                if(!validateEmail(email) || !validatePhoneNumber(phone) || !validatePassword(Optional.empty(),password)){
+                    throw new ValidationException("validazione errata");
+                }
+                socio.setEmail(email);
+                socio.setPassword(password);
+                socio.setTelefono(phone);
+            }
 
-        if (utente.getSocio() != null) {
-            throw new EntityAlreadyPresentException(utente.getSocio());
+        }else{
+            socio = validateAndParseSocio(email, password, phone);
+            socio.setUtente(utente);
+            Tessera tessera = tesseraService.newTessera(socio, price);
+            socio.setTessera(tessera);
         }
 
-        Socio socio = validateAndParseSocio(email, password, phone);
         socio.setDeleted(false);
-        socio.setUtente(utente);
-
         String profilePictureFilename = saveSocioProfilePicture(profilePicture, utente.getCf());
         socio.setUrlFoto(profilePictureFilename);
 
-        Tessera tessera = tesseraService.newTessera(socio, price);
-        socio.setTessera(tessera);
+
 
         sendEmail(socio);
 
@@ -205,6 +221,7 @@ public class SocioService {
             String filename = saveSocioProfilePicture(picture, socio.getUtente().getCf());
             socio.setUrlFoto(filename);
         });
+
         validateSocio(socio);
         return socioRepository.save(socio);
     }
@@ -212,11 +229,9 @@ public class SocioService {
     Socio validateAndParseSocio(String email,
                                 String password,
                                 String phoneNumber) throws ValidationException {
-        // Crea un'istanza di EmailValidator
-        EmailValidator emailValidator = EmailValidator.getInstance();
 
         // Controlla se l'email è un'email valida e non supera i 50 caratteri
-        if (email == null || email.length() > 50 || !emailValidator.isValid(email)) {
+        if (!validateEmail(email)) {
             throw new ValidationException("Email non valida");
         }
 
@@ -226,23 +241,13 @@ public class SocioService {
         }
 
         // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
-        if (phoneNumber != null && !phoneNumber.isEmpty()){
-            if( !phoneNumber.matches("^[0-9]{10}$")) {
-                throw new ValidationException("Numero di telefono non valido");
-            }
+        if (!validatePhoneNumber(phoneNumber)) {
+            throw new ValidationException("Numero di telefono non valido");
+
         }
-
-        // Controlla se l'URL della foto è un URL valido e non supera gli 80 caratteri
-        /*if (photoUrl != null && !photoUrl.isEmpty()){
-            if (photoUrl.length() > 80 || !photoUrl.matches("^(ftp|http|https):\\/\\/[^ \"]+$")) {
-                return false;
-            }
-        }
-
-         */
-
         return new Socio(email, password, phoneNumber);
     }
+
 
     public boolean validatePassword(Optional<String> oldPassword, String newPassword) {
         // Controlla se la password ha almeno 8 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e non supera i 50 caratteri
@@ -253,14 +258,22 @@ public class SocioService {
     }
 
     public boolean validateEmail(String email) {
-        // Crea un'istanza di EmailValidator
         EmailValidator emailValidator = EmailValidator.getInstance();
-        return emailValidator.isValid(email);
+        // Controlla se l'email è un'email valida e non supera i 50 caratteri
+        if (email == null || email.length() > 50 || !emailValidator.isValid(email)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public boolean validatePhoneNumber(String phoneNumber) {
-        // Controlla se il numero di telefono contiene solo numeri e ha esattamente 10 cifre
-        return phoneNumber != null && phoneNumber.matches("^[0-9]{10}$");
+        if (phoneNumber != null && !phoneNumber.isEmpty()){
+            if( !phoneNumber.matches("^[0-9]{10}$")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Socio validateSocio(Socio socio) throws ValidationException {
@@ -354,8 +367,21 @@ public class SocioService {
     public void deleteSocioAndUser(Integer socioId, Optional<Boolean> delete){
         Socio deleteSocio = socioRepository.getReferenceById(socioId);
         deleteSocio.setDeleted(delete.orElse(true));
+        if(deleteSocio.getUrlFoto() != null){
+            try {
+                deletePhoto(socioId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         deleteSocio.setCorsi(null);
-        deleteSocio.getUtente().setDeleted(delete.orElse(true));
+        if(deleteSocio.getDocente() != null){
+            deleteSocio.getDocente().setActive(false);
+            deleteSocio.getDocente().setCorsi(null);
+            docenteRepository.save(deleteSocio.getDocente());
+            deleteSocio.setDocente(null);
+        }
+        //deleteSocio.getUtente().setDeleted(delete.orElse(true));
         socioRepository.save(deleteSocio);
         utenteRepository.save(deleteSocio.getUtente());
     }

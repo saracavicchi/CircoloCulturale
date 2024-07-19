@@ -16,6 +16,7 @@
         section.content article {
             float: left;
             width: 250px;
+            height: 250px;
             border-width: 1px;
             border-style: solid;
             border-radius: 10px;

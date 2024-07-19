@@ -12,6 +12,11 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <style>
+        section.content > article {
+            height: 250px;
+        }
+    </style>
     <script>
         function redirectToCreaSaggioPage() {
             window.location.href = '/saggio/crea';

@@ -105,7 +105,7 @@ public class SedeController {
         Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
         Optional<Sede> sedeOpt = sedeService.findSedeByIdActive(idSede);
         if(sedeOpt.isEmpty() || segretario.isEmpty() || segretario.get().getSegretario() == null || !segretario.get().getSegretario().getActive()) {
-            return "redirect:/sede/info";
+            return "redirect:/segretario/sedi";
         }
         model.addAttribute("sociInfo", socioService.findSociPossibiliSegretari());
         model.addAttribute("sede", sedeOpt.get());
@@ -128,7 +128,7 @@ public class SedeController {
                 redirectAttributes.addAttribute("fail", "true");
                 return "redirect:/sede/modifica?idSede=" + idSede;
             }
-            return "redirect:/sede/info?id=" + idSede;
+            return "redirect:/segretario/sedi?id=" + idSede;
         } catch (Exception e) {
             String message = e.getMessage();
             System.out.println(message);

@@ -151,7 +151,7 @@
 
             // Se la validazione ha esito positivo, invia il form
             if (validation) {
-                alert("Attenzione, nel caso si siano acquistati biglietti per saggi, verranno mantenute le informazioni personali già registrate. Se si desidera modificarle, è possibile farlo dal proprio profilo personale")
+                alert("Attenzione, nel caso si siano acquistati biglietti per saggi o nell'eventualità di riattivazione dell'account, verranno mantenute alcune informazioni personali già registrate. Se si desidera modificarle, è possibile farlo dal proprio profilo personale")
                 event.target.submit();
             } else {
                 errorDisplayed = true;
