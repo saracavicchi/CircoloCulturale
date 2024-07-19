@@ -74,8 +74,10 @@ public class UtenteService {
             throw new ValidationException("Indirizzo troppo lungo");
         }
 
-        // Controlla che nome, cognome, luogo di nascita, stato, provincia, città e via siano formati solo da caratteri e non numeri
-        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-']+$";
+        String regex = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini.
+             Anche lettere accentate
+             */
         if (!name.matches(regex) || !surname.matches(regex) || !birthplace.matches(regex) || !country.matches(regex) || !province.matches(regex) || !city.matches(regex) || !street.matches(regex)) {
             throw new ValidationException("Campi non validi");
         }

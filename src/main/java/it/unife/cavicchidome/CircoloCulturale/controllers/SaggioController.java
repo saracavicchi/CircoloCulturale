@@ -228,5 +228,21 @@ public class SaggioController {
         return "redirect:/segretario/saggi";
     }
 
+    @PostMapping("/deletePhoto")
+    public String deletePhoto(@RequestParam("saggio-id") Integer saggioId,
+                              HttpServletResponse response,
+                              HttpServletRequest request,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        try{
+            saggioService.deletePhoto(saggioId);
+            return "redirect:/saggio/modifica?saggioId=" + saggioId;
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("deletePhotoFailed", "true");
+            e.printStackTrace();
+            return "redirect:/saggio/modifica?saggioId=" + saggioId;
+        }
+    }
+
 
 }

@@ -114,7 +114,7 @@
             var modificaSedeForm = document.getElementById('modificaSedeForm');
             if (modificaSedeForm) {
                 modificaSedeForm.addEventListener('submit', submitForm);
-                var inputs = modificaSedeForm.getElementsByTagName('input');
+                var inputs = modificaSedeForm.querySelectorAll('input, select');
                 addFocusListenersToInputs(inputs, 'modificaSedeForm');
             }
         }
@@ -155,7 +155,10 @@
         var errorMsg = "";
 
         function validateForm() {
-            var charSpaceDashRegex = /^[A-Za-z\s\-]+$/;
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini.
+             Anche lettere accentate
+             */
             var maxLengthNome = 30;
 
             var nome = document.getElementById('nome').value;

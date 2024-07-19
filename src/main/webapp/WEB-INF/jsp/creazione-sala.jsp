@@ -27,7 +27,7 @@
             var creaSalaForm = document.getElementById('creaSalaForm');
             if (creaSalaForm) {
                 creaSalaForm.addEventListener('submit', submitForm);
-                var inputs = creaSalaForm.getElementsByTagName('input');
+                var inputs = creaSalaForm.querySelectorAll('input, select, textarea');
                 addFocusListenersToInputs(inputs, 'creaSalaForm');
             }
         }
@@ -46,6 +46,13 @@
         function validateForm() {
             var numeroSala = document.getElementById('numero').value;
             var capienza = document.getElementById('capienza').value;
+            var descrizione = document.getElementById('descrizione').value;
+
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
 
             // Controlla che il numero della sala sia presente e contenga solo numeri
             if (!numeroSala || !/^\d+$/.test(numeroSala)) {
@@ -56,6 +63,12 @@
             // Controlla che la capienza sia presente e sia un intero positivo
             if (!capienza || !/^\d+$/.test(capienza) || parseInt(capienza, 10) <= 0) {
                 alert("La capienza deve essere un numero intero positivo.");
+                return false;
+            }
+
+            // Optional fields validation
+            if (descrizione && !descrizione.match(charDescrizioneRegex)) {
+                errorMsg = "Descrizione deve contenere solo lettere, spazi o trattini";
                 return false;
             }
 

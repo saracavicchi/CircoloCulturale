@@ -82,7 +82,7 @@
             var creaCorsoForm = document.getElementById('creaSedeForm');
             if (creaCorsoForm) {
                 creaCorsoForm.addEventListener('submit', submitForm);
-                var inputs = creaCorsoForm.getElementsByTagName('input');
+                var inputs = creaCorsoForm.querySelectorAll('input, select');
                 addFocusListenersToInputs(inputs, 'creaSedeForm');
             }
         }
@@ -99,7 +99,10 @@
         var errorMsg = "";
 
         function validateForm() {
-            var charSpaceDashRegex =/^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini.
+             Anche lettere accentate
+             */
             var maxLengthNome = 30;
             var maxLengthTotal = 80;
 

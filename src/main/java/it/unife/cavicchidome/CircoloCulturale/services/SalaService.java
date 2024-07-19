@@ -44,9 +44,19 @@ public class SalaService {
         return salaRepository.findById(idSala);
     }
 
-    public boolean validateSalaInfo(String numeroSala, Integer capienza) {
+    public boolean validateSalaInfo(String numeroSala, Integer capienza, String descrizione) {
+        String descrizionePattern = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-\\(\\)\\.\\,\\;\\:\\!\\?\\[\\]\\{\\}\"\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
+
         // Controlla se numeroSala o capienza sono nulli
         if (numeroSala == null || capienza == null) {
+            return false;
+        }
+        if (!descrizione.isEmpty() && descrizione != null && !descrizione.matches(descrizionePattern)) {
+            System.out.println("descrizione: " + descrizione);
             return false;
         }
 
@@ -71,7 +81,7 @@ public class SalaService {
             Boolean prenotabile,
             Integer idSede
     ) throws IllegalArgumentException {
-        if(!validateSalaInfo(numeroSala, capienza)) {
+        if(!validateSalaInfo(numeroSala, capienza, descrizione)) {
             return false;
         }
 
@@ -127,6 +137,9 @@ public class SalaService {
         try {
             Optional<Sala> salaOpt = salaRepository.findById(idSala);
             if (!salaOpt.isPresent()) {
+                return false;
+            }
+            if(!validateSalaInfo(numeroSala, salaOpt.get().getCapienza(), descrizione)){
                 return false;
             }
             Optional<Sala> salaOptNumero = salaRepository.findByNumeroSalaAndIdSedeActive(Integer.parseInt(numeroSala), salaOpt.get().getIdSede());

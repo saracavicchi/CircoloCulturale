@@ -294,6 +294,22 @@ public class SocioController {
         redirectAttributes.addAttribute("deleteSuccess", "true");
         return "redirect:/socio/profile" + redirectTo;
     }
+
+    @PostMapping("/deletePhoto")
+    public String deletePhoto(@RequestParam("socio-id") Integer socioId,
+                              HttpServletResponse response,
+                              HttpServletRequest request,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        try{
+            socioService.deletePhoto(socioId);
+            return "redirect:/socio/profile?socio-id=" + socioId;
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("deletePhotoFailed", "true");
+            e.printStackTrace();
+            return "redirect:/socio/profile?socio-id=" + socioId;
+        }
+    }
 }
 
 

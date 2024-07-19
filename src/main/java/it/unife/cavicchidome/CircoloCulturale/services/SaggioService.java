@@ -85,8 +85,12 @@ public class SaggioService {
             String numeroCivico,
             List<Integer> corsiIds
     ) {
-        String nomeIndirizzoPattern =  "^(?=.*\\p{L})[\\p{L}\\s\\-']+$";
-        String descrizionePattern = "^(?=.*\\p{L})[\\p{L}\\p{P}\\s\\-()']+?$";
+        String nomeIndirizzoPattern = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        String descrizionePattern = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-\\(\\)\\.\\,\\;\\:\\!\\?\\[\\]\\{\\}\"\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
 
 
         if (nome == null || nome.trim().isEmpty() || !nome.matches(nomeIndirizzoPattern) || nome.length() > 30) {
@@ -388,6 +392,24 @@ public class SaggioService {
     @Transactional
     public List<Saggio> getSaggioAfterDateDeleted(Optional<LocalDate> date, Optional<Boolean> deleted) {
         return saggioRepository.getSaggioAfterDateDeleted(date.orElse(LocalDate.now()), deleted.orElse(false));
+    }
+
+
+    @Transactional
+    public void deletePhoto(Integer saggioId) throws Exception {
+        Optional<Saggio> saggioOptional = saggioRepository.findByIdNotDeleted(saggioId); //solo attivi
+        if (saggioOptional.isPresent()) {
+            Saggio saggio = saggioOptional.get();
+            String photoFilename = saggio.getUrlFoto();
+            saggio.setUrlFoto(null);
+            if (photoFilename != null && !photoFilename.isEmpty()) {
+                Path photoPath = Paths.get(uploadSaggioDir, photoFilename);
+                Files.deleteIfExists(photoPath);
+                System.out.println("File eliminato correttamente in" + photoPath.toAbsolutePath());
+            }
+        } else {
+            throw new Exception("Saggio not found with ID: " + saggioId);
+        }
     }
 
 

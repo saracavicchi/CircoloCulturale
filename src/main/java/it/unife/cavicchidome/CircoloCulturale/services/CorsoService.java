@@ -61,8 +61,12 @@ public class CorsoService {
     }
 
     public boolean validateBasicInfo(String descrizione, String genere, String livello, String categoria) {
-        String nomeIndirizzoPattern = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
-        String descrizionePattern = "^(?=.*\\p{L})[\\p{L}\\p{P}\\s\\-()]+$";
+        String nomeIndirizzoPattern = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        String descrizionePattern = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-\\(\\)\\.\\,\\;\\:\\!\\?\\[\\]\\{\\}\"\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
         if( !descrizione.isEmpty() && descrizione != null && !descrizione.matches(descrizionePattern)){
             return false;
         }
@@ -1091,6 +1095,23 @@ public class CorsoService {
     @Transactional
     public List<Corso> findBySedeId(Integer idSede){
         return corsoRepository.findBySedeId(idSede);
+    }
+
+    @Transactional
+    public void deletePhoto(Integer corsoId) throws Exception {
+        Optional<Corso> corsoOptional = corsoRepository.findByIdActive(corsoId); //solo attivi
+        if (corsoOptional.isPresent()) {
+            Corso corso = corsoOptional.get();
+            String photoFilename = corso.getUrlFoto();
+            corso.setUrlFoto(null);
+            if (photoFilename != null && !photoFilename.isEmpty()) {
+                Path photoPath = Paths.get(uploadCorsoDir, photoFilename);
+                Files.deleteIfExists(photoPath);
+                System.out.println("File eliminato correttamente in" + photoPath.toAbsolutePath());
+            }
+        } else {
+            throw new Exception("Corso not found with ID: " + corsoId);
+        }
     }
 
 }

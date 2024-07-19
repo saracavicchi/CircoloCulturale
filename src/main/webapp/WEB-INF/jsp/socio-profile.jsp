@@ -34,11 +34,18 @@
             initializeAddressFields();
             initProfileForm();
             var socioDeleted = '${socio.deleted}';
+            var profileForm = 'profileForm';
+            var deleteForm = 'deletePhotoForm';
+            var modificaPasswordForm = 'modificaPassword';
             if(socioDeleted == false){
-                handleEliminaSocioFormSubmission();
-                disableForm();
+                //handleEliminaSocioFormSubmission();
+                disableForm(profileForm);
+                disableForm(deleteForm);
+                disableForm(modificaPasswordForm)
             }else{
-                enableEditCheckbox();
+                enableEditCheckbox(profileForm);
+                enableEditCheckbox(deleteForm);
+                enableEditCheckbox(modificaPasswordForm)
             }
 
             var urlParams = new URLSearchParams(window.location.search);
@@ -49,18 +56,18 @@
 
         });
 
-        function disableForm() {
-            var inputs = document.getElementById('profileForm').getElementsByTagName('input');
+        function disableForm(formElement) {
+            var inputs = document.getElementById(formElement).getElementsByTagName('input');
 
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].setAttribute('disabled', 'true');
             }
 
         }
-        function enableEditCheckbox(){
+        function enableEditCheckbox(formElement){
             //var submitButton = document.getElementById('profileForm').getElementsByTagName('button')[0];
             //submitButton.setAttribute('disabled', 'true');
-            var inputs = document.getElementById('profileForm').getElementsByTagName('input');
+            var inputs = document.getElementById(formElement).getElementsByTagName('input');
 
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].setAttribute('disabled', 'true');
@@ -71,7 +78,6 @@
                     for (var i = 0; i < inputs.length; i++) {
                         inputs[i].removeAttribute('disabled');
                     }
-                    submitButton.removeAttribute('disabled');
                 } else {
                     for (var i = 0; i < inputs.length; i++) {
                         inputs[i].setAttribute('disabled', 'true');
@@ -93,9 +99,9 @@
             document.getElementById('houseNumber').value = risultato.houseNumber;
         }
 
-        function handleEliminaSocioFormSubmission() {
+        /*function handleEliminaSocioFormSubmission() {
             document.getElementById('deleteForm').addEventListener('submit', confirmDisiscrizione);
-        }
+        }*/
 
         function scrollToErrorMsg() {
             var ErrorMsgElement = document.getElementById('ErroreMsg');
@@ -103,14 +109,14 @@
                 ErrorMsgElement.scrollIntoView({behavior: "smooth"});
             }
         }
-
+        /*
         function confirmDisiscrizione(event) {
             var confirmUnsubscribe = document.getElementById('confirmUnsubscribe');
             if (confirmUnsubscribe != null && !confirmUnsubscribe.checked) {
                 alert('Per favore, conferma se sei sicuro di volerti disiscrivere.');
                 event.preventDefault(); // Prevent form submission
             }
-        }
+        }*/
 
 
         function initProfileForm() {
@@ -186,8 +192,11 @@
             var houseNumber = form.houseNumber.value;
             var phoneNumber = form.phoneNumber.value;
 
-            // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
-            var regex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
+
+            var regex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini.
+             Anche lettere accentate
+             */
             if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(state) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
                 errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
                 erroredField = "name, surname, birthplace, state, province, city, street";
@@ -341,6 +350,11 @@
                 <input type="checkbox" id="enableEdit" name="enableEdit"/>
             </c:if>
 
+            <form id="deletePhotoForm" action="/socio/deletePhoto" method="POST">
+                <input type="hidden" name="socio-id" value="${socio.id}" />
+                <input type="submit" value="Cancella Foto Profilo">
+            </form>
+
             <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
 
@@ -401,12 +415,12 @@
         <!-- TODO: aggiungere possibilita` di confermare o meno tessera -->
         <c:if test="${not socio.deleted}">
             <section class="content">
-                <form name="modificaPassword" action="modificaPassword" method="POST">
+                <form name="modificaPassword" id="modificaPassword" action="modificaPassword" method="POST">
                     <input type="hidden" name="socio-id" value="${socio.id}"/>
                     <% if (request.getAttribute("socioHeader") != null && ((Socio)request.getAttribute("socioHeader")).getSegretario() == null) { %>
                     <label for="old-password">Vecchia password</label><input type="password" id="old-password" name="old-password" required/> <% } %>
                     <label for="new-password">Nuova password</label><input type="password" id="new-password" name="new-password" required/>
-                    <button type="submit">Modifica Password</button>
+                    <input type="submit" value="Modifica Password">
                 </form>
             </section>
             <section class="content">

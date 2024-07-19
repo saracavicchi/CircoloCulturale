@@ -399,6 +399,24 @@ public class SocioService {
         return socioRepository.findSociPossibiliSegretari();
     }
 
+    @Transactional
+    public void deletePhoto(Integer socioId) throws Exception {
+        Optional<Socio> socioOptional = socioRepository.findById(socioId);//solo active
+        if (socioOptional.isPresent()) {
+            Socio socio = socioOptional.get();
+            String photoFilename = socio.getUrlFoto();
+            socio.setUrlFoto(null);
+            if (photoFilename != null && !photoFilename.isEmpty()) {
+                Path photoPath = Paths.get(uploadDir, photoFilename);
+                Files.deleteIfExists(photoPath);
+                System.out.println("File eliminato correttamente in" + photoPath.toAbsolutePath());
+            }
+        } else {
+            throw new Exception("Socio not found with ID: " + socioId);
+        }
+    }
+
+
 
 
 

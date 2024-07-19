@@ -32,7 +32,7 @@
             var creaCorsoForm = document.getElementById('creaCorsoForm');
             if (creaCorsoForm) {
                 creaCorsoForm.addEventListener('submit', submitForm);
-                var inputs = creaCorsoForm.getElementsByTagName('input');
+                var inputs = creaCorsoForm.querySelectorAll('input, textarea, select');
                 addFocusListenersToInputs(inputs, 'creaCorsoForm');
             }
         }
@@ -49,10 +49,12 @@
         var errorMsg = "";
 
         function validateForm() {
-            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
-            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
-
-
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
             var descrizione = document.getElementById('descrizione').value;
             var genere = document.getElementById('genere').value;
             var livello = document.getElementById('livello').value;
@@ -61,7 +63,7 @@
 
 
             if (descrizione && !descrizione.match(charDescrizioneRegex)) {
-                errorMsg = "Descrizione non contiene caratteri validi";
+                errorMsg = "Descrizione contiene alcuni caratteri non validi";
                 return false;
             }
 

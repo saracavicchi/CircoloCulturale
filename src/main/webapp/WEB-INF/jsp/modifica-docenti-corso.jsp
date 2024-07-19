@@ -92,7 +92,7 @@
             var Form = document.getElementById('modificaDocentiForm');
             if (Form) {
                 Form.addEventListener('submit', submitForm);
-                var inputs = Form.getElementsByTagName('input');
+                var inputs = Form.querySelectorAll('input, select');
                 addFocusListenersToInputs(inputs, 'modificaDocentiForm');
             }
         }

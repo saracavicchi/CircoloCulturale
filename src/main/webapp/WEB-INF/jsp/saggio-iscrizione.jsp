@@ -109,8 +109,10 @@
             var houseNumber = form.houseNumber.value;
             var quantity = form.quantity.value;
 
-            // Controlla se il nome, cognome, luogo di nascita, stato, provincia, città, via contengono solo caratteri e non numeri
-            var regex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
+            var regex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini.
+             Anche lettere accentate
+             */
             if (!regex.test(name) || !regex.test(surname) || !regex.test(birthplace) || !regex.test(state) || !regex.test(province) || !regex.test(city) || !regex.test(street)) {
                 errorMsg = "I campi nome, cognome, luogo di nascita, stato, provincia, città, via devono contenere solo caratteri e non numeri.";
                 erroredField = "name, surname, birthplace, state, province, city, street";

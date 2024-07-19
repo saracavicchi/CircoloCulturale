@@ -50,7 +50,7 @@ class SalaController {
     ){
         try{
             if(salaService.newSala(numeroSala, capienza, descrizione, prenotabile, idSede))
-                return "redirect:/sede/info?idSede=" + idSede;
+                return "redirect:/sede/modifica?idSede=" + idSede;
             else{
                 redirectAttributes.addAttribute("failed", "true");
                 return "redirect:/sede/sala/crea?idSede=" + idSede;
@@ -86,7 +86,7 @@ class SalaController {
     ){
         try{
             if(salaService.updateSala(idSala, numeroSala, descrizione, prenotabile))
-                return "redirect:/segretario/sedi";
+                return "redirect:/sede/modifica?idSede=" + idSede;
             else{
                 redirectAttributes.addAttribute("failed", "true");
                 return "redirect:/sede/sala/modifica?idSede=" + idSede;

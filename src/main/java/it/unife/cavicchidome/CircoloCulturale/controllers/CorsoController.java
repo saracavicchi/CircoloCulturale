@@ -382,4 +382,20 @@ public class CorsoController {
         redirectAttributes.addAttribute("successMessage", "Corso eliminato con successo.");
         return "redirect:/segretario/corsi";
     }
+
+    @PostMapping("/deletePhoto")
+    public String deletePhoto(@RequestParam("corso-id") Integer corsoId,
+                              HttpServletResponse response,
+                              HttpServletRequest request,
+                              RedirectAttributes redirectAttributes,
+                              Model model) {
+        try{
+            corsoService.deletePhoto(corsoId);
+            return "redirect:/corso/modificaBase?idCorso=" + corsoId;
+        } catch (Exception e) {
+            redirectAttributes.addAttribute("deletePhotoFailed", "true");
+            e.printStackTrace();
+            return "redirect:/corso/modificaBase?idCorso=" + corsoId;
+        }
+    }
 }

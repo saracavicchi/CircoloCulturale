@@ -21,7 +21,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            initModificaSalaForm();
 
             // Inizializza tutti i form come disabilitati
             document.querySelectorAll('[id^="enableEdit_"]').forEach(function(checkbox) {
@@ -30,6 +29,7 @@
                     toggleFormElements(this.checked, this.getAttribute('id').split('_')[1]);
                 });
             });
+            initModificaSalaForm();
 
         });
 
@@ -42,64 +42,81 @@
                 }
             }
         }
-
         function initModificaSalaForm() {
-            var modificaSalaForm = document.getElementById('modificaSalaForm');
-            if (modificaSalaForm) {
-                modificaSalaForm.addEventListener('submit', submitForm);
-                var inputs = modificaSalaForm.getElementsByTagName('input');
-                addFocusListenersToInputs(inputs, 'modificaSalaForm');
-            }
-        }
-        function addFocusListenersToInputs(inputs, formName) {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].addEventListener('focus', function() {
-                    removeError(formName);
+            //seleziona tutti i form il cui id comincia con 'modificaSaleForm_'
+            var modificaSalaForms = document.querySelectorAll('form[id^="modificaSaleForm_"]');
+
+            modificaSalaForms.forEach(function(form) {
+                // 'submit' event listener ad ogni fom form
+                console.log(form.getAttribute('id'), form.getAttribute('id').split('_')[1]);
+                form.addEventListener('submit', function(event) {
+                    submitForm(form.getAttribute('id').split('_')[1], event);
                 });
-            }
+
+            });
         }
 
         //campo/i che ha generato l'errore
         var erroredField = "";
         var errorMsg = "";
 
-        function validateForm() {
-            var numeroSala = document.getElementById('numero').value;
-            var capienza = document.getElementById('capienza').value;
+        function validateForm(salaId) {
+            console.log(salaId)
+            console.log('numeroSala_' + salaId);
+            console.log(document.getElementById('numeroSala_' + salaId));
+            var numeroSalaElement = document.getElementById('numeroSala_' + salaId);
+            var numeroSala =numeroSalaElement.value;
+            console.log(numeroSala);
+            var descrizioneElement = document.getElementById('descrizione_' + salaId);
+            var descrizione = descrizioneElement.value;
+            console.log(numeroSala,descrizione)
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
 
-            // Controlla che il numero della sala sia presente e contenga solo numeri
-            if (!numeroSala || !/^\d+$/.test(numeroSala)) {
-                alert("Il numero della sala deve essere presente e può contenere solo numeri.");
+            if (descrizione && !descrizione.match(charDescrizioneRegex)) {
+                errorMsg = "Descrizione contiene caratteri non validi";
                 return false;
             }
 
-            // Controlla che la capienza sia presente e sia un intero positivo
-            if (!capienza || !/^\d+$/.test(capienza) || parseInt(capienza, 10) <= 0) {
-                alert("La capienza deve essere un numero intero positivo.");
+            if (!numeroSala || !/^\d+$/.test(numeroSala)) {
+                errorMsg="Il numero della sala deve essere presente e può contenere solo numeri."
                 return false;
             }
 
             return true; // La validazione è passata
         }
 
-        function submitForm(event) {
-            // Impedisci l'invio del form
-            event.preventDefault();
+        function submitForm(salaId, event) {
 
-            // Chiama la funzione validateForm
-            var validation = validateForm();
+            if(event) event.preventDefault();
+
+            var formId = 'modificaSaleForm_' + salaId;
+            var form = document.getElementById(formId);
+
+            var validation = validateForm(salaId);
 
             if (!validation) {
+                //seleziona tutti input della form
+                var inputs = form.querySelectorAll('input, textarea, select');
+                console.log(form)
+
+                //'focus' event listener a ogni input element
+                inputs.forEach(function(input) {
+                    console.log(input)
+                    input.addEventListener('focus', function() {
+                        removeError();
+                    });
+                });
                 displayErrorMessages();
-            } else {  // Se la validazione ha esito positivo, invia il form
-                // Usa l'ID del form per inviarlo direttamente
-                document.getElementById('modificaSalaForm').submit();
+            } else {
+
+                form.submit();
             }
         }
 
         function displayErrorMessages() {
-            var formElement = document.getElementById('modificaSalaForm');
             errorDisplayed = true;
+            console.log(errorDisplayed)
+            var errorHere= document.getElementById('errorHere');
             // Controlla se il messaggio di errore esiste già
             var errorMessageElement = document.getElementById('error-message');
             var specificErrorElement = document.getElementById('specific-error');
@@ -109,7 +126,7 @@
                 errorMessageElement = document.createElement('p');
                 errorMessageElement.id = 'error-message';
                 errorMessageElement.textContent = "Errore durante l'inserimento, si prega di correggere le informazioni errate.";
-                document.querySelector('.content').insertBefore(errorMessageElement, formElement);
+                document.getElementById('errorHere').insertAdjacentElement('afterbegin', errorMessageElement);
             }
 
             // Se il messaggio di errore specifico non esiste, crealo
@@ -117,19 +134,8 @@
                 specificErrorElement = document.createElement('p');
                 specificErrorElement.id = 'specific-error';
                 specificErrorElement.textContent = errorMsg;
-                document.querySelector('.content').insertBefore(specificErrorElement, formElement);
+                document.getElementById('errorHere').insertAdjacentElement('afterbegin', specificErrorElement);
 
-            }
-
-            // Colora il bordo del campo o dei campi che hanno dato errore
-            if(erroredField != "") {
-                var fields = erroredField.split(', ');
-                for (var i = 0; i < fields.length; i++) {
-                    var fieldElement = document.getElementById(fields[i]);
-                    if (fieldElement) {
-                        fieldElement.style.border = '1px solid red';
-                    }
-                }
             }
             if(errorMessageElement) {
                 scrollToErrorMsg();
@@ -137,13 +143,14 @@
 
         }
         function scrollToErrorMsg() {
-            var ErrorMsgElement = document.getElementById('error-message');
+            var ErrorMsgElement = document.getElementById('specific-error');
             if (ErrorMsgElement) {
                 ErrorMsgElement.scrollIntoView({behavior: "smooth"});
             }
         }
 
-        function removeError(formName) {
+        function removeError() {
+            console.log(errorDisplayed)
             if(!errorDisplayed){
                 return;
             }
@@ -160,19 +167,6 @@
             if (specificErrorElement) {
                 specificErrorElement.remove();
             }
-
-            // Ottieni tutti gli elementi input del form
-            var allInputs = document.getElementById(formName).getElementsByTagName('input');
-            // Filtra per ottenere solo gli input di tipo 'text' o number
-            var inputs = Array.from(allInputs).filter(function(input) {
-                return input.type === 'text' || input.type === 'number';
-            });
-
-            // Itera su ogni elemento input
-            for (var i = 0; i < inputs.length; i++) {
-                // Rimuovi il bordo rosso dal campo
-                inputs[i].style.border = '';
-            }
         }
 
 
@@ -185,7 +179,7 @@
         <section class="title">
             <h1>Modifica Sale</h1>
         </section>
-        <section class="content">
+        <section id="errorHere" class="content">
 
         <% String alreadyPresent;
             if ((alreadyPresent = request.getParameter("alreadyPresent")) != null && alreadyPresent.equals("true")) {
@@ -207,7 +201,7 @@
             <div class="custom-fieldset">
                 <h1 class="custom-legend">Modifica Sala ${sala.numeroSala}</h1>
 
-                <label style="color:var(--border)" for="enableEdit_${sala.id}">Modifica abilitata:</label>
+                <label style="color:var(--border); margin-left:35px" for="enableEdit_${sala.id}">Modifica abilitata:</label>
                 <input type="checkbox" id="enableEdit_${sala.id}" name="enableEdit">
 
                 <form id="modificaSaleForm_${sala.id}" name="modificaSaleForm" action="/sede/sala/modifica" method="post">

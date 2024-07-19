@@ -399,7 +399,9 @@ input[type="radio"] {
 
 aside .content button:hover {
     background-color: var(--foreground);
+    font-size: 16px;
     color: var(--background);
+    border: 2px solid var(--background);
     padding: 6px 14px;
 }
 

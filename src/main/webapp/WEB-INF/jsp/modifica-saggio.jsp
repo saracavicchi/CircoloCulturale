@@ -19,11 +19,18 @@
             initializeAddressFields();
             initModificaSaggioForm();
             // Disabilita gli elementi del form all'avvio
-            toggleFormElements(false);
+            var modificaSaggioForm = 'modificaSaggioForm';
+            var deletePhotoForm = 'deletePhotoForm';
+
+            toggleFormElements(false, modificaSaggioForm);
+            toggleFormElements(false, deletePhotoForm);
             var saggioDeleted = '${saggio.deleted}';
             if(saggioDeleted === "false") {
                 document.getElementById('enableEdit').addEventListener('change', function() {
-                    toggleFormElements(this.checked);
+                    toggleFormElements(this.checked, modificaSaggioForm);
+                });
+                document.getElementById('enableEdit').addEventListener('change', function() {
+                    toggleFormElements(this.checked, deletePhotoForm);
                 });
             }
             //handleEliminaSaggioFormSubmission()
@@ -45,8 +52,8 @@
         }
 
          */
-        function toggleFormElements(isEnabled) {
-            var formElements = document.getElementById('modificaSaggioForm').elements;
+        function toggleFormElements(isEnabled, formElement) {
+            var formElements = document.getElementById(formElement).elements;
             for (var i = 0; i < formElements.length; i++) {
                 // Evita di disabilitare il checkbox stesso
                 if (formElements[i].id !== 'enableEdit') {
@@ -59,7 +66,7 @@
             var modificaSaggioForm = document.getElementById('modificaSaggioForm');
             if (modificaSaggioForm) {
                 modificaSaggioForm.addEventListener('submit', submitForm);
-                var inputs = modificaSaggioForm.getElementsByTagName('input');
+                var inputs = modificaSaggioForm.querySelectorAll('input, select, textarea');
                 addFocusListenersToInputs(inputs, 'modificaSaggioForm');
             }
         }
@@ -88,9 +95,12 @@
             var via = document.getElementById('via').value;
             var numeroCivico = document.getElementById('numeroCivico').value;
 
-            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
-            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
-
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
 
             if (!nome.match(charSpaceDashRegex) || !nome || nome.length > 30 || nome == "") {
                 errorMsg = "Nome contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
@@ -314,6 +324,11 @@
             <label for="enableEdit">Modifica abilitata:</label>
             <input type="checkbox" id="enableEdit" name="enableEdit">
             </c:if>
+
+            <form id="deletePhotoForm" action="/saggio/deletePhoto" method="POST">
+                <input type="hidden" name="saggio-id" value="${saggio.id}" />
+                <input type="submit" value="Cancella Foto Profilo Saggio">
+            </form>
 
             <form id="modificaSaggioForm" name="modificaSaggioForm" action="/saggio/modifica" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="saggioId" value="${saggio.id}"/>

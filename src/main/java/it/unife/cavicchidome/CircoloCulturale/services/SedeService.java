@@ -113,7 +113,10 @@ public class SedeService {
     }
 
     private boolean validateNome(String nome) {
-        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
+        String regex = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini .
+             Anche lettere accentate
+             */
         int maxLengthNome = 30;
 
         if (nome == null) {
@@ -130,7 +133,10 @@ public class SedeService {
     }
 
     private boolean validateIndirizzo(String stato, String provincia, String citta, String via, String numeroCivico) {
-        String regex = "^(?=.*\\p{L})[\\p{L}\\s\\-]+$";
+        String regex = "^(?=.*[A-Za-z])[A-Za-z\\s\\'\\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$";
+        /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini.
+             Anche lettere accentate
+             */
         int maxLengthTotal = 80;
 
         if (stato == null || provincia == null || citta == null || via == null || numeroCivico == null) {

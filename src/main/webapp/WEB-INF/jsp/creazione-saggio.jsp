@@ -23,7 +23,7 @@
             var creaSaggioForm = document.getElementById('creaSaggioForm');
             if (creaSaggioForm) {
                 creaSaggioForm.addEventListener('submit', submitForm);
-                var inputs = creaSaggioForm.getElementsByTagName('input');
+                var inputs = creaSaggioForm.querySelectorAll('input, textarea, select');
                 addFocusListenersToInputs(inputs, 'creaSaggioForm');
             }
         }
@@ -52,8 +52,12 @@
             var via = document.getElementById('via').value;
             var numeroCivico = document.getElementById('numeroCivico').value;
 
-            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
-            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
 
             if (!nome.match(charSpaceDashRegex) || !nome || nome.length > 30 || nome == "") {
                 errorMsg = "Nome contiene alcuni caratteri non validi e deve essere di massimo 30 caratteri";
@@ -76,7 +80,7 @@
 
             // Optional fields validation
             if (descrizione && !descrizione.match(charDescrizioneRegex)) {
-                errorMsg = "Descrizione deve contenere solo lettere, spazi o trattini";
+                errorMsg = "Descrizione contiene alcuni caratteri non validi";
                 return false;
             }
 

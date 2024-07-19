@@ -44,10 +44,10 @@
             }
         }
         function initCreaCorsoForm() {
-            var creaCorsoForm = document.getElementById('modificaCalendarioForm');
-            if (creaCorsoForm) {
-                creaCorsoForm.addEventListener('submit', submitForm);
-                var inputs = creaCorsoForm.getElementsByTagName('input');
+            var modificaCalendarioForm = document.getElementById('modificaCalendarioForm');
+            if (modificaCalendarioForm) {
+                modificaCalendarioForm.addEventListener('submit', submitForm);
+                var inputs = modificaCalendarioForm.querySelectorAll('input, select');
                 addFocusListenersToInputs(inputs, 'modificaCalendarioForm');
             }
         }

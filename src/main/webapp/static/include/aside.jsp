@@ -16,7 +16,7 @@
     </section>
 <% } %>
 <% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getDocente() != null) { %>
-    <section class="title">
+    <section style="margin-top: 10px" class="title">
         <h1>Menù docente</h1>
     </section>
     <section class="content">
@@ -27,7 +27,7 @@
     </section>
 <% } %>
 <% if (request.getAttribute("socioHeader") != null && ((Socio) request.getAttribute("socioHeader")).getSegretario() != null) { %>
-    <section class="title">
+    <section style="margin-top: 10px" class="title">
         <h1>Menù segretario</h1>
     </section>
     <section class="content">

@@ -34,14 +34,19 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             initEditCorsoForm();
+            var editCorsoForm='editCorsoForm'
+            var deletePhotoForm='deletePhotoForm'
+            toggleFormElements(false,editCorsoForm); // Disabilita gli elementi del form all'avvio
+            toggleFormElements(false,deletePhotoForm);
 
-            toggleFormElements(false); // Disabilita gli elementi del form all'avvio
             var corsoActive = '${corso.active}';
-            console.log(corsoActive);
             if(corsoActive === "true") {
                 console.log("ciao");
                 document.getElementById('enableEdit').addEventListener('change', function () {
-                    toggleFormElements(this.checked);
+                    toggleFormElements(this.checked, editCorsoForm);
+                });
+                document.getElementById('enableEdit').addEventListener('change', function () {
+                    toggleFormElements(this.checked, deletePhotoForm);
                 });
             }
 
@@ -53,7 +58,7 @@
             var editCorsoForm = document.getElementById('editCorsoForm');
             if (editCorsoForm) {
                 editCorsoForm.addEventListener('submit', submitForm);
-                var inputs = editCorsoForm.getElementsByTagName('input');
+                var inputs = editCorsoForm.querySelectorAll('input, select, textarea');
                 addFocusListenersToInputs(inputs, 'editCorsoForm');
             }
         }
@@ -70,8 +75,12 @@
         var errorMsg = "";
 
         function validateForm() {
-            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-]+$/;
-            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-]+$/;
+            var charSpaceDashRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            var charDescrizioneRegex = /^(?=.*[A-Za-z])[A-Za-z\s\'\-\(\)\.\,\;\:\!\?\[\]\{\}\"\-àèéìòùÀÈÉÌÒÙáéíóúÁÉÍÓÚâêîôûÂÊÎÔÛäëïöüÿÄËÏÖÜŸ]+$/;
+            /* almeno un carattere alfabetico (maiuscolo o minuscolo) e possono includere spazi, apostrofi, trattini e, nel caso di charDescrizioneRegex,
+             anche parentesi, punti, virgole, punto e virgola, due punti, punti esclamativi, punti interrogativi, parentesi quadre, parentesi graffe, e virgolette.
+             Anche lettere accentate
+             */
 
             var descrizione = document.getElementById('descrizione').value;
             var genere = document.getElementById('genere').value;
@@ -214,8 +223,8 @@
          */
 
 
-        function toggleFormElements(isEnabled) {
-            var formElements = document.getElementById('editCorsoForm').elements;
+        function toggleFormElements(isEnabled, formElement) {
+            var formElements = document.getElementById(formElement).elements;
             for (var i = 0; i < formElements.length; i++) {
                 if (formElements[i].id !== 'enableEdit') { // Evita di disabilitare il checkbox stesso
                     formElements[i].disabled = !isEnabled;
@@ -246,6 +255,11 @@
                 <label for="enableEdit">Modifica abilitata:</label>
                 <input type="checkbox" id="enableEdit" name="enableEdit">
             </c:if>
+
+            <form id="deletePhotoForm" action="/corso/deletePhoto" method="POST">
+                <input type="hidden" name="corso-id" value="${corso.id}" />
+                <input type="submit" value="Cancella Foto Profilo Corso">
+            </form>
 
             <form id="editCorsoForm" action="modificaBase" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="idCorso" value="${corso.id}"/>
