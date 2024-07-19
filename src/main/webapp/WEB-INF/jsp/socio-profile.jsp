@@ -63,6 +63,9 @@
                 inputs[i].setAttribute('disabled', 'true');
             }
 
+            var enableEdit = document.getElementById('enableEdit');
+            enableEdit.removeAttribute('disabled');
+
         }
         function enableEditCheckbox(formElement){
             //var submitButton = document.getElementById('profileForm').getElementsByTagName('button')[0];
@@ -73,6 +76,7 @@
                 inputs[i].setAttribute('disabled', 'true');
             }
             var enableEdit = document.getElementById('enableEdit');
+            enableEdit.removeAttribute('disabled');
             enableEdit.addEventListener('change', function () {
                 if (enableEdit.checked) {
                     for (var i = 0; i < inputs.length; i++) {
@@ -82,6 +86,7 @@
                     for (var i = 0; i < inputs.length; i++) {
                         inputs[i].setAttribute('disabled', 'true');
                     }
+                    enableEdit.removeAttribute('disabled');
                     //submitButton.setAttribute('disabled', 'true');
                 }
             });
@@ -345,10 +350,23 @@
         <section class="content">
             <img class="profile-image" src="${empty socio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(socio.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
 
-            <c:if test="${not socio.deleted}">
-                <label for="enableEdit">Abilita modifiche</label>
-                <input type="checkbox" id="enableEdit" name="enableEdit"/>
-            </c:if>
+            <form id="tesseraform" name="tesseraform" action="/socio/tessera" method="POST">
+                <input type="hidden" name="socio-id" value="${socio.id}"/>
+                <fieldset>
+                    <legend>Informazioni tessera</legend>
+                    <label for="tessera-id">Tessera ID:</label>
+                    <input type="text" id="tessera-id" name="tessera-id" value="${socio.tessera.id}" readonly>
+                    <label for="scadenza">Scadenza:</label>
+                    <input type="date" id="scadenza" name="scadenza" value="${socio.tessera.dataEmissione.plusYears(1)}" readonly>
+                    <c:if test="${socioHeader.segretario ne null}">
+                    <label for="confermato">Confermata</label>
+                    <input type="radio" id="confermato" name="confermato" value="true" <%= ((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socio")).getTessera().getStatoPagamento().equals('c') ? "checked" : ""%>/>
+                    <label for="pending">In sospeso</label>
+                    <input type="radio" id="pending" name="confermato" value="false" <%= ((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socio")).getTessera().getStatoPagamento().equals('p') ? "checked" : ""%>/>
+                    <input type="submit" value="Conferma"/>
+                    </c:if>
+                </fieldset>
+            </form>
 
             <form id="deletePhotoForm" action="/socio/deletePhoto" method="POST">
                 <input type="hidden" name="socio-id" value="${socio.id}" />
@@ -357,7 +375,10 @@
 
             <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
-
+                <c:if test="${not socio.deleted}">
+                <label for="enableEdit">Abilita modifiche</label>
+                <input type="checkbox" id="enableEdit" name="enableEdit"/>
+                </c:if>
                 <fieldset>
                     <legend>Informazioni personali</legend>
                     <label for="name">Nome:</label>
@@ -411,6 +432,25 @@
                 <input type="submit" value="Aggiorna">
             </form>
         </section>
+
+        <c:if test="${socio.docente ne null and socioHeader.segretario ne null}">
+        <section class="content">
+            <h2>Corsi insegnati</h2>
+            <ul>
+                <c:forEach items="${socio.docente.corsi}" var="corso">
+                    <li><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.genere} ${corso.categoria} ${corso.livello}</a></li>
+                </c:forEach>
+            </ul>
+        </section>
+        </c:if>
+
+        <c:if test="${socio.segretario ne null and socioHeader.segretario ne null}">
+        <section class="content">
+            <h2>Sede amministrata</h2>
+            <a href="/sede/modifica?idSede=${socio.segretario.sedeAmministrata.id}">${socio.segretario.sedeAmministrata.nome}</a>
+        </section>
+        </c:if>
+
         <!-- TODO: cambia gestione inattivo e attivo -->
         <!-- TODO: aggiungere possibilita` di confermare o meno tessera -->
         <c:if test="${not socio.deleted}">
@@ -423,6 +463,7 @@
                     <input type="submit" value="Modifica Password">
                 </form>
             </section>
+        </c:if>
             <section class="content">
                 <div class="custom-fieldset">
                     <h1 class="custom-legend">Disiscrizione dal Circolo Culturale</h1>
@@ -440,7 +481,6 @@
                     </form>
                 </div>
             </section>
-        </c:if>
     </main>
     <%@include file="/static/include/aside.jsp"%>
 </div>

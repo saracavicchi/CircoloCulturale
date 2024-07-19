@@ -414,6 +414,10 @@ public class SaggioService {
     }
 
 
+    @Transactional
+    public List<Saggio> getSaggioAfterDateDocente(Optional<LocalDate> date, Integer docenteId) {
+        return saggioRepository.getSaggioAfterDateDocente(date.orElse(LocalDate.now()), docenteId);
+    }
 
 
 

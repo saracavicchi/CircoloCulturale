@@ -120,6 +120,6 @@ public class Biglietto {
     static public final double SCONTO = 0.5;
 
     public BigDecimal getBigliettoPrice() {
-        return BigDecimal.valueOf(Biglietto.COSTO_DEFAULT * (this.getSconto() ? Biglietto.SCONTO : 1));
+        return BigDecimal.valueOf(Biglietto.COSTO_DEFAULT * (this.getSconto() ? Biglietto.SCONTO : 1) * this.getQuantita());
     }
 }

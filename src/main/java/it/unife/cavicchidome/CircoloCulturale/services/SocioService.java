@@ -111,6 +111,12 @@ public class SocioService {
         return Optional.empty();
     }
 
+    @Transactional
+    public void confirmTessera(Integer socioId, Boolean confirmed) {
+        Socio socio = socioRepository.getReferenceById(socioId);
+        socio.getTessera().setStatoPagamento(confirmed ? 'c' : 'n');
+        socioRepository.save(socio);
+    }
 
     @Transactional
     public Optional<Socio> findSocioById(int id) {

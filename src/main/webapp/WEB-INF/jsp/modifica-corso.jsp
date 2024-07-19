@@ -251,6 +251,8 @@
             %>
             <img src="${empty corso.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(corso.urlFoto)}" alt="Foto Profilo Corso" class="profile-image"/>
 
+            <c:if test="${not corso.active}"><p>Corso non attivo</p></c:if>
+
             <c:if test="${corso.active}">
                 <label for="enableEdit">Modifica abilitata:</label>
                 <input type="checkbox" id="enableEdit" name="enableEdit">
@@ -303,6 +305,7 @@
                 <button type="submit">Salva Modifiche</button>
             </form>
         </section>
+        <c:if test="${socioHeader.segretario ne null}">
         <c:if test="${corso.active}">
             <section class="content">
                 <div class="center">
@@ -310,6 +313,7 @@
                     <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
                 </div>
             </section>
+            </c:if>
 
             <section class="content">
                 <div class="custom-fieldset">
