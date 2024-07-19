@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>Contatti - Circolo Culturale</title>
+    <title>Circolo La Sinfonia</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <style>

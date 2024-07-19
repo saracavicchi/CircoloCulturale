@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>CircoloCulturale</title>
+    <title>Circolo La Sinfonia</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
 </head>
 <body>
