@@ -403,9 +403,10 @@ public class SaggioService {
             String photoFilename = saggio.getUrlFoto();
             saggio.setUrlFoto(null);
             if (photoFilename != null && !photoFilename.isEmpty()) {
-                Path photoPath = Paths.get(uploadSaggioDir, photoFilename);
-                Files.deleteIfExists(photoPath);
-                System.out.println("File eliminato correttamente in" + photoPath.toAbsolutePath());
+                Path fileStorageLocation = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/images/saggioPhotos/"+photoFilename);
+                System.out.println("Tentativo di eliminazione in: " + fileStorageLocation);
+                Files.deleteIfExists(fileStorageLocation);
+                System.out.println("File eliminato correttamente in" + fileStorageLocation);
             }
         } else {
             throw new Exception("Saggio not found with ID: " + saggioId);

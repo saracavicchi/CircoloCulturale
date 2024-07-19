@@ -1105,9 +1105,10 @@ public class CorsoService {
             String photoFilename = corso.getUrlFoto();
             corso.setUrlFoto(null);
             if (photoFilename != null && !photoFilename.isEmpty()) {
-                Path photoPath = Paths.get(uploadCorsoDir, photoFilename);
-                Files.deleteIfExists(photoPath);
-                System.out.println("File eliminato correttamente in" + photoPath.toAbsolutePath());
+                Path fileStorageLocation = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/images/corsoPhotos/"+photoFilename);
+                System.out.println("Tentativo di eliminazione in: " + fileStorageLocation);
+                Files.deleteIfExists(fileStorageLocation);
+                System.out.println("File eliminato correttamente in" + fileStorageLocation);
             }
         } else {
             throw new Exception("Corso not found with ID: " + corsoId);

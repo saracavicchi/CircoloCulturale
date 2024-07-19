@@ -407,9 +407,13 @@ public class SocioService {
             String photoFilename = socio.getUrlFoto();
             socio.setUrlFoto(null);
             if (photoFilename != null && !photoFilename.isEmpty()) {
-                Path photoPath = Paths.get(uploadDir, photoFilename);
-                Files.deleteIfExists(photoPath);
-                System.out.println("File eliminato correttamente in" + photoPath.toAbsolutePath());
+                Path fileStorageLocation = Paths.get(System.getProperty("user.dir") + "/src/main/resources/static/images/socioProfilePhotos/"+photoFilename);
+                System.out.println("Tentativo di eliminazione in: " + fileStorageLocation);
+                Files.deleteIfExists(fileStorageLocation);
+                System.out.println("File eliminato correttamente in" + fileStorageLocation);
+            }
+            else{
+                System.out.println("File non eliminato");
             }
         } else {
             throw new Exception("Socio not found with ID: " + socioId);
