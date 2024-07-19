@@ -383,7 +383,10 @@ public class SaggioService {
         return saggioRepository.getSaggioAfterDateDeleted(date.orElse(LocalDate.now()), deleted.orElse(false));
     }
 
-
+    @Transactional
+    public List<Saggio> getSaggioAfterDateDocente(Optional<LocalDate> date, Integer docenteId) {
+        return saggioRepository.getSaggioAfterDateDocente(date.orElse(LocalDate.now()), docenteId);
+    }
 
 
 

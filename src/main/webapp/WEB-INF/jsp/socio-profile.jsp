@@ -56,6 +56,9 @@
                 inputs[i].setAttribute('disabled', 'true');
             }
 
+            var enableEdit = document.getElementById('enableEdit');
+            enableEdit.removeAttribute('disabled');
+
         }
         function enableEditCheckbox(){
             //var submitButton = document.getElementById('profileForm').getElementsByTagName('button')[0];
@@ -66,6 +69,7 @@
                 inputs[i].setAttribute('disabled', 'true');
             }
             var enableEdit = document.getElementById('enableEdit');
+            enableEdit.removeAttribute('disabled');
             enableEdit.addEventListener('change', function () {
                 if (enableEdit.checked) {
                     for (var i = 0; i < inputs.length; i++) {
@@ -76,6 +80,7 @@
                     for (var i = 0; i < inputs.length; i++) {
                         inputs[i].setAttribute('disabled', 'true');
                     }
+                    enableEdit.removeAttribute('disabled');
                     //submitButton.setAttribute('disabled', 'true');
                 }
             });
@@ -336,14 +341,30 @@
         <section class="content">
             <img class="profile-image" src="${empty socio.urlFoto ? uploadDir.concat(placeholderImage) : uploadDir.concat(saggio.urlFoto)}" alt="Foto Profilo" class="profile-pic"/>
 
-            <c:if test="${not socio.deleted}">
-                <label for="enableEdit">Abilita modifiche</label>
-                <input type="checkbox" id="enableEdit" name="enableEdit"/>
-            </c:if>
+            <form id="tesseraform" name="tesseraform" action="/socio/tessera" method="POST">
+                <input type="hidden" name="socio-id" value="${socio.id}"/>
+                <fieldset>
+                    <legend>Informazioni tessera</legend>
+                    <label for="tessera-id">Tessera ID:</label>
+                    <input type="text" id="tessera-id" name="tessera-id" value="${socio.tessera.id}" readonly>
+                    <label for="scadenza">Scadenza:</label>
+                    <input type="date" id="scadenza" name="scadenza" value="${socio.tessera.dataEmissione.plusYears(1)}" readonly>
+                    <c:if test="${socioHeader.segretario ne null}">
+                    <label for="confermato">Confermata</label>
+                    <input type="radio" id="confermato" name="confermato" value="true" <%= ((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socio")).getTessera().getStatoPagamento().equals('c') ? "checked" : ""%>/>
+                    <label for="pending">In sospeso</label>
+                    <input type="radio" id="pending" name="confermato" value="false" <%= ((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socio")).getTessera().getStatoPagamento().equals('p') ? "checked" : ""%>/>
+                    <input type="submit" value="Conferma"/>
+                    </c:if>
+                </fieldset>
+            </form>
 
             <form id="profileForm" name="profileForm" action="/socio/profile" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="socio-id" value="${socio.id}"/>
-
+                <c:if test="${not socio.deleted}">
+                <label for="enableEdit">Abilita modifiche</label>
+                <input type="checkbox" id="enableEdit" name="enableEdit"/>
+                </c:if>
                 <fieldset>
                     <legend>Informazioni personali</legend>
                     <label for="name">Nome:</label>

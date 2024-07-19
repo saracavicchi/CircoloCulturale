@@ -3,6 +3,7 @@ package it.unife.cavicchidome.CircoloCulturale.controllers;
 import it.unife.cavicchidome.CircoloCulturale.models.Docente;
 import it.unife.cavicchidome.CircoloCulturale.models.Socio;
 import it.unife.cavicchidome.CircoloCulturale.services.CorsoService;
+import it.unife.cavicchidome.CircoloCulturale.services.SaggioService;
 import it.unife.cavicchidome.CircoloCulturale.services.SocioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,11 +22,13 @@ import java.util.Optional;
 public class DocenteController {
     private final SocioService socioService;
     private final CorsoService corsoService;
+    private final SaggioService saggioService;
 
     @Autowired
-    public DocenteController(SocioService socioService, CorsoService corsoService) {
+    public DocenteController(SocioService socioService, CorsoService corsoService, SaggioService saggioService) {
         this.socioService = socioService;
         this.corsoService = corsoService;
+        this.saggioService = saggioService;
     }
 
     @GetMapping("/corsi")
@@ -48,19 +51,18 @@ public class DocenteController {
         return "corsi-docente";
     }
 
-    /*@GetMapping("/saggi")
+    @GetMapping("/saggi")
     public String viewSaggi(@RequestParam(name = "data") Optional<LocalDate> date,
-                            @RequestParam(name = "deleted") Optional<Boolean> deleted,
                             Model model,
                             HttpServletRequest request,
                             HttpServletResponse response) {
 
-        Optional<Socio> segretario = socioService.setSocioFromCookie(request, response, model);
-        if (segretario.isEmpty() || segretario.get().getSegretario() == null) {
+        Optional<Socio> docente = socioService.setSocioFromCookie(request, response, model);
+        if (docente.isEmpty() || docente.get().getDocente() == null) {
             return "redirect:/";
         }
 
-        model.addAttribute("saggi", saggioService.getSaggioAfterDateDeleted(date, deleted));
-        return "saggi-segretario";
-    }*/
+        model.addAttribute("saggi", saggioService.getSaggioAfterDateDocente(date, docente.get().getId()));
+        return "saggi-docente";
+    }
 }

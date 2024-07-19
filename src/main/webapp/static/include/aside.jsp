@@ -24,8 +24,8 @@
     </section>
     <section class="content">
         <ul>
-            <li><a href="/docente/corsi">Lezioni</a></li>
-            <!--<li><a href="/docente/lezioni/aggiungi">Aggiungi Lezione</a></li> -->
+            <li><a href="/docente/corsi">Corsi</a></li>
+            <li><a href="/docente/saggi">Saggi</a></li>
         </ul>
     </section>
 <% } %>

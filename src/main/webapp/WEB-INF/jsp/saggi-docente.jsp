@@ -12,49 +12,26 @@
 <head>
     <title>CircoloCulturale</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
-    <style>
-        section.content article {
-            float: left;
-            width: 250px;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 10px;
-            border-color: #a3271f;
-            padding: 10px 8px 10px 20px;
-            margin: 0 18px 16px 0;
-            background: linear-gradient(to right,#fdfbfb,#ebedee);
-        }
-    </style>
-    <script>
-        function redirectToCreaSaggioPage() {
-            window.location.href = '/saggio/crea';
-        }
-    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content" class="clearfix">
         <main class="midleft">
             <section class="title">
-                <h1>Tutti i saggi del circolo</h1>
+                <h1>I saggi dei tuoi corsi</h1>
             </section>
             <section class="filter">
-                <form action="/segretario/saggi" method="get">
+                <form action="/docente/saggi" method="get">
                     <label for="data">Filtra per data:</label>
                     <input type="date" name="data" id="data" value="<%= request.getParameter("data") != null ? request.getParameter("data") : java.time.LocalDate.now()%>>">
-                    <label for="deleted">Mostra saggi cancellati</label>
-                    <input type="checkbox" name="deleted" id="deleted" <c:if test="${param.deleted eq true}">checked</c:if> value="true">
                     <input type="submit" value="Filtra"/>
                 </form>
-            </section>
-            <section class="content">
-                <button type="button" onclick="redirectToCreaSaggioPage()">Crea Nuovo Saggio</button>
             </section>
             <section class="content clearfix">
                 <c:if test="${saggi.size() < 1}"><p id="emptyset">Nessun saggio da mostrare</p></c:if>
                 <c:forEach items="${saggi}" var="saggio">
                     <article <c:if test="${saggio.deleted == true}">class="deleted"</c:if>>
-                        <h1><a href="/saggio/modifica?saggioId=${saggio.id}">${saggio.nome}</a></h1>
+                        <h1><a href="/saggio/info?saggioId=${saggio.id}">${saggio.nome}</a></h1>
                         <h2>${saggio.descrizione}</h2>
                         <p>${saggio.data} - ${saggio.orarioInizio}
                         ${saggio.indirizzo}</p>

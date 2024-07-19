@@ -41,6 +41,9 @@ public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
     @Query("SELECT s FROM Saggio s WHERE s.data > :date AND (s.deleted = :deleted OR s.deleted = false)")
     public List<Saggio> getSaggioAfterDateDeleted(LocalDate date, boolean deleted);
 
+    @Query("SELECT s FROM Saggio s WHERE s.data > :date AND :docenteId IN (SELECT d.id FROM s.corsi c JOIN c.docenti d)")
+    public List<Saggio> getSaggioAfterDateDocente(LocalDate date, Integer docenteId);
+
     @Query("SELECT s FROM Saggio s JOIN s.biglietti b WHERE b.idUtente.id = :socioId AND s.deleted = false")
     public  List<Saggio> findSaggiSocio(Integer socioId);
 }
