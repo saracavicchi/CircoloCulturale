@@ -243,7 +243,7 @@ section.content {
 section.content > article {
     float: left;
     width: 260px;
-    height: 120px;
+    height: 150px;
     border-width: 1px;
     border-style: solid;
     border-radius: 10px;
@@ -255,6 +255,11 @@ section.content > article {
 
 section.content > article.deleted {
     background: var(--deleted);
+}
+
+section.content > article > h2 {
+    overflow: hidden; /* Nasconde il contenuto che eccede */
+    text-overflow: ellipsis;
 }
 
 article > p.badge {
@@ -280,10 +285,11 @@ section.content input[type="submit"],
 section.content button {
     background: white;
     font-weight: bold;
+    font-size: 16px;
     font-variant: small-caps;
     border: 1px solid var(--border);
     border-radius: 5px;
-    padding: 5px;
+    padding: 10px;
 }
 
 section.content input[type="button"]:hover,
@@ -294,7 +300,7 @@ section.content button:hover {
     font-variant: small-caps;
     border: 1px solid var(--border);
     border-radius: 5px;
-    padding: 5px;
+    padding: 10px;
 }
 
 footer {
@@ -376,8 +382,8 @@ label{
 }
 .custom-fieldset form{
     border: 1px solid var(--border);
-    padding-left: 45px;
-    padding-right: 35px;
+    padding: 10px;
+    width:500px
 }
 
 .custom-fieldset a{
@@ -388,12 +394,19 @@ label{
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 10px;
-    padding-right: 370px;
+    /*padding-right: 370px;*
+    max-width: 500px; /* Larghezza massima dell'elemento */
+    width: 500px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border);
-    text-align: center; /* Centra il testo all'interno dell'elemento a */
-    width: auto; /* Imposta la larghezza automaticamente in base al contenuto */
+    text-align: left; /* Centra il testo all'interno dell'elemento a */
+
+}
+
+.custom-fieldset ul {
+    list-style-type: none; /* Removes bullet points */
+    padding: 0; /* Removes default padding */
 }
 
 

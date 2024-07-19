@@ -433,7 +433,7 @@
             </form>
         </section>
 
-        <c:if test="${socio.docente ne null and socio.segretario.active == true and socioHeader.segretario ne null}">
+        <c:if test="${socio.docente ne null and socio.docente.active == true and socioHeader.segretario ne null}">
         <section class="content">
             <div class="custom-fieldset">
                 <h1 class="custom-legend">Corsi insegnati</h1>
