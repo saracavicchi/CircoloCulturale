@@ -12,6 +12,7 @@
 <html>
 <head>
     <title>Circolo La Sinfonia</title>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -100,11 +101,61 @@
             background-color: white;
         }
 
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="month"],
+        input[type="date"],
+        input[type="time"],
+        input[type="file"],
+        input[type="tel"],
+        select,
+        textarea {
+            padding: 10px;
+            border: 1px solid #00f;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         form {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            border: solid #00f;
         }
+
+        form label {
+            color: #00f;
+        }
+
+        input[type="button"],
+        input[type="submit"],
+        button {
+            background: #9c9cff;
+            font-weight: bold;
+            font-size: 16px;
+            font-variant: small-caps;
+            border: 1px solid #00f;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        input[type="button"]:hover,
+        input[type="submit"]:hover,
+        button:hover {
+            background: #0000ff;
+            color: white;
+            font-weight: bold;
+            font-variant: small-caps;
+            border: 1px solid #00f;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
         body {
             background-color: #00f;
         }
