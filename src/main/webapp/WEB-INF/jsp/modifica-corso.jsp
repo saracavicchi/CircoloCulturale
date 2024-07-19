@@ -306,26 +306,26 @@
             </form>
         </section>
         <c:if test="${socioHeader.segretario ne null and socioHeader.segretario.active==true}">
-        <c:if test="${corso.active}">
-            <section class="content">
-                <div class="center">
-                    <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
-                    <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
-                </div>
-            </section>
-            </c:if>
+            <c:if test="${corso.active}">
+                <section class="content">
+                    <div class="center">
+                        <button type="button" onclick="redirectToEditDocentiPage()">Modifica Docenti</button>
+                        <button type="button" onclick="redirectToEditCalendarioPage()">Modifica Calendario e Sala Corso</button>
+                    </div>
+                </section>
 
-            <section class="content">
-                <div class="custom-fieldset">
-                    <h1 class="custom-legend">Cancellazione Corso</h1>
-                    <form id="cancellaCorsoForm" action="elimina" method="POST">
-                        <input type="hidden" name="idCorso" value="${corso.id}" />
-                        <label for="confirmDeletion">Sei sicuro?</label>
-                        <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
-                        <button type="submit">Cancella Corso</button>
-                    </form>
-                </div>
-            </section>
+                <section class="content">
+                    <div class="custom-fieldset">
+                        <h1 class="custom-legend">Cancellazione Corso</h1>
+                        <form id="cancellaCorsoForm" action="elimina" method="POST">
+                            <input type="hidden" name="idCorso" value="${corso.id}" />
+                            <label for="confirmDeletion">Sei sicuro?</label>
+                            <input type="checkbox" id="confirmDeletion" name="confirmDeletion" required>
+                            <button type="submit">Cancella Corso</button>
+                        </form>
+                    </div>
+                </section>
+            </c:if>
         </c:if>
 
     </main>
