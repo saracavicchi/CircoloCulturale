@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Modifica Password</title>
+    <title>Circolo La Sinfonia</title>
 
     <script>
         var errorDisplayed = false;

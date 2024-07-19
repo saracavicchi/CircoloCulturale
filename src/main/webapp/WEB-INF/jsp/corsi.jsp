@@ -10,8 +10,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Circolo Culturale</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const authFailed = urlParams.get('authFailed');
+        if(authFailed === 'true'){
+            alert('Autenticazione fallita. Nel caso in cui si tratti di un\'utenza con tessera non confermata, si prega di rivolgersi ad una delle nostre segreterie');
+        }
+    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
@@ -48,10 +55,10 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${corsi}" var="corso">
-                    <article <c:if test="${corso.active == false}">class="deleted"</c:if>>
+                    <article class="full">
                         <h1><a href="/corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
                         <h2>${corso.descrizione}</h2>
-                        <p>${corso.categoria} - ${corso.genere} - ${corso.livello}</p>
+                        <p><strong>Luogo:</strong> aula ${corso.idSala.numeroSala} ${corso.idSala.idSede.nome}</p>
                     </article>
                 </c:forEach>
             </section>

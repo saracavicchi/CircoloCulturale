@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Circolo Culturale</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
         section.content > article {
@@ -39,7 +39,7 @@
         </section>
         <section class="content clearfix">
             <c:forEach items="${biglietti}" var="biglietto">
-                <article>
+                <article class="vertical">
                     <h1><a href="/biglietto/info?id=${biglietto.id}">#${biglietto.id}</a></h1>
                     <h2>${biglietto.idUtente.cf}</h2>
                     <p>${biglietto.idSaggio.nome}</p>

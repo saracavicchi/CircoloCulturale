@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Circolo Culturale</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <style>
         .center {
@@ -362,9 +362,7 @@
                 <c:forEach items="${sede.orarioSede}" var="orario" varStatus="status">
                 <c:set var="giornoIt" value="${status.index == 0 ? 'Lunedì' : status.index == 1 ? 'Martedì' : status.index == 2 ? 'Mercoledì' : status.index == 3 ? 'Giovedì' : status.index == 4 ? 'Venerdì' : status.index == 5 ? 'Sabato' : 'Domenica'}"/>
                 <p>
-                    Orario di apertura (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioApertura}"/>
-                    <br>
-                    Orario di chiusura (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioChiusura}"/>
+                    (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioApertura}"/> - <c:out value="${orario.orarioChiusura}"/>
                 </p>
                 </c:forEach>
             </fieldset>

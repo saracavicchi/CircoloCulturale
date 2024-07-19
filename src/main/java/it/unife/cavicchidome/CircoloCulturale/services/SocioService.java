@@ -117,7 +117,7 @@ public class SocioService {
     @Transactional
     public void confirmTessera(Integer socioId, Boolean confirmed) {
         Socio socio = socioRepository.getReferenceById(socioId);
-        socio.getTessera().setStatoPagamento(confirmed ? 'c' : 'n');
+        socio.getTessera().setStatoPagamento(confirmed ? 'c' : 'p');
         socioRepository.save(socio);
     }
 

@@ -10,22 +10,20 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>CircoloCulturale</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <title>Circolo La Sinfonia</title>
     <style>
-        section.content article {
-            float: left;
-            width: 250px;
+        section.content > article {
             height: 250px;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 10px;
-            border-color: #a3271f;
-            padding: 10px 8px 10px 20px;
-            margin: 0 18px 16px 0;
-            background: linear-gradient(to right,#fdfbfb,#ebedee);
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const authFailed = urlParams.get('authFailed');
+        if(authFailed === 'true'){
+            alert('Autenticazione fallita. Nel caso in cui si tratti di un\'utenza con tessera non confermata, si prega di rivolgersi ad una delle nostre segreterie');
+        }
+    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>
@@ -43,7 +41,7 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${saggi}" var="saggio">
-                    <article <c:if test="${saggio.deleted == true}">class="deleted"</c:if>>
+                    <article class="full">
                         <h1><a href="/saggio/info?id=${saggio.id}">${saggio.nome}</a></h1>
                         <h2>${saggio.descrizione}</h2>
                         <p>${saggio.data} - ${saggio.orarioInizio}

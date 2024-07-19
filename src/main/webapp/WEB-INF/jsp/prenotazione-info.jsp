@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>CircoloCulturale</title>
+    <title>Circolo La Sinfonia</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <script>
         function confirmDisiscrizione(event) {
@@ -39,11 +39,11 @@
                 <c:if test="${prenotazione.deleted == true}"><p style="color: red">Prenotazione cancellata</p></c:if>
                 <h1>Prenotazione #${prenotazione.id}</h1>
                 <h2>${prenotazione.descrizione}</h2>
-                <p>Data: ${prenotazione.data}</p>
-                <p>Orario: dalle ${prenotazione.orarioInizio} alle ${prenotazione.orarioFine}</p>
-                <p>Sala ${prenotazione.idSala.numeroSala} - ${prenotazione.idSala.idSede.nome}</p>
+                <p><strong>Data: </strong>${prenotazione.data}</p>
+                <p><strong>Orario: </strong>dalle ${prenotazione.orarioInizio} alle ${prenotazione.orarioFine}</p>
+                <p><strong>Sala e sede: </strong>${prenotazione.idSala.numeroSala} - ${prenotazione.idSala.idSede.nome}</p>
                 <% if (((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socioHeader")).getSegretario() != null) {%>
-                <p>Prenotato da: ${prenotazione.idSocio.utente.nome} ${prenotazione.idSocio.utente.cognome}</p>
+                <p><strong>Prenotato da: </strong>${prenotazione.idSocio.utente.nome} ${prenotazione.idSocio.utente.cognome}</p>
                 <% } %>
                 <c:if test="${prenotazione.deleted ne true}">
                 <form name="deleteForm" id="deleteForm" action="/socio/prenotazioni/elimina" method="POST">

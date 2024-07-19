@@ -11,7 +11,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Profilo Socio</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
 
     <script>
@@ -356,8 +356,8 @@
                     <legend>Informazioni tessera</legend>
                     <label for="tessera-id">Tessera ID:</label>
                     <input type="text" id="tessera-id" name="tessera-id" value="${socio.tessera.id}" readonly>
-                    <label for="scadenza">Scadenza:</label>
-                    <input type="date" id="scadenza" name="scadenza" value="${socio.tessera.dataEmissione.plusYears(1)}" readonly>
+                    <label for="emissione">Emissione:</label>
+                    <input type="date" id="emissione" name="emissione" value="${socio.tessera.dataEmissione}" readonly>
                     <c:if test="${socioHeader.segretario ne null}">
                     <label for="confermato">Confermata</label>
                     <input type="radio" id="confermato" name="confermato" value="true" <%= ((it.unife.cavicchidome.CircoloCulturale.models.Socio)request.getAttribute("socio")).getTessera().getStatoPagamento().equals('c') ? "checked" : ""%>/>

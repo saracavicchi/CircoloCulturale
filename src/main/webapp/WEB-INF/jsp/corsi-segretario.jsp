@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Circolo Culturale</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css">
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -70,10 +70,10 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${corsi}" var="corso">
-                    <article>
+                    <article class="full <c:if test="${corso.active == false}">deleted</c:if>">
                         <h1><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
                         <h2>${corso.descrizione}</h2>
-                        <p>${corso.categoria} - ${corso.genere} - ${corso.livello}</p>
+                        <p><strong>Luogo:</strong> aula ${corso.idSala.numeroSala} ${corso.idSala.idSede.nome}</p>
                     </article>
                 </c:forEach>
             </section>

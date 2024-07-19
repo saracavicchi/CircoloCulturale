@@ -11,7 +11,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Profilo Socio</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
@@ -22,9 +22,9 @@
         <section class="title">
             <h1>Corsi di ${socioHeader.utente.nome} ${socioHeader.utente.cognome}</h1>
         </section>
-        <section class="content">
+        <section class="clearfix content">
             <c:forEach items="${corsi}" var="corso">
-                <article>
+                <article class="full">
                     <h1><a href="/corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>
                     <h2>${corso.descrizione}</h2>
                 </article>

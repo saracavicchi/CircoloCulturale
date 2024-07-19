@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>CircoloCulturale</title>
+    <title>Circolo La Sinfonia</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -44,8 +44,13 @@
                 <h1>Informazioni sul Biglietto</h1>
             </section>
             <section class="content">
+                <% if (((it.unife.cavicchidome.CircoloCulturale.models.Biglietto)request.getAttribute("biglietto")).getStatoPagamento().equals('p') ) {%>
+                <p style="color: red">Biglietto in sospeso</p>
+                <% } %>
                 <h1>Biglietto per ${biglietto.idSaggio.nome}</h1>
-                ${biglietto.dataOraAcquisto}
+                <p><strong>Acquistato in data:</strong> ${biglietto.dataOraAcquisto}</p>
+                <p><strong>Acquistato da:</strong> ${biglietto.idUtente.nome} ${biglietto.idUtente.cognome} (${biglietto.idUtente.cf})</p>
+                <p><strong>Quantità:</strong> ${biglietto.quantita}</p>
             </section>
         </main>
         <%@include file="/static/include/aside.jsp"%>

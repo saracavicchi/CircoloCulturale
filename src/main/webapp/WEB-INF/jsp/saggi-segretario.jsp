@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title>CircoloCulturale</title>
+    <title>Circolo La Sinfonia</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
     <style>
         section.content > article {
@@ -45,7 +45,7 @@
             <section class="content clearfix">
                 <c:if test="${saggi.size() < 1}"><p id="emptyset">Nessun saggio da mostrare</p></c:if>
                 <c:forEach items="${saggi}" var="saggio">
-                    <article <c:if test="${saggio.deleted == true}">class="deleted"</c:if>>
+                    <article class="full <c:if test="${saggio.deleted == true}">deleted</c:if>">
                         <h1><a href="/saggio/modifica?saggioId=${saggio.id}">${saggio.nome}</a></h1>
                         <h2>${saggio.descrizione}</h2>
                         <p>${saggio.data} - ${saggio.orarioInizio}

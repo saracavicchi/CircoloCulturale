@@ -11,7 +11,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Profilo Socio</title>
+    <title>Circolo La Sinfonia</title>
     <link href="/static/css/style.css" rel="stylesheet" type="text/css"/>
 
 </head>
@@ -24,7 +24,7 @@
         </section>
         <section class="clearfix content">
             <c:forEach items="${saggi}" var="saggio">
-                <article>
+                <article class="full">
                     <h1><a href="/saggio/info?id=${saggio.id}">${saggio.nome}</a></h1>
                     <h2>${saggio.descrizione}</h2>
                 </article>
