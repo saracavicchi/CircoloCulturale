@@ -38,7 +38,7 @@ public class SaggioService {
     
     @Transactional
     public List<Saggio> getNextMonth() {
-        LocalDate untilDate = LocalDate.now().plusDays(60); //TODO: 60 giorni non è un mese :)
+        LocalDate untilDate = LocalDate.now().plusMonths(1);
         return saggioRepository.getNextSaggi(untilDate); //Solo saggi attivi
     }
 

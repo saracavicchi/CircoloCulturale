@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
     @Query("""
-       SELECT s FROM Saggio s WHERE s.deleted = false AND s.data <= ?1
+       SELECT s FROM Saggio s WHERE s.deleted = false AND s.data <= ?1 AND s.data >= CURRENT_DATE
     """)
     public List<Saggio> getNextSaggi(LocalDate untilDate);
 
@@ -38,7 +38,7 @@ public interface SaggioRepository extends JpaRepository<Saggio, Integer> {
     @Query("SELECT s FROM Saggio s WHERE s.id = ?1")
     public Optional<Saggio> findByIdAll(Integer id);
 
-    @Query("SELECT s FROM Saggio s WHERE s.data > :date AND (s.deleted = :deleted OR s.deleted = false)")
+    @Query("SELECT s FROM Saggio s WHERE s.data > :date AND (s.deleted = :deleted OR s.deleted = false) ORDER BY s.data ASC")
     public List<Saggio> getSaggioAfterDateDeleted(LocalDate date, boolean deleted);
 
     @Query("SELECT s FROM Saggio s WHERE s.data > :date AND :docenteId IN (SELECT d.id FROM s.corsi c JOIN c.docenti d)")

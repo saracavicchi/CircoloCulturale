@@ -40,7 +40,7 @@
             </section>
             <section class="content clearfix">
                 <c:forEach items="${biglietti}" var="biglietto">
-                    <article <c:if test="${biglietto.deleted == true}">class="deleted"</c:if>>
+                    <article class="vertical <c:if test="${biglietto.deleted == true}">deleted</c:if>">
                         <h1><a href="/biglietto/modifica?bigliettoId=${biglietto.id}">#${biglietto.id}</a></h1>
                         <h2>${biglietto.idUtente.cf}</h2>
                         <p>${biglietto.idSaggio.nome}</p>

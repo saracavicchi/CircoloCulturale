@@ -57,6 +57,13 @@
         }
 
     </style>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const authFailed = urlParams.get('authFailed');
+        if(authFailed === 'true'){
+            alert('Autenticazione fallita. Nel caso in cui si tratti di un\'utenza con tessera non confermata, si prega di rivolgersi ad una delle nostre segreterie');
+        }
+    </script>
 </head>
 <body>
     <%@include file="/static/include/header.jsp"%>

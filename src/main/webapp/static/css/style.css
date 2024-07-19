@@ -243,14 +243,25 @@ section.content {
 section.content > article {
     float: left;
     width: 260px;
-    height: 150px;
+    height: 120px;
     border-width: 1px;
     border-style: solid;
     border-radius: 10px;
     border-color: #a3271f;
     padding: 10px 8px 10px 20px;
-    margin: 0 18px 16px 0;
+    margin: 15px;
     background: linear-gradient(to right, #fdfbfb, #ebedee);
+}
+
+section.content > article.full {
+    width: 90%;
+    height: max-content;
+}
+
+section.content > article.vertical {
+    width: max-content;
+    height: max-content;
+    margin: 10px;
 }
 
 section.content > article.deleted {
@@ -258,6 +269,7 @@ section.content > article.deleted {
 }
 
 section.content > article > h2 {
+    font-size: 1em;
     overflow: hidden; /* Nasconde il contenuto che eccede */
     text-overflow: ellipsis;
 }
@@ -268,7 +280,7 @@ article > p.badge {
     font-weight: bold;
     font-variant: small-caps;
     border-radius: 5px;
-    padding: 5px;
+    padding: 2px 3px;
     margin: 0;
 }
 
