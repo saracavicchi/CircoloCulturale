@@ -207,7 +207,6 @@ public class PrenotazioneSalaService {
             message.setText("Gentile " + socio.getUtente().getNome() + ","
                     + "\n\nLe confermiamo l'avvenuta prenotazione della sala " + prenotazione.getIdSala().getNumeroSala() + " (sede " + prenotazione.getIdSala().getIdSede().getNome() +
                     ") per il giorno " + prenotazione.getData() + " dalle ore " + prenotazione.getOrarioInizio() + " alle ore " + prenotazione.getOrarioFine() + "." +
-                    "\n\nIl suo codice prenotazione è: " + prenotazione.getId() +
                     "\n\nCordiali saluti,\nCircolo Culturale \"La Sinfonia\"");
 
             Transport.send(message);
