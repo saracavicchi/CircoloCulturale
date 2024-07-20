@@ -41,7 +41,6 @@ public class SedeController {
 
         socioService.setSocioFromCookie(request, response, model);
 
-        // TODO: fix JSP return
         if (sedeId.isPresent()) {
             Optional<Sede> sede = sedeService.findSedeByIdActive(sedeId.get());//TODO: ho messo active
             if (sede.isPresent()) {

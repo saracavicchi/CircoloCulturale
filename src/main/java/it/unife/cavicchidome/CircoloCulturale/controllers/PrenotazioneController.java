@@ -84,7 +84,6 @@ public class PrenotazioneController {
             return "redirect:/";
         }
 
-        // TODO: renderli transazionali
         model.addAttribute("sedi", salaRepository.findDistinctSedi());
         model.addAttribute("sale", salaRepository.findAllPrenotabili());
         Sala sala;

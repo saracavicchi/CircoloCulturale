@@ -179,8 +179,8 @@ public class PrenotazioneSalaService {
     }
 
     public void newPrenotazioneEmail(Socio socio, PrenotazioneSala prenotazione) {
-        final String username = "indirizzomail";
-        final String password = "app password"; // replace with your password
+        final String username = "circoloculturaleCD@gmail.com";
+        final String password = "fcqn ntzj hzsw agnu"; // replace with your password
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -198,7 +198,7 @@ public class PrenotazioneSalaService {
         try {
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("indirizzomailmittente"));
+            message.setFrom(new InternetAddress("circoloculturaleCD@gmail.com"));
             message.setRecipients(
                     Message.RecipientType.TO,
                     InternetAddress.parse(socio.getEmail())
@@ -220,8 +220,8 @@ public class PrenotazioneSalaService {
     }
 
     public void deletePrenotazioneEmail(Socio socio, PrenotazioneSala prenotazione) {
-        final String username = "indirizzomail";
-        final String password = "app password"; // replace with your password
+        final String username = "circoloculturaleCD@gmail.com";
+        final String password = "fcqn ntzj hzsw agnu"; // replace with your password
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -239,7 +239,7 @@ public class PrenotazioneSalaService {
         try {
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("indirizzomailmittente"));
+            message.setFrom(new InternetAddress("circoloculturaleCD@gmail.com"));
             message.setRecipients(
                     Message.RecipientType.TO,
                     InternetAddress.parse(socio.getEmail())

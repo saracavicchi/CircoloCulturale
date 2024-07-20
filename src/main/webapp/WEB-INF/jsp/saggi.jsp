@@ -33,7 +33,7 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content" class="clearfix">
-        <main class="midleft clearfix">
+        <main class="<%= request.getAttribute("socioHeader") == null ? "fullsize" : "midleft"%> clearfix">
             <section class="title">
                 <h1>Tutti i saggi del circolo</h1>
             </section>

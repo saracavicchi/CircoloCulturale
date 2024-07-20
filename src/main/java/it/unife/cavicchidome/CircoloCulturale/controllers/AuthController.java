@@ -75,7 +75,7 @@ public class AuthController {
             response.addCookie(socioCookie);
             Optional<Socio> socio = socioRepository.findById(socioId.get());
             if (socio.isPresent()) {
-                if(socio.get().getTessera().getStatoPagamento() == 'p') {
+                if(socio.get().getTessera().getStatoPagamento().equals('p')) {
                     redirectAttributes.addAttribute("pending", "true");
                 }
             }

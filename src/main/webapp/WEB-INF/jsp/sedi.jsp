@@ -28,7 +28,7 @@
 <body>
     <%@include file="/static/include/header.jsp"%>
     <div id="main-content" class="clearfix">
-        <main class="midleft">
+        <main class="<%= request.getAttribute("socioHeader") == null ? "fullsize" : "midleft"%>">
             <section class="title">
                 <h1>Le nostre sedi</h1>
             </section>

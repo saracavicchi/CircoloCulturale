@@ -56,7 +56,7 @@
             <div class="contact-info">
                 <p>Email: <a href="mailto:circoloculturalecd@gmail.com">circoloculturalecd@gmail.com</a></p>
                 <p>Telefono: <a href="tel:+393457628530">+39 345 762 8530</a></p>
-                <p>Indirizzo: "${sede.indirizzo}</p>
+                <p>Indirizzo: ${sede.indirizzo}</p>
             </div>
             <div class="map">
                 <div id="map"></div>
