@@ -47,6 +47,7 @@
                 </form>
             </section>
             <section class="content clearfix">
+            <c:if test="${corsi.size() < 1}"><p id="emptyset">Nessun corso da mostrare</p></c:if>
                 <c:forEach items="${corsi}" var="corso">
                     <article class="full">
                         <h1><a href="/corso/modificaBase?idCorso=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>

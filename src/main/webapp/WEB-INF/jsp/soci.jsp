@@ -47,6 +47,7 @@
                 <button type="button" onclick="redirectToCreaSocioPage()">Crea Nuovo Socio</button>
             </section>
             <section class="content clearfix">
+            <c:if test="${soci.size() < 1}"><p id="emptyset">Nessun socio da mostrare</p></c:if>
                 <c:forEach items="${soci}" var="socio">
                     <article <c:if test="${socio.deleted == true}">class="deleted"</c:if>>
                         <c:if test="${socio.docente ne null and socio.docente.active == true}"><p id="docentebadge" class="badge">docente</p></c:if>

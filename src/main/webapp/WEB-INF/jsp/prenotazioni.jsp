@@ -72,6 +72,7 @@
                 <button type="button" onclick="redirectToCreaPrenotazionePage()">Crea Nuova Prenotazione</button>
             </section>
             <section class="content clearfix">
+            <c:if test="${prenotazioni.size() < 1}"><p id="emptyset">Nessuna prenotazione da mostrare</p></c:if>
                 <c:forEach items="${prenotazioni}" var="prenotazione">
                     <article <c:if test="${prenotazione.deleted == true}">class="deleted"</c:if>>
                         <h1><a href="<%= (request.getAttribute("segretario") != null) ? "/segretario/prenotazioni" : "/socio/prenotazioni"%>?id=${prenotazione.id}">#${prenotazione.id}</a></h1>

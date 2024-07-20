@@ -44,6 +44,7 @@
                 </form>
             </section>
             <section class="content clearfix">
+            <c:if test="${biglietti.size() < 1}"><p id="emptyset">Nessun biglietto da mostrare</p></c:if>
                 <c:forEach items="${biglietti}" var="biglietto">
                     <article class="vertical <c:if test="${biglietto.deleted == true}">deleted</c:if>">
                         <h1><a href="/biglietto/modifica?bigliettoId=${biglietto.id}">#${biglietto.id}</a></h1>

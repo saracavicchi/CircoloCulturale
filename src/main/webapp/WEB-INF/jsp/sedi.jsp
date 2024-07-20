@@ -33,6 +33,7 @@
                 <h1>Le nostre sedi</h1>
             </section>
             <section class="content clearfix">
+            <c:if test="${sedi.size() < 1}"><p id="emptyset">Nessuna sede da mostrare</p></c:if>
                 <c:forEach items="${sedi}" var="sede">
                     <article <c:if test="${sede.active == false}">class="deleted"</c:if>>
                         <h1><a href="/sede/info?id=${sede.id}">${sede.nome}</a></h1>

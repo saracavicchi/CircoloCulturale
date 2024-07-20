@@ -23,6 +23,7 @@
             <h1>Corsi di ${socioHeader.utente.nome} ${socioHeader.utente.cognome}</h1>
         </section>
         <section class="clearfix content">
+        <c:if test="${corsi.size() < 1}"><p id="emptyset">Nessun corso da mostrare</p></c:if>
             <c:forEach items="${corsi}" var="corso">
                 <article class="full">
                     <h1><a href="/corso/info?id=${corso.id}">${corso.categoria} ${corso.genere} ${corso.livello}</a></h1>

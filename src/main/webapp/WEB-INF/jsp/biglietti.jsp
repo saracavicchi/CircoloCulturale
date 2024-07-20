@@ -38,6 +38,7 @@
             </form>
         </section>
         <section class="content clearfix">
+            <c:if test="${biglietti.size() < 1}"><p id="emptyset">Nessun biglietto da mostrare</p></c:if>
             <c:forEach items="${biglietti}" var="biglietto">
                 <article class="vertical">
                     <h1><a href="/biglietto/info?id=${biglietto.id}">#${biglietto.id}</a></h1>

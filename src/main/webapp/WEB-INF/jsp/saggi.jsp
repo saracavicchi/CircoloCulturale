@@ -45,6 +45,7 @@
                 </form>
             </section>
             <section class="content clearfix">
+            <c:if test="${saggi.size() < 1}"><p id="emptyset">Nessun saggio da mostrare</p></c:if>
                 <c:forEach items="${saggi}" var="saggio">
                     <article class="full">
                         <h1><a href="/saggio/info?id=${saggio.id}">${saggio.nome}</a></h1>

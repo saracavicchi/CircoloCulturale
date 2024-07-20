@@ -23,6 +23,7 @@
             <h1>Saggi di ${socio.utente.nome} ${socio.utente.cognome}</h1>
         </section>
         <section class="clearfix content">
+        <c:if test="${saggi.size() < 1}"><p id="emptyset">Nessun saggio da mostrare</p></c:if>
             <c:forEach items="${saggi}" var="saggio">
                 <article class="full">
                     <h1><a href="/saggio/info?id=${saggio.id}">${saggio.nome}</a></h1>
