@@ -77,7 +77,7 @@ public class SedeService {
     public boolean outsideOpeningHours(Integer idSala, Weekday dow, LocalTime startTime, LocalTime endTime) {
         Sede sede = sedeRepository.getReferenceById(salaRepository.getReferenceById(idSala).getIdSede().getId());
         OrarioSede orarioSede = findOrarioSede(sede.getId(), dow);
-        if (startTime.isBefore(orarioSede.getOrarioApertura()) || endTime.isAfter(orarioSede.getOrarioChiusura())) {
+        if (/*sede.getActive() == true && */(startTime.isBefore(orarioSede.getOrarioApertura()) || endTime.isAfter(orarioSede.getOrarioChiusura()))) {
             return true;
         } else {
             return false;

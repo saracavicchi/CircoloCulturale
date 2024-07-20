@@ -58,7 +58,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Integer> {
             "c.idSala.id = :salaId AND " +
             "((:orarioInizio BETWEEN cc.orarioInizio AND cc.orarioFine) OR " +
             "(:orarioFine BETWEEN cc.orarioInizio AND cc.orarioFine) OR " +
-            "(:orarioInizio <= cc.orarioInizio AND :orarioFine >= cc.orarioFine))")
+            "(:orarioInizio <= cc.orarioInizio AND :orarioFine >= cc.orarioFine)) AND c.active = true")
     Optional<Corso> findOverlapCorso(Integer salaId, Weekday dow, LocalTime orarioInizio, LocalTime orarioFine);
 
     @Query("SELECT c FROM Corso c WHERE c.idSala.id = :idSala AND c.active = true AND c.idSala.active = true")
