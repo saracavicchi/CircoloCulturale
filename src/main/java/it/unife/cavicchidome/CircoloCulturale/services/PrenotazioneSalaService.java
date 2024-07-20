@@ -5,6 +5,9 @@ import it.unife.cavicchidome.CircoloCulturale.models.*;
 import it.unife.cavicchidome.CircoloCulturale.repositories.PrenotazioneSalaRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SalaRepository;
 import it.unife.cavicchidome.CircoloCulturale.repositories.SocioRepository;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 @Service
 public class PrenotazioneSalaService {
@@ -77,6 +81,8 @@ public class PrenotazioneSalaService {
                                             Integer socioId) throws ValidationException, EntityNotFoundException {
 
         PrenotazioneSala prenotazione = validateAndParsePrenotazione(description, startTime, endTime, date, salaId, socioId);
+
+        newPrenotazioneEmail(prenotazione.getIdSocio(), prenotazione);
 
         return prenotazioneSalaRepository.save(prenotazione);
     }
@@ -152,6 +158,7 @@ public class PrenotazioneSalaService {
             throw new ValidationException("Non hai i permessi per cancellare questa prenotazione");
         } else {
             prenotazione.setDeleted(true);
+            deletePrenotazioneEmail(prenotazione.getIdSocio(), prenotazione);
             prenotazioneSalaRepository.save(prenotazione);
         }
     }
@@ -169,5 +176,87 @@ public class PrenotazioneSalaService {
     @Transactional
     public List<PrenotazioneSala> findBySedeId(Integer idSede) {
         return prenotazioneSalaRepository.findBySedeId(idSede);
+    }
+
+    public void newPrenotazioneEmail(Socio socio, PrenotazioneSala prenotazione) {
+        final String username = "indirizzomail";
+        final String password = "app password"; // replace with your password
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+
+        Session session = Session.getInstance(prop,
+                new jakarta.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("indirizzomailmittente"));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(socio.getEmail())
+            );
+            message.setSubject("Nuova prenotazione sala");
+            message.setText("Gentile " + socio.getUtente().getNome() + ","
+                    + "\n\nLe confermiamo l'avvenuta prenotazione della sala " + prenotazione.getIdSala().getNumeroSala() + " (sede " + prenotazione.getIdSala().getIdSede().getNome() +
+                    ") per il giorno " + prenotazione.getData() + " dalle ore " + prenotazione.getOrarioInizio() + " alle ore " + prenotazione.getOrarioFine() + "." +
+                    "\n\nIl suo codice prenotazione è: " + prenotazione.getId() +
+                    "\n\nCordiali saluti,\nCircolo Culturale \"La Sinfonia\"");
+
+            Transport.send(message);
+
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deletePrenotazioneEmail(Socio socio, PrenotazioneSala prenotazione) {
+        final String username = "indirizzomail";
+        final String password = "app password"; // replace with your password
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+
+        Session session = Session.getInstance(prop,
+                new jakarta.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("indirizzomailmittente"));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(socio.getEmail())
+            );
+            message.setSubject("Prenotazione sala cancellata");
+            message.setText("Gentile " + socio.getUtente().getNome() + ","
+                    + "\n\nLe comunichiamo la cancellazione della prenotazione numero " + prenotazione.getId() + "." +
+                    "\n\nLa prenotazione era fissata in data " + prenotazione.getData() + " dalle ore " + prenotazione.getOrarioInizio() + " alle ore " + prenotazione.getOrarioFine() +
+                            " per la sala " + prenotazione.getIdSala().getNumeroSala() + " (sede " + prenotazione.getIdSala().getIdSede().getNome() + ")." +
+                    "\n\nCordiali saluti,\nCircolo Culturale \"La Sinfonia\"");
+
+            Transport.send(message);
+
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

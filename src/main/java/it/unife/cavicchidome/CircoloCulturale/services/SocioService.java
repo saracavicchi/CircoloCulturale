@@ -351,8 +351,9 @@ public class SocioService {
                     InternetAddress.parse(socio.getEmail())
             );
             message.setSubject("Benvenuto al Circolo Culturale");
-            message.setText("Ciao " + socio.getUtente().getNome() + ","
-                    + "\n\nBenvenuto al Circolo Culturale! Il tuo codice tessera è: " + socio.getTessera().getId());
+            message.setText("Gentile " + socio.getUtente().getNome() + ","
+                    + "\n\nBenvenuto al Circolo Culturale! Il tuo codice tessera è: " + socio.getTessera().getId() +
+                    "\n\nCordiali saluti,\nCircolo Culturale \"La Sinfonia\"");
 
             Transport.send(message);
 
