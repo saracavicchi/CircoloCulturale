@@ -362,7 +362,7 @@
                 <c:forEach items="${sede.orarioSede}" var="orario" varStatus="status">
                 <c:set var="giornoIt" value="${status.index == 0 ? 'Lunedì' : status.index == 1 ? 'Martedì' : status.index == 2 ? 'Mercoledì' : status.index == 3 ? 'Giovedì' : status.index == 4 ? 'Venerdì' : status.index == 5 ? 'Sabato' : 'Domenica'}"/>
                 <p>
-                    (<c:out value="${giornoIt}"/>): <c:out value="${orario.orarioApertura}"/> - <c:out value="${orario.orarioChiusura}"/>
+                    <c:out value="${giornoIt}"/>: <c:out value="${orario.orarioApertura}"/> - <c:out value="${orario.orarioChiusura}"/>
                 </p>
                 </c:forEach>
             </fieldset>
